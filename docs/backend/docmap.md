@@ -3,80 +3,90 @@
 ## Overview
 This document maps all backend documentation and implementation for the Remote Teams Expectations platform.
 
-## Architecture
+## Architecture Documentation
 
-### Framework
-- **Technology**: Next.js 15.2.4 App Router
-- **Runtime**: Node.js
-- **Language**: TypeScript
+### System Design
+- **API Architecture**: `/docs/backend/api-architecture.md`
+  - Server Actions pattern
+  - API routes specification
+  - OpenAPI documentation
+  - Service communication flows
+
+- **Security Architecture**: `/docs/backend/security-architecture.md`
+  - Clerk authentication integration
+  - Authorization model (RBAC)
+  - Data protection strategies
+  - Input validation patterns
+
+- **Infrastructure Blueprint**: `/docs/backend/infrastructure-blueprint.md`
+  - Vercel deployment
+  - Supabase integration
+  - Scaling characteristics
+  - Monitoring requirements
+
+- **Service Boundaries**: `/docs/backend/service-boundaries.md`
+  - Layer separation
+  - Communication patterns
+  - Error handling strategy
+  - Performance optimization
 
 ### Current Implementation
+- **Location**: `/docs/backend/api.md`
+- **Status**: Mock implementation only
 - **Data Layer**: In-memory mock data
-- **API Routes**: Not implemented (using Server Components)
-- **State Management**: Props-based, no persistence
+- **API Routes**: Not implemented
+- **State Management**: Props-based
 
-## Data Access Layer
+## Framework Stack
+- **Runtime**: Next.js 15.2.4 App Router
+- **Language**: TypeScript
+- **ORM**: Drizzle (planned)
+- **Database**: Supabase PostgreSQL (planned)
+- **Auth**: Clerk (planned)
 
-### Mock Data Service
-- **Location**: `/lib/data.ts`
-- **Pattern**: Direct imports in Server Components
-- **Operations**: Read-only access to mock data
+## Server Implementation
 
-### Type Definitions
-- **Location**: `/lib/types.ts`
-- **Models**: User, Expectation
+### Server Components
+- **Dashboard**: `/app/page.tsx`
+- **History**: `/app/history/page.tsx`
+- **Layout**: `/app/layout.tsx`
 
-## Server Components
+### Server Actions (Planned)
+- **Location**: `/app/actions/`
+- **Pattern**: Form submissions and mutations
+- **Validation**: Zod schemas
 
-### Dashboard Data Assembly
-- **Location**: `/app/page.tsx`
-- **Operations**:
-  - Join expectations with users
-  - Filter active expectations
-  - Separate user vs team expectations
+### API Routes (Planned)
+- **Location**: `/app/api/`
+- **Purpose**: External integrations
+- **Format**: RESTful with OpenAPI spec
 
-### History Data Processing
-- **Location**: `/app/history/page.tsx`
-- **Operations**:
-  - Filter completed expectations
-  - Sort by completion date
-  - Enrich with user data
+## Data Access
 
-## Utility Functions
-- **Location**: `/lib/utils.ts`
-- **Purpose**: Helper functions (currently Tailwind class merging)
+### Current Mock Data
+- **Types**: `/lib/types.ts`
+- **Data**: `/lib/data.ts`
+- **Utils**: `/lib/utils.ts`
 
-## Security Considerations
-- **Authentication**: Not implemented
-- **Authorization**: Not implemented
-- **Current User**: Hardcoded as "user-1"
+### Planned Data Layer
+- **ORM**: Drizzle with type safety
+- **Migrations**: Version controlled
+- **Queries**: Prepared statements
+- **Caching**: Redis integration
 
-## Production Requirements
+## Security Implementation
 
-### Database Integration
-- Replace mock data with persistent storage
-- Implement proper data access layer
-- Add connection pooling
-
-### API Development
-- Create API routes for CRUD operations
-- Implement proper error handling
-- Add request validation
-
-### Authentication
-- User authentication system
+### Authentication (Planned)
+- Clerk integration
+- JWT verification
 - Session management
 - Protected routes
 
-### Real-time Features
-- WebSocket or polling for team updates
-- Optimistic UI updates
-- Conflict resolution
-
-## Performance Patterns
-- **Data Fetching**: Server-side in components
-- **Caching**: Not implemented
-- **Optimization**: Minimal data transformation
+### Authorization (Planned)
+- Role-based access
+- Resource ownership
+- API rate limiting
+- Input sanitization
 
 ## IgnoreFormat
 <!-- DO NOT MODIFY THIS SECTION -->

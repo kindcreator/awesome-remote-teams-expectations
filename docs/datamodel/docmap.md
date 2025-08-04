@@ -3,56 +3,96 @@
 ## Overview
 This document maps all data model documentation for the Remote Teams Expectations platform.
 
+## Architecture Documentation
+
+### Data Architecture
+- **Location**: `/docs/datamodel/architecture.md`
+- **Contents**:
+  - Entity Relationship Diagram
+  - JSON Schema definitions
+  - Data integrity rules
+  - Index strategy
+
+### Entity Documentation
+- **Location**: `/docs/datamodel/entities.md`
+- **Contents**:
+  - Core entity definitions
+  - Business constraints
+  - Current vs production schema
+
 ## Core Data Models
 
 ### User Model
-- **Location**: `/lib/types.ts`
-- **Purpose**: Represents team members in the system
+- **Current Implementation**: `/lib/types.ts`
+- **Production Schema**: See `/docs/datamodel/architecture.md`
 - **Fields**:
-  - `id`: Unique identifier
+  - `id`: UUID identifier
+  - `email`: Unique email (production)
   - `name`: Display name
-  - `avatarUrl`: Profile image path
+  - `avatarUrl`: Profile image
+  - `createdAt`: Creation timestamp
+  - `updatedAt`: Last modified
 
 ### Expectation Model
-- **Location**: `/lib/types.ts`
-- **Purpose**: Represents work commitments and their completion status
+- **Current Implementation**: `/lib/types.ts`
+- **Production Schema**: See `/docs/datamodel/architecture.md`
 - **Fields**:
-  - `id`: Unique identifier
-  - `userId`: Reference to User
+  - `id`: UUID identifier
+  - `userId`: User reference
   - `title`: Task description
-  - `createdAt`: ISO 8601 creation timestamp
-  - `estimatedCompletion`: ISO 8601 expected completion
+  - `createdAt`: Creation timestamp
+  - `estimatedCompletion`: Expected completion
   - `isDone`: Completion status
-  - `doneAt`: ISO 8601 actual completion (nullable)
+  - `doneAt`: Actual completion
+  - `updatedAt`: Last modified
 
 ## Data Relationships
 
 ### User-Expectation Relationship
 - **Type**: One-to-Many
-- **Implementation**: `userId` foreign key in Expectation model
-- **Constraints**: Each expectation belongs to exactly one user
+- **Constraint**: One active expectation per user
+- **Foreign Key**: `expectations.userId -> users.id`
+- **Cascade**: Soft delete on user removal
 
-## Mock Data Store
-- **Location**: `/lib/data.ts`
-- **Purpose**: In-memory data storage for development
-- **Contents**:
-  - 4 predefined users (user-1 through user-4)
-  - Sample expectations demonstrating various states
+## Data Access Patterns
 
-## Data Flow Patterns
+### Query Patterns
+- Active expectations view
+- Team dashboard aggregation
+- History timeline
+- User-specific queries
 
-### Data Assembly
-- **Location**: `/app/page.tsx`
-- **Pattern**: Server-side data enrichment joining expectations with users
+### Performance Optimization
+- Composite indexes for common queries
+- Prepared statements via ORM
+- Connection pooling
+- Query result caching
 
-### State Management
-- **Pattern**: Props-based with no global state
-- **Form Handling**: React Hook Form with Zod validation
+## Data Validation
 
-## Schema Validation
+### Schema Validation
 - **Library**: Zod
-- **Integration**: React Hook Form resolvers
-- **Location**: Form components use inline schemas
+- **Location**: Inline with Server Actions
+- **Integration**: Form validation
+
+### Business Rules
+- Future completion dates only
+- Single active expectation
+- Ownership validation
+- Timestamp consistency
+
+## Current Implementation
+
+### Mock Data
+- **Types**: `/lib/types.ts`
+- **Data**: `/lib/data.ts`
+- **Limitations**: No persistence
+
+### Migration Path
+- Drizzle ORM schemas
+- Database migrations
+- Data seeding scripts
+- Backward compatibility
 
 ## IgnoreFormat
 <!-- DO NOT MODIFY THIS SECTION -->

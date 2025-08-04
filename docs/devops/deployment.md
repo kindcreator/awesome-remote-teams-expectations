@@ -1,4 +1,16 @@
-# Deployment Guide
+# Deployment Overview
+
+## Deployment Architecture
+
+### Production Platform
+- **Infrastructure**: Hostinger VPS
+- **Platform**: Coolify (self-hosted PaaS)
+- **Repository**: https://github.com/kindcreator/awesome-remote-teams-expectations
+- **Integration**: GitHub webhook for automatic deployments
+
+### Deployment Documentation
+- **Coolify Setup**: See `/docs/devops/coolify-deployment.md`
+- **Infrastructure**: See `/docs/backend/infrastructure-blueprint.md`
 
 ## Development Environment
 
@@ -10,10 +22,13 @@
 ### Local Setup
 ```bash
 # Clone repository
-git clone <repository-url>
+git clone https://github.com/kindcreator/awesome-remote-teams-expectations.git
 
 # Install dependencies
 pnpm install
+
+# Create .env.local for development
+cp .env.example .env.local
 
 # Run development server
 pnpm dev
@@ -21,55 +36,63 @@ pnpm dev
 # Build production
 pnpm build
 
-# Run production build
+# Run production build locally
 pnpm start
 ```
 
 ### Environment Variables
-Currently none required (mock data only).
+Development (`.env.local`):
+```env
+# Database
+DATABASE_URL=postgresql://localhost:5432/expectations_dev
 
-Production will require:
-- Database connection strings
-- Authentication keys
-- API endpoints
+# Authentication (development keys)
+CLERK_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 
-## Production Deployment
+# Supabase (development project)
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_ANON_KEY=eyJhbG...
+```
 
-### Platform
-Requirements specify Vercel deployment.
+## Deployment Flow
 
-### Build Configuration
-- Framework: Next.js
-- Build Command: `pnpm build`
-- Output Directory: `.next`
-- Node Version: 18.x
+### Continuous Deployment
+1. **Development**: Work on feature branches
+2. **Pull Request**: Create PR to main
+3. **Review**: Code review and testing
+4. **Merge**: Merge to main branch
+5. **Deploy**: Automatic deployment via Coolify webhook
 
-### Current Status
-- Development environment only
-- No CI/CD pipeline
-- No automated deployments
-- No environment separation
+### Manual Deployment
+Access Coolify dashboard for:
+- Manual deployments
+- Rollbacks
+- Environment variable updates
+- Log viewing
 
-## Required Infrastructure
+## Infrastructure Components
 
-### Database (not implemented)
-- Supabase PostgreSQL
-- Connection pooling
-- Backup strategy
+### Application Hosting
+- Hostinger VPS with Coolify
+- Docker containerization via Nixpacks
+- Traefik reverse proxy
+- SSL via Let's Encrypt (automatic)
 
-### Authentication (not implemented)
-- Clerk service
-- Environment keys
-- Webhook endpoints
+### External Services
+- **Database**: Supabase PostgreSQL
+- **Authentication**: Clerk
+- **Storage**: Supabase Storage
+- **Real-time**: Supabase Realtime
 
-### Monitoring (not implemented)
-- Error tracking
-- Performance monitoring
-- Usage analytics
+## Monitoring & Maintenance
 
-### CI/CD Pipeline (not implemented)
-Requirements specify:
-- GitHub Actions
-- Automated testing
-- Branch deployments
-- PR previews
+### Application Monitoring
+- Health check endpoint: `/api/health`
+- Container logs via Coolify
+- Resource usage dashboards
+
+### Backup Strategy
+- Database backups (Supabase)
+- Code repository (GitHub)
+- Environment secrets (Coolify)
