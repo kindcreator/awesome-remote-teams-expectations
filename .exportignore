@@ -1,0 +1,216 @@
+components/ui/**
+#dont touch this 👆 - ui is just TOO big 
+
+
+
+!Dockerfile
+!.env
+*.csv
+exported-from-ppfl-santanna-fl-client-server
+uv.lock
+
+
+
+
+# Python byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+.DS_Store
+*.DS_Store
+medical-dataset-manager/**
+
+# C extensions
+*.so
+
+node_modules/*
+.next/*
+eslint.*
+package-lock.json
+
+# Rider
+.idea/*
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+# SageMath parsed files
+*.sage.py
+
+# poetry
+poetry.lock
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+#mypy
+.mypy_cache/
+
+# IDE settings
+.vscode/
+.idea/
+
+# Project-specific
+exported-from-*
+
+# Images
+*.jpg
+*.jpeg
+*.png
+*.svg
+
+# Documentation
+*.md
+*.txt
+
+/output/
+.bin
+.bin/
+.bin/*
+.bin/**
+
+
+bin
+bin/
+bin/*
+bin/**
+
+.obj
+.obj/
+.obj/*
+.obj/**
+
+
+obj
+obj/
+obj/*
+obj/**
+
+*.http
+**.http
+
+.gitattributes
+
+.exportignore
+poetry.lock
+
+.ruff_cache/
+.ruff_cache
+solution
+.ruff_cache/*
+results_output/*
+assets/*
+
+
+.worker_logs/
+.worker_logs/**
+
+.pytest_cache/
+.pytest_cache/**
+
+.ruff_cache/
+.ruff_cache/**
+
+.gitignore
+Postman/*
+
+containers/*
+TestResults/*
+Tests/coverage-report/*
+Tests/coverage-results/*
+
+coverage-results/*
+coverage-results/*
+
+# Include documentation
+
+tmp/
+tmp/**
+
+assets/**
+
+.tmp/*  
+
+.github/*
+README.md
+
+
+
+
+
