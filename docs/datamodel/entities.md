@@ -49,10 +49,15 @@ export const expectations = pgTable('expectations', {
 ## Data Constraints
 
 ### Business Rules
-- One active expectation per user maximum
+- One active expectation per user maximum (enforced by unique partial index)
 - Expectations cannot be retroactively created
 - Completion time must be after creation time
 - Only expectation owner can modify/delete
+
+### Database Indexes
+- **Unique Partial Index**: `expectations_user_id_active_idx` - Enforces one active expectation per user at database level
+- **Performance Index**: `expectations_user_id_idx` - Optimizes user expectation queries
+- **History Index**: `expectations_done_at_idx` - Optimizes history sorting queries
 
 ### Implementation Status
 - ✅ Database schema defined with Drizzle ORM

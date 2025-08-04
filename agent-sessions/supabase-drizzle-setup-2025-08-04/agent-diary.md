@@ -48,3 +48,13 @@
 - Supabase and Drizzle ORM are fully configured
 - Database schema matches requirements from PDF
 - Ready for database migrations once credentials are added
+
+### PR Review Fixes Completed
+1. **Database Constraint**: Added partial unique index to enforce "one active expectation per user" at database level
+2. **Error Handling**: Improved Supabase server client to log warnings in development
+3. **Makefile**: Created automation for database operations
+4. **Documentation**: Updated all relevant docs with new changes
+
+### Next Steps
+- Run `make db-update` to apply the new indexes
+- Continue with Ticket #1 (landing page implementation)

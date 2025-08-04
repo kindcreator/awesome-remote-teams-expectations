@@ -98,6 +98,8 @@ graph TB
 - Drizzle ORM migrations
 - Version-controlled schema
 - Rollback capabilities
+- Partial unique index for business rules enforcement
+- Performance indexes for common queries
 
 ### 3. Authentication (Clerk)
 **Purpose**: Complete authentication and user management

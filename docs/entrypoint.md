@@ -50,4 +50,9 @@ This is the navigation map for AI agents and developers to efficiently navigate 
 ## Database Schema
 - **Users**: Integrated with Clerk authentication (clerk_user_id)
 - **Expectations**: Work commitments with estimated completion times
-- Business rule: One active expectation per user maximum
+- Business rule: One active expectation per user maximum (enforced by database constraint)
+
+## Development Tools
+- **Makefile**: Automation for common tasks (`make help` for commands)
+- **Database Management**: `make db-update` to sync schema changes
+- **Error Handling**: Enhanced logging for development debugging
