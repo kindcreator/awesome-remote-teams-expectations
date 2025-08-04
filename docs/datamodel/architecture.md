@@ -7,6 +7,7 @@ erDiagram
     User ||--o{ Expectation : creates
     User {
         uuid id PK
+        string clerkUserId UK
         string email UK
         string name
         string avatarUrl
@@ -32,29 +33,31 @@ Primary entity representing team members.
 
 **Attributes:**
 - `id`: UUID primary key (generated)
-- `email`: Unique email address (from Clerk auth)
+- `clerkUserId`: Unique identifier from Clerk authentication
+- `email`: Unique email address (synchronized from Clerk)
 - `name`: Display name
 - `avatarUrl`: Profile image URL (nullable)
 - `createdAt`: Account creation timestamp
 - `updatedAt`: Last modification timestamp
 
 **Constraints:**
+- ClerkUserId must be unique
 - Email must be unique
-- Name required, max 100 characters
-- Avatar URL must be valid URL format
+- Name required
+- Avatar URL must be valid URL format when provided
 
 ### Expectation Entity
 Represents work commitments with time estimates.
 
 **Attributes:**
 - `id`: UUID primary key (generated)
-- `userId`: Foreign key to User (required)
-- `title`: Task description (required, max 500 characters)
-- `createdAt`: Creation timestamp
+- `userId`: Foreign key to User (required, cascade on delete)
+- `title`: Task description (required)
+- `createdAt`: Creation timestamp (auto-generated)
 - `estimatedCompletion`: Expected completion timestamp
 - `isDone`: Boolean completion status (default: false)
 - `doneAt`: Actual completion timestamp (nullable)
-- `updatedAt`: Last modification timestamp
+- `updatedAt`: Last modification timestamp (auto-updated)
 
 **Constraints:**
 - One active (non-done) expectation per user
@@ -71,9 +74,9 @@ Represents work commitments with time estimates.
 4. **Time Consistency**: Timestamps must maintain logical order
 
 ### Referential Integrity
-- Cascade user deletion to expectations (soft delete)
-- Prevent user deletion with active expectations
+- Cascade user deletion to expectations
 - Foreign key constraints enforced at database level
+- Clerk userId ensures authentication consistency
 
 ## JSON Schemas
 
@@ -82,11 +85,15 @@ Represents work commitments with time estimates.
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": ["id", "email", "name", "createdAt", "updatedAt"],
+  "required": ["id", "clerkUserId", "email", "name", "createdAt", "updatedAt"],
   "properties": {
     "id": {
       "type": "string",
       "format": "uuid"
+    },
+    "clerkUserId": {
+      "type": "string",
+      "minLength": 1
     },
     "email": {
       "type": "string",
@@ -94,8 +101,7 @@ Represents work commitments with time estimates.
     },
     "name": {
       "type": "string",
-      "minLength": 1,
-      "maxLength": 100
+      "minLength": 1
     },
     "avatarUrl": {
       "type": ["string", "null"],
@@ -166,6 +172,13 @@ Represents work commitments with time estimates.
 
 ### Index Strategy
 - Primary: `id` (both tables)
-- Unique: `users.email`
+- Unique: `users.email`, `users.clerkUserId`
 - Composite: `expectations(userId, isDone)` for active check
 - Single: `expectations.doneAt` for history sorting
+
+## Implementation Stack
+- **Database**: PostgreSQL via Supabase
+- **ORM**: Drizzle ORM for type-safe queries
+- **Authentication**: Clerk integration
+- **Schema Location**: `/db/schema/`
+- **Migration Management**: Drizzle Kit

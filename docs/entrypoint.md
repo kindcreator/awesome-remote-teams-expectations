@@ -42,5 +42,12 @@ This is the navigation map for AI agents and developers to efficiently navigate 
 
 ## Current Implementation Status
 - **Authentication**: Clerk authentication integrated with Next.js App Router
+- **Database**: Supabase configured with PostgreSQL backend
+- **ORM**: Drizzle ORM set up with type-safe schema definitions
 - **UI Framework**: Next.js 15 with TypeScript and Tailwind CSS
 - **Component Library**: shadcn/ui components configured
+
+## Database Schema
+- **Users**: Integrated with Clerk authentication (clerk_user_id)
+- **Expectations**: Work commitments with estimated completion times
+- Business rule: One active expectation per user maximum
