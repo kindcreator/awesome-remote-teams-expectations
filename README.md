@@ -1,53 +1,45 @@
-# Remote Teams Expectations Platform
+# Remote Teams Expectations Tracker
 
-A collaborative platform designed to enhance transparency and accountability in remote teams by allowing team members to set, track, and share their work expectations.
+A simple, focused tool for remote teams to share what they're working on and when they'll be done.
 
-## Business Overview
+![Web App Initial Version](preview/web%20app%20init%20version%20.png)
 
-Remote Teams Expectations addresses the fundamental challenge of visibility in distributed teams. Team members can communicate what they're working on, when they expect to complete it, and track their actual delivery against estimates.
+## 🚀 Live Demo
 
-## Key Features
+**Check out the POC: [https://tracker.kindsolutions.net/](https://tracker.kindsolutions.net/)**
 
-### Real-time Team Visibility
-See what every team member is currently focused on in a single dashboard view, eliminating the need for constant status update meetings.
+## What is this?
 
-### Expectation Management
-Set clear expectations with estimated completion times, helping teams coordinate efforts and manage dependencies effectively.
+In remote teams, it's hard to know what everyone is working on. This app solves that with a dead-simple approach:
+- Each person sets ONE current expectation
+- Shows what they're doing and when they'll finish
+- Everyone sees the team's focus at a glance
+- Track history of completed work
 
-### Performance Insights
-Track completion history to identify patterns, improve estimation accuracy, and celebrate team accomplishments.
+## POC Status
 
-### Simple and Focused
-One expectation per person at a time ensures clarity of focus and prevents overwhelming task lists.
+This is a **Proof of Concept** following the 80/20 rule. Like an artist sketching basic shapes before adding details, this MVP demonstrates the core concept before implementing full features.
 
-## Getting Started
+**Current state**: Basic UI and mock data only  
+**Next steps**: Implement authentication, persistence, and real-time updates based on client feedback
 
-```bash
-# Install dependencies
-pnpm install
+## Development Approach
 
-# Run development server
-pnpm dev
+Following lean startup principles:
+1. Build minimal viable version
+2. Deploy and get real feedback
+3. Shape implementation to actual needs
+4. Avoid over-engineering
 
-# Build for production
-pnpm build
+This approach ensures we build what teams actually need, not what we think they need.
 
-# Start production server
-pnpm start
-```
+## Tech Stack
 
-## Technology Foundation
-
-Built with modern web technologies for reliability and performance:
-- Next.js for server-side rendering and optimal performance
-- TypeScript for type safety and developer productivity
-- Tailwind CSS for consistent, responsive design
-- React 19 for cutting-edge UI capabilities
+- Next.js 15 + React 19
+- TypeScript
+- Tailwind CSS
+- Deployed on Coolify (self-hosted)
 
 ## Documentation
 
-Technical documentation is organized by domain:
-- `/docs/datamodel/` - Data structures and relationships
-- `/docs/frontend/` - User interface implementation
-- `/docs/backend/` - Server-side logic and APIs
-- `/docs/devops/` - Deployment and operations
+For technical details, see `/docs/`
