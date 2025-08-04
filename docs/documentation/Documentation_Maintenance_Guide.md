@@ -15,10 +15,11 @@ This guide outlines the essential rules for updating this project's documentatio
 
 ### Document Directory
 
-| Path                               | Purpose                                                                                                                                              |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `README.md`                        | A brief business description and high-level overview of the platform's features. **No** in-depth technical details. 
-| `/docs/datamodel/docmap.md`        | ALL of the references for datamodel documentation. MANDATORILY LOOK AT THIS EVERY TIME YOU REFOCUS.
-| `/docs/frontend/docmap.md`         | ALL of the references for frontend documentation and implementation (all files). MANDATORILY LOOK AT THIS EVERY TIME YOU REFOCUS.       
-| `/docs/backend/docmap.md`          | ALL of the references for backend documentation and implementation (all files). MANDATORILY LOOK AT THIS EVERY TIME YOU REFOCUS.
-| `/docs/devops/`                    | Top level directory for devops documentation. Mandatorily look at this if you need to release or perform operations tasks.
+| Path                       | Purpose                                                                                                                                              |
+|----------------------------| ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `README.md`                | A brief business description and high-level overview of the platform's features. **No** in-depth technical details. 
+| `entrypoint.md`            | A documentation map for agent navigation in the focumentation.  
+| `/docs/datamodel/docmap.md` | ALL of the references for datamodel documentation. MANDATORILY LOOK AT THIS EVERY TIME YOU REFOCUS.
+| `/docs/frontend/docmap.md` | ALL of the references for frontend documentation and implementation (all files). MANDATORILY LOOK AT THIS EVERY TIME YOU REFOCUS.       
+| `/docs/backend/docmap.md`  | ALL of the references for backend documentation and implementation (all files). MANDATORILY LOOK AT THIS EVERY TIME YOU REFOCUS.
+| `/docs/devops/`            | Top level directory for devops documentation. Mandatorily look at this if you need to release or perform operations tasks.
