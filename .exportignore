@@ -4,7 +4,6 @@ components/ui/**
 
 
 !Dockerfile
-!.env
 *.csv
 exported-from-ppfl-santanna-fl-client-server
 uv.lock
@@ -211,6 +210,10 @@ assets/**
 README.md
 
 
+
+
+!.env
+!.env.*
 
 
 
