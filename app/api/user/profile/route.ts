@@ -5,12 +5,13 @@ import { eq } from 'drizzle-orm';
 import { isTestMode, testAuth } from '@/lib/test-auth';
 import { headers } from 'next/headers';
 
-export async function GET() {
+export async function GET(req: Request) {
   let userId: string | null = null;
   
   // In test mode, check for Bearer token
   if (isTestMode()) {
-    const authHeader = headers().get('authorization');
+    const headersList = await headers();
+    const authHeader = headersList.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,

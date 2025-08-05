@@ -21,21 +21,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  return (
-    <ClerkProvider>
-      <html lang="en">
-        <head>
-          <style>{`
+  const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === 'true';
+  
+  const content = (
+    <html lang="en">
+      <head>
+        <style>{`
 html {
   font-family: ${GeistSans.style.fontFamily};
   --font-sans: ${GeistSans.variable};
   --font-mono: ${GeistMono.variable};
 }
-          `}</style>
-        </head>
-        <body>
-          <header className="flex justify-between items-center p-4 border-b">
-            <h1 className="text-xl font-semibold">Remote Teams Expectations</h1>
+        `}</style>
+      </head>
+      <body>
+        <header className="flex justify-between items-center p-4 border-b">
+          <h1 className="text-xl font-semibold">Remote Teams Expectations</h1>
+          {!isTestMode && (
             <div>
               <SignedOut>
                 <SignInButton mode="modal" />
@@ -45,10 +47,21 @@ html {
                 <UserButton />
               </SignedIn>
             </div>
-          </header>
-          {children}
-        </body>
-      </html>
+          )}
+        </header>
+        {children}
+      </body>
+    </html>
+  );
+  
+  // Only wrap with ClerkProvider in production mode
+  if (isTestMode) {
+    return content;
+  }
+  
+  return (
+    <ClerkProvider>
+      {content}
     </ClerkProvider>
-  )
+  );
 }

@@ -15,7 +15,7 @@ try {
 
 export async function POST(req: Request) {
   // Get the headers
-  const headerPayload = headers();
+  const headerPayload = await headers();
   const svix_id = headerPayload.get("svix-id");
   const svix_timestamp = headerPayload.get("svix-timestamp");
   const svix_signature = headerPayload.get("svix-signature");
@@ -73,6 +73,13 @@ export async function POST(req: Request) {
     const { id, email_addresses, first_name, last_name, image_url } = evt.data;
     
     // Validate required fields
+    if (!email_addresses || !Array.isArray(email_addresses)) {
+      return new Response(JSON.stringify({ error: 'Missing required fields: email_addresses' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    
     const primaryEmail = email_addresses.find(email => email.verification?.status === 'verified');
     if (!primaryEmail) {
       return new Response(JSON.stringify({ error: 'Missing required fields: verified email' }), {
@@ -123,6 +130,13 @@ export async function POST(req: Request) {
     const { id, email_addresses, first_name, last_name, image_url } = evt.data;
     
     // Validate required fields
+    if (!email_addresses || !Array.isArray(email_addresses)) {
+      return new Response(JSON.stringify({ error: 'Missing required fields: email_addresses' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    
     const primaryEmail = email_addresses.find(email => email.verification?.status === 'verified');
     if (!primaryEmail) {
       return new Response(JSON.stringify({ error: 'Missing required fields: verified email' }), {
