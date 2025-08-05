@@ -21,6 +21,10 @@ db-update: db-generate db-push
 dev:
 	npm run dev
 
+dev-tunnel:
+	@echo "Starting ngrok tunnel..."
+	@ngrok http 3000
+
 build:
 	npm run build
 
@@ -86,6 +90,20 @@ playwright-install:
 playwright-install-browsers:
 	npx playwright install
 
+# Install ngrok for WSL
+ngrok-setup-wsl:
+	./scripts/setup-ngrok-wsl.sh
+
+# Configure ngrok authentication
+ngrok-auth:
+	@echo "Usage: make ngrok-auth TOKEN=your_authtoken_here"
+	@[ "${TOKEN}" ] || ( echo "Error: TOKEN is not set"; exit 1 )
+	./scripts/setup-ngrok-auth.sh ${TOKEN}
+
+# Configure ngrok from .env.local
+ngrok-setup:
+	./scripts/setup-ngrok-from-env.sh
+
 # Clean test artifacts
 test-clean:
 	rm -rf test-results/ playwright-report/ blob-report/
@@ -114,6 +132,7 @@ help:
 	@echo ""
 	@echo "Development:"
 	@echo "  make dev          - Start development server"
+	@echo "  make dev-tunnel   - Start ngrok tunnel for webhook testing"
 	@echo "  make build        - Build for production"
 	@echo "  make lint         - Run linter"
 	@echo "  make install      - Install dependencies"
@@ -139,11 +158,12 @@ help:
 	@echo "  make playwright-setup - Install @playwright/test dependency"
 	@echo "  make playwright-install - Install Playwright with system dependencies"
 	@echo "  make playwright-install-browsers - Install browsers only"
+	@echo "  make ngrok-setup-wsl - Install ngrok for WSL (Linux version)"
 	@echo ""
 	@echo "Validation:"
 	@echo "  make validate     - Full validation (lint, build, test)"
 
-.PHONY: db-generate db-push db-migrate db-studio db-update dev build lint install help \
+.PHONY: db-generate db-push db-migrate db-studio db-update dev dev-tunnel build lint install help \
         test test-ui test-debug test-headed test-api test-e2e test-watch test-report \
         test-codegen test-update-snapshots test-fast test-ci test-tdd \
         playwright-setup playwright-install playwright-install-browsers test-clean test-and-report \
