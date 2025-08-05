@@ -1,0 +1,43 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - heading "Remote Teams Expectations" [level=1]
+  - button "Sign in"
+  - button "Sign up"
+- banner:
+  - heading "Expectations" [level=1]
+  - paragraph: An overview of your team's focus.
+  - link "View History":
+    - /url: /history
+    - button "View History":
+      - img
+      - text: View History
+- main:
+  - heading "My Focus" [level=2]
+  - img "Alex"
+  - text: Alex Your Current Focus
+  - button:
+    - img
+  - paragraph: Finalize Q3 marketing report
+  - text: "Set: Aug 4, 11:00 AM ETA: Aug 4, 7:00 PM"
+  - img
+  - text: "Time remaining: about 10 hours ago"
+  - button "Mark as Done":
+    - img
+    - text: Mark as Done
+  - heading "Team's Focus" [level=2]
+  - img "Maria"
+  - paragraph: Develop the new authentication flow
+  - paragraph: Maria
+  - img
+  - text: in about 12 hours
+  - img "Sophia"
+  - paragraph: Review and merge pull requests for the API gateway
+  - paragraph: Sophia
+  - img
+  - text: about 11 hours ago
+- button "Open Next.js Dev Tools":
+  - img
+- alert
+```

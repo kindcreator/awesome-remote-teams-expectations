@@ -5,12 +5,18 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "dev:test": "next dev",
     "lint": "next lint",
     "start": "next start",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:api": "playwright test tests/api/",
+    "test:e2e": "playwright test tests/e2e/"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.28.1",
@@ -64,17 +70,20 @@
     "react-resizable-panels": "^2.1.7",
     "recharts": "2.15.4",
     "sonner": "^1.7.4",
+    "svix": "^1.70.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.9",
     "zod": "3.25.67"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.2",
     "@tailwindcss/postcss": "^4.1.9",
     "@types/node": "^22",
     "@types/pg": "^8.15.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.2.1",
     "drizzle-kit": "^0.31.4",
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
