@@ -3,11 +3,21 @@
 # Check if .env.test.local exists (for real test credentials)
 if [ -f .env.test.local ]; then
   echo "Using .env.test.local (local test credentials)"
-  export $(cat .env.test.local | grep -v '^#' | xargs)
+  # Load and export all variables
+  set -a
+  source .env.test.local
+  set +a
 else
   echo "Using .env.test (mock credentials)"
-  export $(cat .env.test | grep -v '^#' | xargs)
+  # Load and export all variables
+  set -a
+  source .env.test
+  set +a
 fi
+
+# Debug: Check if Clerk keys are set
+echo "CLERK_SECRET_KEY is set: ${CLERK_SECRET_KEY:+yes}"
+echo "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is set: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:+yes}"
 
 # Run playwright tests with UI
 if [ -z "$1" ]; then

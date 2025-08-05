@@ -4,8 +4,10 @@ components/ui/**
 
 
 !Dockerfile
+!.env.*
 !.env
 *.csv
+playwright-report/
 exported-from-ppfl-santanna-fl-client-server
 uv.lock
 
@@ -103,7 +105,6 @@ celerybeat-schedule
 poetry.lock
 
 # Environments
-.env
 .venv
 env/
 venv/

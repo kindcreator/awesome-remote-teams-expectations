@@ -1,0 +1,115 @@
+<SolutionTreeView>
+
+awesome-remote-teams-expectations/
+├── .clerk/
+│   └── .tmp/
+│       └── keyless.json
+├── .github/
+├── .idea/
+├── .next/
+├── agent-sessions/
+│   ├── clerk-auth-sync-2025-08-05/
+│   ├── clerk-setup-2025-08-04/
+│   ├── documentation-build-2025-08-04/
+│   ├── supabase-drizzle-setup-2025-08-04/
+│   ├── tdd-clerk-fix-2025-08-05/
+│   └── wsl-env-fix-2025-01-05/
+├── app/
+│   ├── api/
+│   │   ├── health/
+│   │   │   └── route.ts
+│   │   ├── test-mode/
+│   │   ├── user/
+│   │   │   └── profile/
+│   │   │       └── route.ts
+│   │   └── webhooks/
+│   │       └── clerk/
+│   │           └── route.ts
+│   ├── history/
+│   │   └── page.tsx
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   ├── ui/
+│   ├── history-timeline-item.tsx
+│   ├── manage-expectation-form.tsx
+│   ├── my-expectation-view.tsx
+│   ├── team-expectation-card.tsx
+│   └── theme-provider.tsx
+├── db/
+│   ├── migrations/
+│   │   ├── meta/
+│   │   │   ├── 0000_snapshot.json
+│   │   │   └── _journal.json
+│   │   └── 0000_dry_anthem.sql
+│   ├── schema/
+│   │   ├── expectations.ts
+│   │   ├── index.ts
+│   │   └── users.ts
+│   └── index.ts
+├── docs/
+│   ├── agents/
+│   ├── backend/
+│   ├── best-practices/
+│   ├── datamodel/
+│   ├── devops/
+│   ├── documentation/
+│   ├── frontend/
+│   ├── protocols/
+│   ├── setup/
+│   └── testing/
+├── hooks/
+│   ├── use-mobile.ts
+│   └── use-toast.ts
+├── lib/
+│   ├── supabase/
+│   │   ├── client.ts
+│   │   └── server.ts
+│   ├── data.ts
+│   ├── types.ts
+│   └── utils.ts
+├── node_modules/
+├── playwright-report/
+├── preview/
+├── prompts/
+├── public/
+├── scripts/
+│   ├── fix-playwright-wsl.sh
+│   ├── install-playwright-deps-wsl.sh
+│   ├── quick-setup.sh
+│   ├── setup-ngrok-from-env.sh
+│   ├── setup-ngrok-wsl.sh
+│   ├── setup-playwright-wsl.sh
+│   ├── start-webhook-testing.sh
+│   └── test-tdd.sh
+├── styles/
+│   └── globals.css
+├── tests/
+│   ├── api/
+│   │   └── clerk-webhook.spec.ts
+│   ├── e2e/
+│   │   ├── auth.spec.ts
+│   │   └── health-check.spec.ts
+│   ├── fixtures/
+│   │   └── auth.ts
+│   └── helpers/
+│       └── clerk-auth.ts
+├── tmp/
+├── .env
+├── .env.example
+├── .env.test
+├── .env.test.local
+├── Makefile
+├── components.json
+├── drizzle.config.ts
+├── middleware.ts
+├── next-env.d.ts
+├── next.config.mjs
+├── package.json
+├── playwright.config.ts
+├── pnpm-lock.yaml
+├── postcss.config.mjs
+└── tsconfig.json
+
+</SolutionTreeView>

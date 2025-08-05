@@ -6,11 +6,10 @@ import { History } from "lucide-react"
 import Link from "next/link"
 import { auth, currentUser } from "@clerk/nextjs/server"
 import { UserButton } from "@clerk/nextjs"
-import { isTestMode, testAuth, testCurrentUser } from "@/lib/test-auth"
 
 export default async function Home() {
-  const { userId } = isTestMode() ? await testAuth() : await auth()
-  const user = isTestMode() ? await testCurrentUser() : await currentUser()
+  const { userId } = await auth()
+  const user = await currentUser()
   
   const allExpectations = expectations.map((exp) => ({
     ...exp,
@@ -43,35 +42,12 @@ export default async function Home() {
               </Button>
             </Link>
             <div data-testid="user-profile">
-              {isTestMode() ? (
-                <>
-                  <button 
-                    onClick={() => {
-                      // In test mode, clear the session cookie and redirect
-                      document.cookie = '__session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-                      window.location.href = '/sign-in';
-                    }}
-                    className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
-                  >
-                    Sign out
-                  </button>
-                  {user && (
-                    <div className="hidden">
-                      <span data-testid="user-name">{user.firstName} {user.lastName}</span>
-                      <span data-testid="user-email">{user.emailAddresses[0]?.emailAddress}</span>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <>
-                  <UserButton afterSignOutUrl="/sign-in" />
-                  {user && (
-                    <div className="hidden">
-                      <span data-testid="user-name">{user.firstName} {user.lastName}</span>
-                      <span data-testid="user-email">{user.emailAddresses[0]?.emailAddress}</span>
-                    </div>
-                  )}
-                </>
+              <UserButton afterSignOutUrl="/sign-in" />
+              {user && (
+                <div className="hidden">
+                  <span data-testid="user-name">{user.firstName} {user.lastName}</span>
+                  <span data-testid="user-email">{user.emailAddresses[0]?.emailAddress}</span>
+                </div>
               )}
             </div>
           </div>
