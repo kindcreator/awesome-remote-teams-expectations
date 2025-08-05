@@ -40,6 +40,21 @@ This approach ensures we build what teams actually need, not what we think they 
 - Tailwind CSS
 - Deployed on Coolify (self-hosted)
 
+## Getting Started
+
+### Quick Setup
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set up environment variables: See **[Setup Guide](./docs/setup/README.md)**
+4. Run development server: `npm run dev`
+
+### Setup Guides
+- **[Complete Setup Guide](./docs/setup/README.md)** - Step-by-step instructions
+- **[Environment Variables](./docs/setup/env-variables.md)** - All configuration options
+- **[Testing Setup](./docs/setup/testing.md)** - Run tests without external services
+
 ## Documentation
 
-For technical details, see `/docs/`
+- **Setup**: `/docs/setup/` - Getting started guides
+- **Testing**: `/docs/testing/` - Testing strategy and guides
+- **Technical**: `/docs/` - Architecture and implementation details

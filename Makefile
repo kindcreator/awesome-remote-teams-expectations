@@ -6,7 +6,7 @@ db-generate:
 
 db-push:
 	npm run db:push
-ą
+
 db-migrate:
 	npm run db:migrate
 
