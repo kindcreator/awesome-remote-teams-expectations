@@ -27,8 +27,8 @@ git clone https://github.com/kindcreator/awesome-remote-teams-expectations.git
 # Install dependencies
 pnpm install
 
-# Create .env.local for development
-cp .env.example .env.local
+# Create .env for development
+cp .env.example .env
 
 # Run development server
 pnpm dev
@@ -41,7 +41,7 @@ pnpm start
 ```
 
 ### Environment Variables
-Development (`.env.local`):
+Development (`.env`):
 ```env
 # Database
 DATABASE_URL=postgresql://localhost:5432/expectations_dev
