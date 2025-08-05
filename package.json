@@ -10,7 +10,12 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:api": "playwright test tests/api/",
+    "test:e2e": "playwright test tests/e2e/"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.28.1",

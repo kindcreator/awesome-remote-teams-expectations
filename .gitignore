@@ -37,3 +37,9 @@ tmp/
 # Drizzle Studio local data
 drizzle/
 .drizzle/
+
+# Playwright test results
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

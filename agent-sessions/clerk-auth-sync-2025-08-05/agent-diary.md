@@ -26,3 +26,44 @@
 ## Issue Found
 - No testing infrastructure configured in the project
 - Need to set up Vitest before writing tests
+
+## Updated Approach
+- Using Playwright for all testing (E2E and API)
+- Following TDD guide recommendations for Playwright + Next.js
+
+## Tests Written (Red Phase)
+1. Created playwright.config.ts with minimal configuration
+2. Written failing tests for Clerk webhook endpoint:
+   - User creation sync
+   - User update sync
+   - Invalid signature handling
+   - Missing fields handling
+   - Unhandled event types
+3. Written failing tests for authentication flow:
+   - Unauthenticated redirect
+   - Authenticated dashboard access
+   - User data sync on first sign-in
+   - Sign-out flow
+   - API route protection
+
+## Next Steps
+- Install Playwright: `npm init playwright@latest`
+- Run tests to confirm they fail
+- Implement webhook endpoint
+- Implement authentication middleware
+
+## Testing Automation Created
+1. Enhanced Makefile with comprehensive testing commands:
+   - TDD workflow: `make test-tdd FILE=path/to/test.spec.ts`
+   - Fast feedback: `make test-fast`
+   - CI testing: `make test-ci`
+   - Test types: `make test-api`, `make test-e2e`
+   - Debugging: `make test-debug`, `make test-headed`
+2. Added npm scripts for common test commands
+3. Created testing documentation at `/docs/testing/playwright-guide.md`
+
+## Recommended Workflow
+1. Install: `make playwright-install`
+2. TDD: `make test-tdd FILE=tests/api/clerk-webhook.spec.ts`
+3. Fast feedback: `make test-fast`
+4. Full validation: `make validate`
