@@ -8,29 +8,38 @@ Implement synchronization between Clerk authentication and our backend (Supabase
 - Database has users table with clerk_user_id field
 - Need to create sync mechanism between Clerk and our backend
 
-## Implementation Plan
+## Implementation Plan (TDD Approach)
 
-### 1. Analyze Current Authentication Setup
-- Review existing Clerk integration
-- Understand current user flow
-- Identify sync points between Clerk and backend
+### 1. Analyze Current Setup
+- Review backend documentation
+- Analyze database schema
+- Understand existing auth flow
 
-### 2. Implement User Sync Mechanism
-- Create webhook endpoint for Clerk user events
-- Implement user creation/update in database when Clerk user is created/updated
-- Ensure clerk_user_id is properly mapped
+### 2. Test & Implement Clerk Webhook (TDD)
+- **First commit**: Write tests for Clerk webhook endpoint
+  - Test user creation sync
+  - Test user update sync
+  - Test error handling
+- **Second commit**: Implement webhook endpoint
 
-### 3. Implement Authentication Middleware
-- Create middleware to verify Clerk session
-- Ensure authenticated users can access dashboard
-- Protect dashboard routes
+### 3. Test & Implement Authentication Middleware (TDD)
+- **First commit**: Write tests for auth middleware
+  - Test authenticated access
+  - Test unauthenticated rejection
+  - Test session validation
+- **Second commit**: Implement middleware
 
-### 4. Testing
-- Test user registration flow
-- Test authentication flow
-- Verify database sync
+### 4. Integration Testing
+- **First commit**: Write integration tests for full auth flow
+- **Second commit**: Fix any issues found
 
 ## Technical Approach
-- Follow TDD principles as per agent guidelines
+- Follow TDD principles - test first, then implement
+- Use Playwright for E2E and API testing
 - Use existing Drizzle ORM setup
-- Leverage Clerk's Next.js integration
+- Leverage Clerk's webhook system for user sync
+
+## Testing Strategy with Playwright
+- API Testing: Use Playwright's request context for testing webhook endpoints
+- E2E Testing: Test full authentication flows including login, dashboard access
+- Component Testing: Playwright experimental component testing for isolated UI tests
