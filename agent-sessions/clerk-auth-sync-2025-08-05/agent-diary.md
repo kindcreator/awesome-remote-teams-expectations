@@ -63,7 +63,13 @@
 3. Created testing documentation at `/docs/testing/playwright-guide.md`
 
 ## Recommended Workflow
-1. Install: `make playwright-install`
-2. TDD: `make test-tdd FILE=tests/api/clerk-webhook.spec.ts`
-3. Fast feedback: `make test-fast`
-4. Full validation: `make validate`
+1. Install Playwright dependency: `make playwright-setup`
+2. Install browsers: `make playwright-install`
+3. TDD: `make test-tdd FILE=tests/api/clerk-webhook.spec.ts`
+4. Fast feedback: `make test-fast`
+5. Full validation: `make validate`
+
+## Issues Fixed
+- Removed non-existent --watch flag from Playwright commands
+- Added playwright-setup command to install @playwright/test dependency first
+- Updated documentation to reflect correct setup steps

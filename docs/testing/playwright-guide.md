@@ -4,7 +4,10 @@
 
 ### Initial Setup
 ```bash
-# Install Playwright with all browsers and system dependencies
+# Step 1: Install @playwright/test as dev dependency
+make playwright-setup
+
+# Step 2: Install browsers with system dependencies
 make playwright-install
 
 # Or just install browsers (if system deps already present)
@@ -15,7 +18,7 @@ make playwright-install-browsers
 
 #### TDD Workflow (Recommended)
 ```bash
-# Run specific test file in watch mode with UI
+# Run specific test file in UI mode (provides watch-like experience)
 make test-tdd FILE=tests/api/clerk-webhook.spec.ts
 
 # Fast feedback - single browser, headless
@@ -24,6 +27,8 @@ make test-fast
 # Run with visible browser for debugging
 make test-headed
 ```
+
+Note: Playwright UI mode provides a watch-like experience where you can re-run tests instantly with the UI's "Run" button.
 
 #### Different Test Types
 ```bash

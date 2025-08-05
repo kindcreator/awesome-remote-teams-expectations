@@ -51,7 +51,7 @@ test-e2e:
 	npx playwright test tests/e2e/
 
 test-watch:
-	npx playwright test --ui --watch
+	npx playwright test --ui
 
 test-report:
 	npx playwright show-report
@@ -70,9 +70,13 @@ test-fast:
 test-ci:
 	CI=true npx playwright test
 
-# TDD workflow - run specific test file in watch mode
+# TDD workflow - run specific test file in UI mode
 test-tdd:
-	npx playwright test $(FILE) --ui --watch
+	npx playwright test $(FILE) --ui
+
+# Install Playwright as dev dependency
+playwright-setup:
+	npm install -D @playwright/test --legacy-peer-deps
 
 # Install Playwright with all browsers
 playwright-install:
@@ -122,7 +126,7 @@ help:
 	@echo "  make test-headed  - Run tests with visible browser"
 	@echo "  make test-api     - Run API tests only"
 	@echo "  make test-e2e     - Run E2E tests only"
-	@echo "  make test-watch   - Run tests in watch mode with UI"
+	@echo "  make test-watch   - Run tests in UI mode"
 	@echo "  make test-fast    - Fast feedback (Chrome only, headless)"
 	@echo "  make test-ci      - CI mode (all browsers, with retries)"
 	@echo "  make test-tdd FILE=path/to/test.spec.ts - TDD mode for specific file"
@@ -132,6 +136,7 @@ help:
 	@echo "  make test-and-report - Run tests and open report"
 	@echo ""
 	@echo "Setup:"
+	@echo "  make playwright-setup - Install @playwright/test dependency"
 	@echo "  make playwright-install - Install Playwright with system dependencies"
 	@echo "  make playwright-install-browsers - Install browsers only"
 	@echo ""
@@ -141,5 +146,5 @@ help:
 .PHONY: db-generate db-push db-migrate db-studio db-update dev build lint install help \
         test test-ui test-debug test-headed test-api test-e2e test-watch test-report \
         test-codegen test-update-snapshots test-fast test-ci test-tdd \
-        playwright-install playwright-install-browsers test-clean test-and-report \
+        playwright-setup playwright-install playwright-install-browsers test-clean test-and-report \
         check validate
