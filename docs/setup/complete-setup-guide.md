@@ -183,5 +183,5 @@ make test-fast       # Fast test run (Chrome only)
 # Setup
 make install         # Install dependencies
 make db-update       # Update database schema
-make ngrok-setup     # Configure ngrok from .env.local
+make ngrok-setup     # Configure ngrok from .env
 ```

@@ -98,7 +98,7 @@ playwright-install-browsers:
 ngrok-setup-wsl:
 	./scripts/setup-ngrok-wsl.sh
 
-# Configure ngrok from .env.local
+# Configure ngrok from .env
 ngrok-setup:
 	./scripts/setup-ngrok-from-env.sh
 
