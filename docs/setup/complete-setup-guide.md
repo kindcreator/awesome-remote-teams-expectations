@@ -43,6 +43,11 @@ make install
 
 # Install Playwright for testing
 make playwright-setup
+
+# For WSL users: Install browser dependencies
+make playwright-setup-wsl
+
+# For other systems: Install with system dependencies
 make playwright-install
 ```
 
@@ -151,6 +156,11 @@ make test-e2e    # End-to-end auth tests
 **Database connection error**:
 - Verify `DATABASE_URL` is correct
 - Run `make db-update` to ensure schema is current
+
+**WSL Playwright error "Host system is missing dependencies"**:
+- Run `make playwright-setup-wsl` to install browser dependencies
+- This requires sudo access to install system packages
+- After installation, tests should run without issues
 
 ## Production Deployment
 

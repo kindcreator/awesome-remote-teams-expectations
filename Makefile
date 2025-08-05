@@ -102,6 +102,10 @@ ngrok-setup-wsl:
 ngrok-setup:
 	./scripts/setup-ngrok-from-env.sh
 
+# Install Playwright dependencies for WSL
+playwright-setup-wsl:
+	./scripts/setup-playwright-wsl.sh
+
 # Clean test artifacts
 test-clean:
 	rm -rf test-results/ playwright-report/ blob-report/
@@ -157,6 +161,7 @@ help:
 	@echo "  make playwright-setup - Install @playwright/test dependency"
 	@echo "  make playwright-install - Install Playwright with system dependencies"
 	@echo "  make playwright-install-browsers - Install browsers only"
+	@echo "  make playwright-setup-wsl - Install Playwright browser dependencies for WSL"
 	@echo "  make ngrok-setup-wsl - Install ngrok for WSL (Linux version)"
 	@echo "  make ngrok-setup  - Configure ngrok using token from .env"
 	@echo ""
@@ -166,5 +171,5 @@ help:
 .PHONY: db-generate db-push db-migrate db-studio db-update dev dev-tunnel build lint install setup help \
         test test-ui test-debug test-headed test-api test-e2e test-watch test-report \
         test-codegen test-update-snapshots test-fast test-ci test-tdd \
-        playwright-setup playwright-install playwright-install-browsers test-clean test-and-report \
-        ngrok-setup-wsl ngrok-setup check validate
+        playwright-setup playwright-install playwright-install-browsers playwright-setup-wsl \
+        test-clean test-and-report ngrok-setup-wsl ngrok-setup check validate

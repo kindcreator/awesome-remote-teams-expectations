@@ -26,7 +26,14 @@ echo ""
 
 echo "🧪 Installing Playwright..."
 npm install -D @playwright/test --legacy-peer-deps || exit 1
-npx playwright install --with-deps || exit 1
+
+# Check if running in WSL and install system dependencies
+if grep -qi microsoft /proc/version 2>/dev/null; then
+    echo "🐧 Installing Playwright dependencies for WSL..."
+    ./scripts/setup-playwright-wsl.sh || exit 1
+else
+    npx playwright install --with-deps || exit 1
+fi
 echo "✅ Playwright installed"
 echo ""
 
