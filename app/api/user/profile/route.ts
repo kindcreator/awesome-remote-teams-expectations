@@ -2,29 +2,9 @@ import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { users } from '@/db/schema/users';
 import { eq } from 'drizzle-orm';
-import { isTestMode, testAuth } from '@/lib/test-auth';
-import { headers } from 'next/headers';
 
-export async function GET(req: Request) {
-  let userId: string | null = null;
-  
-  // In test mode, check for Bearer token
-  if (isTestMode()) {
-    const headersList = await headers();
-    const authHeader = headersList.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-    const authData = await testAuth();
-    userId = authData.userId;
-  } else {
-    // Production mode - use Clerk
-    const authData = await auth();
-    userId = authData.userId;
-  }
+export async function GET() {
+  const { userId } = await auth();
 
   if (!userId) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -34,22 +14,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    // In test mode, return mock user data
-    if (isTestMode()) {
-      return new Response(JSON.stringify({ 
-        user: {
-          id: 'test_user_123',
-          email: 'test@example.com',
-          name: 'Test User',
-          avatarUrl: null,
-        }
-      }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-    
-    // Production mode - query database
+    // Query database for user
     const user = await db.query.users.findFirst({
       where: eq(users.clerkUserId, userId),
     });

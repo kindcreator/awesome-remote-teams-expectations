@@ -32,38 +32,33 @@ export async function POST(req: Request) {
   const payload = await req.json();
   const body = JSON.stringify(payload);
 
+  // Check if Webhook is available
+  if (!Webhook) {
+    console.error('svix package not installed');
+    return new Response(JSON.stringify({ error: 'Webhook verification not available' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Create a new Svix instance with your secret.
+  const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET || '');
+
   let evt: WebhookEvent;
 
-  // In test mode, skip signature verification
-  if (process.env.NEXT_PUBLIC_TEST_MODE === 'true') {
-    evt = payload as WebhookEvent;
-  } else {
-    // Check if Webhook is available
-    if (!Webhook) {
-      console.error('svix package not installed');
-      return new Response(JSON.stringify({ error: 'Webhook verification not available' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Create a new Svix instance with your secret.
-    const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET || '');
-
-    // Verify the payload with the headers
-    try {
-      evt = wh.verify(body, {
-        "svix-id": svix_id,
-        "svix-timestamp": svix_timestamp,
-        "svix-signature": svix_signature,
-      }) as WebhookEvent;
-    } catch (err) {
-      console.error('Error verifying webhook:', err);
-      return new Response(JSON.stringify({ error: 'Invalid webhook signature' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
+  // Verify the payload with the headers
+  try {
+    evt = wh.verify(body, {
+      "svix-id": svix_id,
+      "svix-timestamp": svix_timestamp,
+      "svix-signature": svix_signature,
+    }) as WebhookEvent;
+  } catch (err) {
+    console.error('Error verifying webhook:', err);
+    return new Response(JSON.stringify({ error: 'Invalid webhook signature' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
   // Handle the webhook
@@ -89,19 +84,7 @@ export async function POST(req: Request) {
     }
 
     try {
-      // In test mode, return mock response
-      if (process.env.NEXT_PUBLIC_TEST_MODE === 'true') {
-        return new Response(JSON.stringify({ 
-          success: true, 
-          userId: 'mock_user_id_123',
-          action: 'created' 
-        }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        });
-      }
-
-      // Production mode - create user in database
+      // Create user in database
       const [newUser] = await db.insert(users).values({
         clerkUserId: id,
         email: primaryEmail.email_address,
@@ -146,18 +129,7 @@ export async function POST(req: Request) {
     }
 
     try {
-      // In test mode, return mock response
-      if (process.env.NEXT_PUBLIC_TEST_MODE === 'true') {
-        return new Response(JSON.stringify({ 
-          success: true, 
-          action: 'updated' 
-        }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        });
-      }
-
-      // Production mode - update user in database
+      // Update user in database
       await db.update(users)
         .set({
           email: primaryEmail.email_address,
