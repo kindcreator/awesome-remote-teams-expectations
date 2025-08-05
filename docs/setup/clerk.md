@@ -16,7 +16,7 @@
    - Copy these values:
 
 ```bash
-# .env.local
+# .env
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_xxxxx
 CLERK_SECRET_KEY=sk_test_xxxxx
 ```
@@ -28,13 +28,13 @@ CLERK_SECRET_KEY=sk_test_xxxxx
    - Copy signing secret:
 
 ```bash
-# .env.local
+# .env
 CLERK_WEBHOOK_SECRET=whsec_xxxxx
 ```
 
 5. **Set URLs**
 ```bash
-# .env.local
+# .env
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
@@ -43,7 +43,7 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
 
 ## Test Environment
 
-For testing, use the same keys in `.env.test.local` or create a separate Clerk test instance.
+For testing, use the same keys in `.env.test` or create a separate Clerk test instance.
 
 ## Verification
 
