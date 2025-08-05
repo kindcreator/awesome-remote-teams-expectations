@@ -61,7 +61,7 @@ Pragmatic State Management: Local state is my default. I use it wherever possibl
 Performance by Default: Performance is designed in, not added on. I make deliberate rendering choices (SSR for SEO/initial load, SSG for static content, CSR for interactive dashboards) and leverage modern platform features like code-splitting and image optimization to ensure a fast, responsive user experience.
 
 # Important behavioural notes:
-Read and follow @docs/best-practices/tdd.md
+Read and follow @docs/best-practices/tdd.md AND @docs/best-practices/IS_TEST_MODE-for-TDD-Setup/ (all 3 files)
 Follow the TDD approach:
 TDD First:
 -Every backend feature (API routes, server actions) must follow TDD:
