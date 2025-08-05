@@ -13,19 +13,26 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks(.*)',  // Webhooks should be public
 ]);
 
-// In test mode, bypass Clerk middleware
-if (process.env.NEXT_PUBLIC_TEST_MODE === 'true') {
-  export default function middleware(req: NextRequest) {
+// Wrap clerkMiddleware to handle test mode
+export default clerkMiddleware(async (auth, req) => {
+  // In test mode, simulate authentication based on cookie
+  if (process.env.NEXT_PUBLIC_TEST_MODE === 'true') {
+    const hasSession = req.cookies.has('__session');
+    
+    // If trying to access protected route without session, redirect to sign-in
+    if (isProtectedRoute(req) && !isPublicRoute(req) && !hasSession) {
+      return NextResponse.redirect(new URL('/sign-in', req.url));
+    }
+    
+    // Allow access if has session or accessing public route
     return NextResponse.next();
   }
-} else {
-  export default clerkMiddleware(async (auth, req) => {
-    // If it's a protected route and user is not authenticated, protect it
-    if (isProtectedRoute(req) && !isPublicRoute(req)) {
-      await auth.protect();
-    }
-  });
-}
+  
+  // Normal Clerk protection in production
+  if (isProtectedRoute(req) && !isPublicRoute(req)) {
+    await auth.protect();
+  }
+});
 
 export const config = {
   matcher: [
