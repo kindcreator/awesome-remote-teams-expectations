@@ -39,3 +39,6 @@ drizzle/
 .drizzle/
 
 docs/setup/current.md
+
+test-results/
+playwright-report/
