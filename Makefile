@@ -158,7 +158,7 @@ help:
 	@echo "  make playwright-install - Install Playwright with system dependencies"
 	@echo "  make playwright-install-browsers - Install browsers only"
 	@echo "  make ngrok-setup-wsl - Install ngrok for WSL (Linux version)"
-	@echo "  make ngrok-setup  - Configure ngrok using token from .env.local"
+	@echo "  make ngrok-setup  - Configure ngrok using token from .env"
 	@echo ""
 	@echo "Validation:"
 	@echo "  make validate     - Full validation (lint, build, test)"

@@ -42,11 +42,11 @@ echo ""
 if [ -n "$NGROK_AUTHTOKEN" ]; then
     echo "Using NGROK_AUTHTOKEN from environment"
     export NGROK_AUTHTOKEN
-elif [ -f .env.local ]; then
-    # Try to load from .env.local
-    NGROK_TOKEN=$(grep NGROK_AUTHTOKEN .env.local | cut -d '=' -f2-)
-    if [ -n "$NGROK_TOKEN" ] && [ "$NGROK_TOKEN" != "your_ngrok_authtoken_here" ]; then
-        echo "Using NGROK_AUTHTOKEN from .env.local"
+elif [ -f .env ]; then
+    # Try to load from .env
+    NGROK_TOKEN=$(grep NGROK_AUTHTOKEN .env | cut -d '=' -f2-)
+    if [ -n "$NGROK_TOKEN" ] && [ "$NGROK_TOKEN" != "" ]; then
+        echo "Using NGROK_AUTHTOKEN from .env"
         export NGROK_AUTHTOKEN=$NGROK_TOKEN
     fi
 fi

@@ -57,8 +57,8 @@ cd awesome-remote-teams-expectations
 make install
 
 # 2. Configure environment
-cp .env.local.example .env.local
-# Edit .env.local with your credentials
+cp .env.example .env
+# Edit .env with your credentials
 
 # 3. Setup database
 make db-update

@@ -4,13 +4,13 @@ echo "🚀 Quick Setup for Awesome Remote Teams Expectations"
 echo "===================================================="
 echo ""
 
-# Check if .env.local exists
-if [ ! -f .env.local ]; then
-    echo "📄 Creating .env.local from example..."
-    cp .env.local.example .env.local
-    echo "✅ Created .env.local"
+# Check if .env exists
+if [ ! -f .env ]; then
+    echo "📄 Creating .env from example..."
+    cp .env.example .env
+    echo "✅ Created .env"
     echo ""
-    echo "⚠️  Please edit .env.local with your credentials:"
+    echo "⚠️  Please edit .env with your credentials:"
     echo "   - Clerk keys"
     echo "   - Database URL"
     echo "   - ngrok authtoken"

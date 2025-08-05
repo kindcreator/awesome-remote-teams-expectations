@@ -1,22 +1,23 @@
 #!/bin/bash
 
-echo "Setting up ngrok from .env.local..."
+echo "Setting up ngrok from .env..."
 echo "===================================="
 
-# Check if .env.local exists
-if [ ! -f .env.local ]; then
-    echo "❌ .env.local file not found"
-    echo "Please create it from .env.local.example"
+# Check if .env exists
+if [ ! -f .env ]; then
+    echo "❌ .env file not found"
+    echo "Please create it from .env.example:"
+    echo "  cp .env.example .env"
     exit 1
 fi
 
-# Extract NGROK_AUTHTOKEN from .env.local
-NGROK_TOKEN=$(grep NGROK_AUTHTOKEN .env.local | cut -d '=' -f2-)
+# Extract NGROK_AUTHTOKEN from .env
+NGROK_TOKEN=$(grep NGROK_AUTHTOKEN .env | cut -d '=' -f2-)
 
-if [ -z "$NGROK_TOKEN" ] || [ "$NGROK_TOKEN" = "your_ngrok_authtoken_here" ]; then
-    echo "❌ NGROK_AUTHTOKEN not set in .env.local"
+if [ -z "$NGROK_TOKEN" ]; then
+    echo "❌ NGROK_AUTHTOKEN not set in .env"
     echo ""
-    echo "Please add your ngrok authtoken to .env.local:"
+    echo "Please add your ngrok authtoken to .env:"
     echo "NGROK_AUTHTOKEN=your_actual_token_here"
     echo ""
     echo "Get your token from: https://dashboard.ngrok.com/get-started/your-authtoken"
@@ -35,7 +36,7 @@ else
 fi
 
 # Configure authtoken
-echo "Configuring ngrok with token from .env.local..."
+echo "Configuring ngrok with token from .env..."
 $NGROK_CMD config add-authtoken $NGROK_TOKEN
 
 if [ $? -eq 0 ]; then

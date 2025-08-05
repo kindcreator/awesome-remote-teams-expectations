@@ -10,20 +10,26 @@
 
 1. **Copy the example environment file**:
    ```bash
-   cp .env.local.example .env.local
+   cp .env.example .env
    ```
 
-2. **Update `.env.local` with your values**:
+2. **Update `.env` with your values**:
    ```env
    # Clerk Authentication (from https://dashboard.clerk.com/apps/YOUR_APP/instances/YOUR_INSTANCE)
    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_publishable_key
    CLERK_SECRET_KEY=sk_test_your_secret_key
    
+   
    # Clerk Webhook Secret (you'll get this after creating the webhook)
    CLERK_WEBHOOK_SECRET=whsec_your_webhook_secret
    
-   # Database
-   DATABASE_URL=your_database_url
+   # Supabase Environment Variables
+   NEXT_PUBLIC_SUPABASE_URL=
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=
+   SUPABASE_SERVICE_ROLE_KEY=
+   
+   # Database URL for Drizzle
+   DATABASE_URL=
    
    # ngrok Configuration (from https://dashboard.ngrok.com/get-started/your-authtoken)
    NGROK_AUTHTOKEN=your_ngrok_authtoken
@@ -98,7 +104,7 @@ make db-update
    - Click **Create**
    - **Copy the signing secret** (starts with `whsec_`)
 
-4. **Update `.env.local`** with the webhook secret:
+4. **Update `.env`** with the webhook secret:
    ```env
    CLERK_WEBHOOK_SECRET=whsec_your_actual_secret
    ```
@@ -131,12 +137,12 @@ make test-e2e    # End-to-end auth tests
 ### Common Issues
 
 **ngrok authentication error**:
-- Ensure `NGROK_AUTHTOKEN` is set in `.env.local`
+- Ensure `NGROK_AUTHTOKEN` is set in `.env`
 - Run `make ngrok-setup` to configure
 
 **Webhook 400 error "Invalid signature"**:
 - Verify `CLERK_WEBHOOK_SECRET` matches the one from Clerk Dashboard
-- Restart dev server after updating `.env.local`
+- Restart dev server after updating `.env`
 
 **Webhook 404 error**:
 - Check URL ends with `/api/webhooks/clerk`
