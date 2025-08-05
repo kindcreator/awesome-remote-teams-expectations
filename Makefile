@@ -35,6 +35,10 @@ lint:
 install:
 	npm install --legacy-peer-deps
 
+# Quick setup for new developers
+setup:
+	./scripts/quick-setup.sh
+
 # Testing Commands
 test:
 	npx playwright test
@@ -94,12 +98,6 @@ playwright-install-browsers:
 ngrok-setup-wsl:
 	./scripts/setup-ngrok-wsl.sh
 
-# Configure ngrok authentication
-ngrok-auth:
-	@echo "Usage: make ngrok-auth TOKEN=your_authtoken_here"
-	@[ "${TOKEN}" ] || ( echo "Error: TOKEN is not set"; exit 1 )
-	./scripts/setup-ngrok-auth.sh ${TOKEN}
-
 # Configure ngrok from .env.local
 ngrok-setup:
 	./scripts/setup-ngrok-from-env.sh
@@ -131,6 +129,7 @@ help:
 	@echo "  make db-studio    - Open Drizzle Studio"
 	@echo ""
 	@echo "Development:"
+	@echo "  make setup        - Quick setup for new developers"
 	@echo "  make dev          - Start development server"
 	@echo "  make dev-tunnel   - Start ngrok tunnel for webhook testing"
 	@echo "  make build        - Build for production"
@@ -159,12 +158,13 @@ help:
 	@echo "  make playwright-install - Install Playwright with system dependencies"
 	@echo "  make playwright-install-browsers - Install browsers only"
 	@echo "  make ngrok-setup-wsl - Install ngrok for WSL (Linux version)"
+	@echo "  make ngrok-setup  - Configure ngrok using token from .env.local"
 	@echo ""
 	@echo "Validation:"
 	@echo "  make validate     - Full validation (lint, build, test)"
 
-.PHONY: db-generate db-push db-migrate db-studio db-update dev dev-tunnel build lint install help \
+.PHONY: db-generate db-push db-migrate db-studio db-update dev dev-tunnel build lint install setup help \
         test test-ui test-debug test-headed test-api test-e2e test-watch test-report \
         test-codegen test-update-snapshots test-fast test-ci test-tdd \
         playwright-setup playwright-install playwright-install-browsers test-clean test-and-report \
-        check validate
+        ngrok-setup-wsl ngrok-setup check validate
