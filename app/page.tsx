@@ -6,10 +6,11 @@ import { History } from "lucide-react"
 import Link from "next/link"
 import { auth, currentUser } from "@clerk/nextjs/server"
 import { UserButton } from "@clerk/nextjs"
+import { isTestMode, testAuth, testCurrentUser } from "@/lib/test-auth"
 
 export default async function Home() {
-  const { userId } = await auth()
-  const user = await currentUser()
+  const { userId } = isTestMode() ? await testAuth() : await auth()
+  const user = isTestMode() ? await testCurrentUser() : await currentUser()
   
   const allExpectations = expectations.map((exp) => ({
     ...exp,

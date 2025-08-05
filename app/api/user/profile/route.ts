@@ -2,9 +2,10 @@ import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { users } from '@/db/schema/users';
 import { eq } from 'drizzle-orm';
+import { isTestMode, testAuth } from '@/lib/test-auth';
 
 export async function GET() {
-  const { userId } = await auth();
+  const { userId } = isTestMode() ? await testAuth() : await auth();
 
   if (!userId) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {

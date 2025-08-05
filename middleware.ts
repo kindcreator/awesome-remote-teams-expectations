@@ -1,4 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 const isProtectedRoute = createRouteMatcher([
   '/',  // Dashboard
@@ -11,12 +13,19 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks(.*)',  // Webhooks should be public
 ]);
 
-export default clerkMiddleware(async (auth, req) => {
-  // If it's a protected route and user is not authenticated, protect it
-  if (isProtectedRoute(req) && !isPublicRoute(req)) {
-    await auth.protect();
+// In test mode, bypass Clerk middleware
+if (process.env.NEXT_PUBLIC_TEST_MODE === 'true') {
+  export default function middleware(req: NextRequest) {
+    return NextResponse.next();
   }
-});
+} else {
+  export default clerkMiddleware(async (auth, req) => {
+    // If it's a protected route and user is not authenticated, protect it
+    if (isProtectedRoute(req) && !isPublicRoute(req)) {
+      await auth.protect();
+    }
+  });
+}
 
 export const config = {
   matcher: [

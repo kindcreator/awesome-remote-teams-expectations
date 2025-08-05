@@ -80,7 +80,7 @@ test-ci:
 
 # TDD workflow - run specific test file in UI mode
 test-tdd:
-	npx playwright test $(FILE) --ui
+	./scripts/test-tdd.sh $(FILE)
 
 # Install Playwright as dev dependency
 playwright-setup:
