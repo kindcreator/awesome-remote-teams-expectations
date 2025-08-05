@@ -37,3 +37,5 @@ tmp/
 # Drizzle Studio local data
 drizzle/
 .drizzle/
+
+docs/setup/current.md
