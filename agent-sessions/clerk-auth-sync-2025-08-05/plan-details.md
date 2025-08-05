@@ -42,4 +42,6 @@ Implement synchronization between Clerk authentication and our backend (Supabase
 ## Testing Strategy with Playwright
 - API Testing: Use Playwright's request context for testing webhook endpoints
 - E2E Testing: Test full authentication flows including login, dashboard access
-- Component Testing: Playwright experimental component testing for isolated UI tests
+- Minimal TDD approach: Write failing tests first, then minimal code to pass
+- Fast feedback loops: Target <10 seconds for individual tests
+- Co-located tests: Place tests alongside implementation files for rapid feedback
