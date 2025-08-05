@@ -19,7 +19,7 @@ npm install
 ### 2. Environment Setup
 
 ```bash
-cp .env.example .env.local
+cp .env.example .env
 ```
 
 Then follow these guides to get your API keys:
@@ -61,7 +61,7 @@ For test-specific configuration, see:
 ## Troubleshooting
 
 ### "Publishable key not valid"
-- Check `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` in `.env.local`
+- Check `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` in `.env`
 - Ensure it starts with `pk_test_` or `pk_live_`
 - Verify you copied from Clerk dashboard → API Keys
 

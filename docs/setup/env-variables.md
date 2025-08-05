@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project uses environment variables for configuration. Copy `.env.example` to `.env.local` and fill in your values.
+This project uses environment variables for configuration. Copy `.env.example` to `.env` and fill in your values.
 
 ## Required Variables
 
@@ -31,15 +31,15 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
 
 ## Environment Files
 
-- `.env.local` - Development environment (gitignored)
-- `.env.test.local` - Test environment (gitignored)
+- `.env` - Development environment (gitignored)
+- `.env.test` - Test environment (will discuss separately)
 - `.env.production` - Production environment (in deployment platform)
 
 ## Quick Setup
 
 1. Copy example file:
 ```bash
-cp .env.example .env.local
+cp .env.example .env
 ```
 
 2. Follow service-specific guides:
@@ -53,7 +53,7 @@ npm run dev
 
 ## Security Notes
 
-- Never commit `.env.local` files
+- Never commit `.env` files
 - Use different API keys for production
 - Rotate keys regularly
 - Keep `CLERK_SECRET_KEY` and `SUPABASE_SERVICE_ROLE_KEY` server-side only
