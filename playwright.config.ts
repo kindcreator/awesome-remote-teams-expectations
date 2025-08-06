@@ -15,6 +15,7 @@ const baseURL = `http://localhost:${PORT}`;
 export default defineConfig({
   testDir: path.join(__dirname, "e2e"),
   outputDir: "test-results/",
+  timeout: 30000, // 30 seconds global timeout
   webServer: {
     command: "npm run dev",
     url: baseURL,
