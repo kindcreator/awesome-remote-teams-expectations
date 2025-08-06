@@ -28,26 +28,26 @@ export default defineConfig({
   },
   projects: [
     {
-      name: "global setup",
-      testMatch: /global\.setup\.ts/,
+      name: "setup",
+      testMatch: /setup\/.*\.setup\.ts/,
     },
     {
-      name: "Main tests",
-      testMatch: /.*app.spec.ts/,
+      name: "authentication",
+      testMatch: /authentication\/sign-in-flow\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
       },
-      dependencies: ["global setup"],
+      dependencies: ["setup"],
     },
     {
-      name: "Authenticated tests",
-      testMatch: /.*authenticated.spec.ts/,
+      name: "authenticated features",
+      testMatch: /authentication\/protected-routes\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
-        // Use prepared auth state.
+        // Use prepared auth state for tests that need pre-authentication
         storageState: "playwright/.clerk/user.json",
       },
-      dependencies: ["global setup"],
+      dependencies: ["setup"],
     },
   ],
 });

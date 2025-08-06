@@ -1,43 +1,59 @@
 # Test Organization
 
-## Current Structure (After Restructuring)
+## Current Test Structure
 
-### E2E Tests (tests/e2e/)
-- `ticket-2-authentication.spec.ts` - Complete auth flow (sign-in, dashboard access, sign-out)
-- `ticket-3-expectations-list.spec.ts` - View all team expectations (to be created)
-- `ticket-4-manage-expectation.spec.ts` - Create/edit/delete expectations (to be created)
-- `ticket-5-history.spec.ts` - View completed expectations history (to be created)
+### E2E Tests (`/e2e/`)
+Our main E2E tests use Clerk's official testing approach:
+- `global.setup.ts` - Authentication setup and session storage
+- `app.spec.ts` - Main authentication flow tests (sign-in, sign-out)
+- `authenticated.spec.ts` - Protected route access tests
 
-### API Tests (tests/api/)
-For testing server actions and API routes with business logic focus.
-- To be added as we implement server actions
+**Configuration**: See `/docs/tdd/` for complete documentation
 
-### Integration Tests (tests/integration/)
-For testing component interactions and data flow.
-- To be added for complex component interactions
+### Unit Tests (`/tests/unit/`)
+For testing pure functions and utilities (to be added as needed)
 
-### Unit Tests (tests/unit/)
-For testing pure functions and utilities.
-- To be added for business logic functions
+### Integration Tests (`/tests/integration/`) 
+For testing component interactions (to be added as needed)
 
-## Migration Status
+### API Tests (`/tests/api/`)
+For testing API endpoints (to be added as needed)
 
-### To Keep:
-- ✅ `ticket-2-authentication.spec.ts` - Our proper TDD test for Ticket #2
+## Testing Approach
 
-### To Remove/Refactor:
-- ❌ `auth.spec.ts` - Duplicates ticket-2, should be removed
-- ⚠️ `expectations.spec.ts` - Should be moved to ticket-3 when we start that ticket
+We use Clerk's official testing pattern:
+1. **Real Authentication**: Tests use actual Clerk API with test credentials
+2. **Session Persistence**: Global setup saves authenticated session for reuse
+3. **No Mocks**: No TEST_MODE or authentication mocking
+4. **30-second Timeout**: Configured globally in `playwright.config.ts`
 
-## TDD Workflow
+## Running Tests
 
-1. **RED Phase**: Write E2E test for the ticket
-2. **GREEN Phase**: Implement feature to pass the test
-3. **REFACTOR Phase**: Add API/unit tests for complex logic
+```bash
+# Run all E2E tests
+npm run test:e2e
 
-## Why This Structure?
+# Run in UI mode for development
+npm run test:e2e:ui
 
-1. **Ticket-based**: Each ticket has its own E2E test file
-2. **No duplication**: Each behavior tested at one level only
-3. **Clear ownership**: Easy to find tests for each feature
-4. **TDD-friendly**: Start with E2E (user story), then drill down
+# Run in debug mode
+npm run test:e2e:debug
+
+# Run unit tests
+npm run test
+```
+
+## Environment Setup
+
+Required in `.env.test`:
+- `E2E_CLERK_USER_USERNAME` - Test user email
+- `E2E_CLERK_USER_PASSWORD` - Test user password
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` - Clerk publishable key
+- `CLERK_SECRET_KEY` - Clerk secret key
+
+## Documentation
+
+- `/docs/tdd/docmap.md` - Main test documentation hub
+- `/docs/tdd/authentication.md` - Authentication test details
+- `/docs/tdd/architecture.md` - Test architecture overview
+- `/docs/tdd/configuration.md` - Configuration guide
