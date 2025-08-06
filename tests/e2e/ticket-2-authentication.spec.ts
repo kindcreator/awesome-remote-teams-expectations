@@ -60,11 +60,11 @@ test.describe('Ticket #2: Authentication Requirements', () => {
       // Check for email input
       await expect(page.getByLabel(/email/i)).toBeVisible();
       
-      // Check for password input
-      await expect(page.getByLabel(/password/i)).toBeVisible();
+      // Check for password input (use more specific selector to avoid ambiguity)
+      await expect(page.locator('input[type="password"]')).toBeVisible();
       
-      // Check for sign-in button
-      await expect(page.getByRole('button', { name: /sign in/i })).toBeVisible();
+      // Check for sign-in button (Clerk's Continue button)
+      await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
     });
 
     test('should successfully sign in with valid credentials', async ({ page }) => {
@@ -103,10 +103,10 @@ test.describe('Ticket #2: Authentication Requirements', () => {
       
       // Fill in credentials
       await page.getByLabel(/email/i).fill('test@example.com');
-      await page.getByLabel(/password/i).fill('TestPassword123!');
+      await page.locator('input[type="password"]').fill('TestPassword123!');
       
       // Click sign-in button
-      await page.getByRole('button', { name: /sign in/i }).click();
+      await page.getByRole('button', { name: 'Continue' }).click();
       
       // Should redirect to dashboard after successful sign-in
       await expect(page).toHaveURL('/dashboard');
@@ -135,10 +135,10 @@ test.describe('Ticket #2: Authentication Requirements', () => {
       
       // Fill in incorrect credentials
       await page.getByLabel(/email/i).fill('wrong@example.com');
-      await page.getByLabel(/password/i).fill('WrongPassword');
+      await page.locator('input[type="password"]').fill('WrongPassword');
       
       // Click sign-in button
-      await page.getByRole('button', { name: /sign in/i }).click();
+      await page.getByRole('button', { name: 'Continue' }).click();
       
       // Should show error message
       await expect(page.getByText(/invalid email or password/i)).toBeVisible();
@@ -282,10 +282,10 @@ test.describe('Ticket #2: Authentication Requirements', () => {
       
       // Fill in demo user credentials
       await page.getByLabel(/email/i).fill('demo@example.com');
-      await page.getByLabel(/password/i).fill('DemoPassword123!');
+      await page.locator('input[type="password"]').fill('DemoPassword123!');
       
       // Click sign-in button
-      await page.getByRole('button', { name: /sign in/i }).click();
+      await page.getByRole('button', { name: 'Continue' }).click();
       
       // Should redirect to dashboard
       await expect(page).toHaveURL('/dashboard');
