@@ -1,5 +1,5 @@
 import { test as base, Page } from '@playwright/test';
-import { mockUser, mockSession } from '../mocks/handlers/clerk';
+import { mockUser, mockSession } from '../shared/mocks/handlers/clerk';
 
 /**
  * Custom test fixture that provides an authenticated page
@@ -16,7 +16,7 @@ export const test = base.extend<{
       // This runs in the browser context
       if (typeof window !== 'undefined') {
         // Import and start MSW worker
-        import('/tests/mocks/browser').then(({ worker }) => {
+        import('/tests/shared/mocks/browser').then(({ worker }) => {
           worker.start({
             onUnhandledRequest: 'bypass',
           });

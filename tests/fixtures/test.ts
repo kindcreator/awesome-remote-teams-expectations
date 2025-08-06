@@ -1,5 +1,5 @@
 import { test as base } from '@playwright/test';
-import { setupMockAuth, TEST_USER } from '../helpers/mock-auth';
+import { setupMockAuth, TEST_USER } from '../shared/helpers/mock-auth';
 
 /**
  * Extended test fixture with authentication mocking
