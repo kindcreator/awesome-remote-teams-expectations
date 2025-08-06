@@ -1,8 +1,15 @@
 #!/bin/bash
+set -euo pipefail
 
 echo "🎭 Installing Playwright Dependencies for WSL"
 echo "============================================"
 echo ""
+
+# Ensure WSL environment
+if ! grep -qi microsoft /proc/version; then
+    echo "This script should be run in a WSL environment only."
+    exit 1
+fi
 
 # Check if running as root
 if [ "$EUID" -eq 0 ]; then 

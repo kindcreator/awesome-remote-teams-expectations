@@ -4,7 +4,7 @@ This directory contains setup guides for the project.
 
 ## Service Setup Guides
 
-- **[Clerk](./clerk.md)** - Authentication service setup
+- **[Complete Setup Guide](./complete-setup-guide.md)** - End-to-end project setup including Clerk webhooks and Supabase
 - **[Supabase](./supabase.md)** - Database and backend setup
 - **[Environment Variables](./env-variables.md)** - Complete env vars reference
 

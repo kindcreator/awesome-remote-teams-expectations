@@ -1,6 +1,9 @@
 import { SignUp } from '@clerk/nextjs'
 
-export default function SignUpPage() {
+export default function SignUpPage({
+  searchParams,
+}: { searchParams: { redirect_url?: string } }) {
+  const dest = searchParams.redirect_url || '/dashboard'
   return (
     <div className="flex min-h-screen items-center justify-center">
       <SignUp
@@ -16,7 +19,7 @@ export default function SignUpPage() {
         }}
         path="/sign-up"
         signInUrl="/sign-in"
-        afterSignUpUrl="/dashboard"
+        afterSignUpUrl={dest}
       />
     </div>
   )
