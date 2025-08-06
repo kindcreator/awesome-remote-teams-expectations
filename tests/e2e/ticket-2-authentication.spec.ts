@@ -234,7 +234,7 @@ test.describe('Ticket #2: Authentication Requirements', () => {
   });
 
   test.describe('Demo User', () => {
-    test('should be able to sign in with demo user credentials', async ({ page }) => {
+    test('should be able to sign in with demo user credentials (assumes admin has created demo@example.com)', async ({ page }) => {
       await page.goto('/sign-in');
       
       // Mock successful authentication for demo user
