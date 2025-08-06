@@ -9,7 +9,7 @@ export const mockUser = {
   email_addresses: [{
     id: 'email_2NNEqL2nrIRdJ194ndJqAHwEfxC',
     object: 'email_address',
-    email_address: 'test@example.com',
+    email_address: 'demo@example.com',
     verification: {
       status: 'verified',
       strategy: 'from_oauth_google',

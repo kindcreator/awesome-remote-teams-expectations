@@ -11,8 +11,8 @@
 2. **Create Test Users in Clerk**
    - In your test Clerk app, go to "Users"
    - Create a test user with:
-     - Email: `test@example.com`
-     - Password: `TestPassword123!`
+     - Email: `demo@example.com`
+     - Password: `PrVWdzq7tBaUZmivIKWDzbeuuXvG0GKDqiBiDaXja3`
    - Verify the email address
 
 3. **Get Your Test Credentials**
@@ -47,8 +47,8 @@
    DATABASE_URL=your_database_url
 
    # Test user credentials
-   CLERK_TEST_USER_EMAIL=test@example.com
-   CLERK_TEST_USER_PASSWORD=TestPassword123!
+   CLERK_TEST_USER_EMAIL=demo@example.com
+   CLERK_TEST_USER_PASSWORD=PrVWdzq7tBaUZmivIKWDzbeuuXvG0GKDqiBiDaXja3
    ```
 
 ## Running Tests
@@ -73,7 +73,7 @@ import { signIn } from '../helpers/clerk-auth';
 await signIn(page);
 
 // Or use specific user
-await signIn(page, 'other-test@example.com', 'OtherPassword123!');
+await signIn(page, 'other-demo@example.com', 'OtherPassword123!');
 ```
 
 ### Best Practices

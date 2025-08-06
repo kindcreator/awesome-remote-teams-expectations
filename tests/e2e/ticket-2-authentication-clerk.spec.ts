@@ -26,8 +26,8 @@ test.describe('Ticket #2: Authentication with Clerk Testing', () => {
         page,
         signInParams: {
           strategy: 'password',
-          identifier: process.env.CLERK_TEST_EMAIL || 'test@example.com',
-          password: process.env.CLERK_TEST_PASSWORD || 'TestPassword123!',
+          identifier: process.env.CLERK_TEST_EMAIL || 'demo@example.com',
+          password: process.env.CLERK_TEST_PASSWORD || 'PrVWdzq7tBaUZmivIKWDzbeuuXvG0GKDqiBiDaXja3',
         },
       })
       
@@ -59,8 +59,8 @@ test.describe('Ticket #2: Authentication with Clerk Testing', () => {
         page,
         signInParams: {
           strategy: 'password',
-          identifier: process.env.CLERK_TEST_EMAIL || 'test@example.com',
-          password: process.env.CLERK_TEST_PASSWORD || 'TestPassword123!',
+          identifier: process.env.CLERK_TEST_EMAIL || 'demo@example.com',
+          password: process.env.CLERK_TEST_PASSWORD || 'PrVWdzq7tBaUZmivIKWDzbeuuXvG0GKDqiBiDaXja3',
         },
       })
       
@@ -92,8 +92,8 @@ test.describe('Ticket #2: Authentication with Clerk Testing', () => {
         page,
         signInParams: {
           strategy: 'password',
-          identifier: process.env.CLERK_TEST_EMAIL || 'test@example.com',
-          password: process.env.CLERK_TEST_PASSWORD || 'TestPassword123!',
+          identifier: process.env.CLERK_TEST_EMAIL || 'demo@example.com',
+          password: process.env.CLERK_TEST_PASSWORD || 'PrVWdzq7tBaUZmivIKWDzbeuuXvG0GKDqiBiDaXja3',
         },
       })
       
@@ -109,8 +109,8 @@ test.describe('Ticket #2: Authentication with Clerk Testing', () => {
         page,
         signInParams: {
           strategy: 'password',
-          identifier: process.env.CLERK_TEST_EMAIL || 'test@example.com',
-          password: process.env.CLERK_TEST_PASSWORD || 'TestPassword123!',
+          identifier: process.env.CLERK_TEST_EMAIL || 'demo@example.com',
+          password: process.env.CLERK_TEST_PASSWORD || 'PrVWdzq7tBaUZmivIKWDzbeuuXvG0GKDqiBiDaXja3',
         },
       })
       

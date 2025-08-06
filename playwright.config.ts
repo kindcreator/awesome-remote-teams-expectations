@@ -13,6 +13,8 @@ dotenv.config({ path: path.resolve(__dirname, '.env.test') });
  */
 export default defineConfig({
   testDir: './tests',
+  /* Global setup for Clerk */
+  globalSetup: require.resolve('./tests/global-setup'),
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -36,6 +38,14 @@ export default defineConfig({
 
     /* Capture video on failure */
     video: 'retain-on-failure',
+  },
+
+  /* Timeout for each test */
+  timeout: 30 * 1000,
+
+  /* Timeout for each assertion */
+  expect: {
+    timeout: 10 * 1000,
   },
 
   /* Configure projects for major browsers */

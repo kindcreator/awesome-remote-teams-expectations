@@ -52,7 +52,7 @@ export const clerkHandlers = [
       }],
       user: {
         id: 'user_test',
-        email: 'test@example.com',
+        email: 'demo@example.com',
         first_name: 'Test',
         last_name: 'User',
       },
@@ -63,7 +63,7 @@ export const clerkHandlers = [
   http.get('https://api.clerk.dev/v1/users/:userId', () => {
     return HttpResponse.json({
       id: 'user_test',
-      email: 'test@example.com',
+      email: 'demo@example.com',
       created_at: new Date().toISOString(),
     });
   }),

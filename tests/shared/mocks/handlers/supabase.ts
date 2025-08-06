@@ -7,7 +7,7 @@ const SUPABASE_URL = 'https://*.supabase.co';
 export const mockDbUser = {
   id: 'db-user-123',
   clerk_user_id: 'user_2NNEqL2nrIRdJ194ndJqAHwEfxC',
-  email: 'test@example.com',
+  email: 'demo@example.com',
   name: 'Test User',
   created_at: '2025-08-05T12:00:00Z',
   updated_at: '2025-08-05T12:00:00Z',

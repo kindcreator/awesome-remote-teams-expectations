@@ -28,7 +28,7 @@ test.describe('Ticket #2: Authentication Requirements', () => {
               id: 'sess_test',
               user: {
                 id: 'user_test',
-                email_addresses: [{ email_address: 'test@example.com' }],
+                email_addresses: [{ email_address: 'demo@example.com' }],
                 first_name: 'Test',
                 last_name: 'User',
               },
@@ -80,7 +80,7 @@ test.describe('Ticket #2: Authentication Requirements', () => {
               response: {
                 id: 'sign_in_test',
                 status: 'complete',
-                identifier: 'test@example.com',
+                identifier: 'demo@example.com',
                 created_session_id: 'sess_test',
               },
               client: {
@@ -88,7 +88,7 @@ test.describe('Ticket #2: Authentication Requirements', () => {
                   id: 'sess_test',
                   user: {
                     id: 'user_test',
-                    email_addresses: [{ email_address: 'test@example.com' }],
+                    email_addresses: [{ email_address: 'demo@example.com' }],
                   },
                   status: 'active',
                 }],
@@ -102,8 +102,8 @@ test.describe('Ticket #2: Authentication Requirements', () => {
       });
       
       // Fill in credentials
-      await page.getByLabel(/email/i).fill('test@example.com');
-      await page.locator('input[type="password"]').fill('TestPassword123!');
+      await page.getByLabel(/email/i).fill('demo@example.com');
+      await page.locator('input[type="password"]').fill('PrVWdzq7tBaUZmivIKWDzbeuuXvG0GKDqiBiDaXja3');
       
       // Click sign-in button
       await page.getByRole('button', { name: 'Continue' }).click();
@@ -161,7 +161,7 @@ test.describe('Ticket #2: Authentication Requirements', () => {
               id: 'sess_test',
               user: {
                 id: 'user_test',
-                email_addresses: [{ email_address: 'test@example.com' }],
+                email_addresses: [{ email_address: 'demo@example.com' }],
               },
               status: 'active',
             }],
@@ -188,7 +188,7 @@ test.describe('Ticket #2: Authentication Requirements', () => {
               id: 'sess_test',
               user: {
                 id: 'user_test',
-                email_addresses: [{ email_address: 'test@example.com' }],
+                email_addresses: [{ email_address: 'demo@example.com' }],
               },
               status: 'active',
             }],

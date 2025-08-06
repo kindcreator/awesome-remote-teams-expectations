@@ -2,7 +2,7 @@ import { Page, BrowserContext } from '@playwright/test';
 
 export const TEST_USER = {
   id: 'user_2NNEqL2nrIRdJ194ndJqAHwEfxC',
-  email: 'test@example.com',
+  email: 'demo@example.com',
   firstName: 'Test',
   lastName: 'User',
 };

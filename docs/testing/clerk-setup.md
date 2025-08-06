@@ -8,8 +8,8 @@ This project uses Clerk's official testing approach for E2E tests.
    - Go to your Clerk Dashboard
    - Navigate to "Users" section
    - Create a new user with:
-     - Email: `test@example.com`
-     - Password: `TestPassword123!`
+     - Email: `demo@example.com`
+     - Password: `PrVWdzq7tBaUZmivIKWDzbeuuXvG0GKDqiBiDaXja3`
    - Verify the email address
 
 2. **Configure Environment Variables**

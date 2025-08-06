@@ -57,7 +57,7 @@ export const auth = jest.fn().mockResolvedValue({
 
 export const currentUser = jest.fn().mockResolvedValue({
   id: 'test_user_id',
-  email: 'test@example.com',
+  email: 'demo@example.com',
   firstName: 'Test',
   lastName: 'User'
 });

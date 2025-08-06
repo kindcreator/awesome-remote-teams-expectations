@@ -99,7 +99,7 @@ For each ticket, create tests in this order:
 test('complete authentication flow', async ({ page }) => {
   // Sign in
   await page.goto('/sign-in');
-  await page.fill('[name=email]', 'test@example.com');
+  await page.fill('[name=email]', 'demo@example.com');
   await page.fill('[name=password]', 'password');
   await page.click('button[type=submit]');
   
