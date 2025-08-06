@@ -5,6 +5,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "dev:test": "next dev",
     "lint": "next lint",
     "start": "next start",
     "db:generate": "drizzle-kit generate",
@@ -14,9 +15,10 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:unit": "vitest run",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test tests/e2e/",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:debug": "playwright test --debug"
+    "test:e2e:debug": "playwright test --debug",
+    "test:api": "playwright test tests/api/"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.28.1",
@@ -70,6 +72,7 @@
     "react-resizable-panels": "^2.1.7",
     "recharts": "2.15.4",
     "sonner": "^1.7.4",
+    "svix": "^1.70.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.9",

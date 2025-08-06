@@ -62,9 +62,19 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
+<<<<<<< HEAD
     command: 'npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+=======
+    command: 'npm run dev:test',
+    url: 'http://localhost:3000',
+    reuseExistingServer: true,
+    timeout: 120 * 1000,
+    env: {
+      ...process.env,
+    },
+>>>>>>> feature/ticket-2-authentication-implementation
   },
 });

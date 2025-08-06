@@ -35,10 +35,48 @@ This approach ensures we build what teams actually need, not what we think they 
 
 ## Tech Stack
 
-- Next.js 15 + React 19
-- TypeScript
-- Tailwind CSS
-- Deployed on Coolify (self-hosted)
+- **Frontend**: Next.js 15 + React 19, TypeScript, Tailwind CSS
+- **Authentication**: Clerk (with webhook sync)
+- **Database**: PostgreSQL with Drizzle ORM
+- **Testing**: Playwright for E2E and API tests
+- **Deployment**: Coolify (self-hosted)
+
+## Quick Start
+
+### Prerequisites
+- Node.js 18+
+- PostgreSQL database
+- Clerk account (free tier works)
+- ngrok account (for local webhook testing)
+
+### Setup
+```bash
+# 1. Clone and install
+git clone https://github.com/your-org/awesome-remote-teams-expectations.git
+cd awesome-remote-teams-expectations
+make install
+
+# 2. Configure environment
+cp .env.example .env
+# Edit .env with your credentials
+
+# 3. Setup database
+make db-update
+
+# 4. Run development server
+make dev
+```
+
+For complete setup including webhooks and testing, see [Complete Setup Guide](docs/setup/complete-setup-guide.md).
+
+## Development Commands
+
+```bash
+make dev              # Start development server
+make test            # Run all tests
+make db-studio       # Open database GUI
+make help            # Show all available commands
+```
 
 ## Getting Started
 
@@ -57,4 +95,5 @@ This approach ensures we build what teams actually need, not what we think they 
 
 - **Setup**: `/docs/setup/` - Getting started guides
 - **Testing**: `/docs/testing/` - Testing strategy and guides
-- **Technical**: `/docs/` - Architecture and implementation details
+- **Architecture**: [Overview](docs/entrypoint.md)
+- **API**: [Documentation](docs/backend/docmap.md)
