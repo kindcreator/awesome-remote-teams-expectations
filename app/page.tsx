@@ -36,16 +36,6 @@ export default async function Home() {
             </Link>
           </div>
           
-          <div className="mt-12 p-6 bg-white rounded-lg shadow-md border">
-            <h2 className="text-lg font-semibold mb-3">Try Demo Account</h2>
-            <p className="text-gray-600 mb-4">
-              Want to explore the platform? Sign in with our demo account to see how it works.
-            </p>
-            <div className="text-sm text-gray-500">
-              <p>Email: demo@example.com</p>
-              <p>Password: DemoPassword123!</p>
-            </div>
-          </div>
         </div>
         
         <div className="mt-20 grid md:grid-cols-3 gap-8">
