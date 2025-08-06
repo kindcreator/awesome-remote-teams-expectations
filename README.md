@@ -94,6 +94,6 @@ make help            # Show all available commands
 ## Documentation
 
 - **Setup**: `/docs/setup/` - Getting started guides
-- **Testing**: `/docs/testing/` - Testing strategy and guides
+- **Testing**: [TDD Documentation](docs/testing/docmap.md) - Test-driven development approach and E2E tests
 - **Architecture**: [Overview](docs/entrypoint.md)
 - **API**: [Documentation](docs/backend/docmap.md)

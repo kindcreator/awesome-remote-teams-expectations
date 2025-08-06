@@ -42,3 +42,6 @@ docs/setup/current.md
 
 test-results/
 playwright-report/
+
+# Clerk session storage (anywhere in repo)
+**/.clerk/

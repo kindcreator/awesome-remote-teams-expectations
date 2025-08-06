@@ -38,11 +38,19 @@ html {
             <h1 className="text-xl font-semibold">Remote Teams Expectations</h1>
             <div>
               <SignedOut>
-                <SignInButton mode="modal" />
-                <SignUpButton mode="modal" className="ml-2" />
+                <SignInButton mode="redirect" />
+                <SignUpButton mode="redirect" className="ml-2" />
               </SignedOut>
               <SignedIn>
-                <UserButton />
+                <UserButton 
+                  afterSignOutUrl="/"
+                  appearance={{
+                    elements: {
+                      userButtonPopoverCard: "shadow-lg",
+                      userButtonPopoverActionButton: "hover:bg-gray-100"
+                    }
+                  }}
+                />
               </SignedIn>
             </div>
           </header>
