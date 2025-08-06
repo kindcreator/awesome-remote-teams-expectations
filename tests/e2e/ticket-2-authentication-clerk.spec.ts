@@ -1,8 +1,23 @@
 import { test, expect } from '../fixtures/clerk-auth'
 import { clerk } from '@clerk/testing/playwright'
 
-// These tests use Clerk's official testing approach
-// Requires test user to be created in Clerk dashboard with credentials from .env.test
+// CRITICAL: Environment variables MUST be set or tests will fail
+const TEST_EMAIL = process.env.CLERK_TEST_EMAIL
+const TEST_PASSWORD = process.env.CLERK_TEST_PASSWORD
+
+if (!TEST_EMAIL || !TEST_PASSWORD) {
+  throw new Error(`
+    ❌ CRITICAL ERROR: Missing required environment variables!
+    
+    CLERK_TEST_EMAIL and CLERK_TEST_PASSWORD MUST be set in .env.test
+    
+    Current values:
+    - CLERK_TEST_EMAIL: ${TEST_EMAIL || 'NOT SET'}
+    - CLERK_TEST_PASSWORD: ${TEST_PASSWORD ? '[HIDDEN]' : 'NOT SET'}
+    
+    Tests cannot run without these credentials!
+  `)
+}
 
 test.describe('Ticket #2: Authentication with Clerk Testing', () => {
   test.describe('Dashboard Protection', () => {
@@ -21,13 +36,13 @@ test.describe('Ticket #2: Authentication with Clerk Testing', () => {
     })
 
     test('should allow authenticated users to access dashboard', async ({ page }) => {
-      // Sign in with test credentials
+      // Sign in with test credentials - NO FALLBACKS
       await clerk.signIn({
         page,
         signInParams: {
           strategy: 'password',
-          identifier: process.env.CLERK_TEST_EMAIL || 'demo@example.com',
-          password: process.env.CLERK_TEST_PASSWORD || 'PrVWdzq7tBaUZmivIKWDzbeuuXvG0GKDqiBiDaXja3',
+          identifier: TEST_EMAIL,
+          password: TEST_PASSWORD,
         },
       })
       
@@ -54,13 +69,13 @@ test.describe('Ticket #2: Authentication with Clerk Testing', () => {
     test('should successfully sign in with valid credentials', async ({ page }) => {
       await page.goto('/sign-in')
       
-      // Use Clerk's sign-in helper
+      // Use Clerk's sign-in helper - NO FALLBACKS
       await clerk.signIn({
         page,
         signInParams: {
           strategy: 'password',
-          identifier: process.env.CLERK_TEST_EMAIL || 'demo@example.com',
-          password: process.env.CLERK_TEST_PASSWORD || 'PrVWdzq7tBaUZmivIKWDzbeuuXvG0GKDqiBiDaXja3',
+          identifier: TEST_EMAIL,
+          password: TEST_PASSWORD,
         },
       })
       
@@ -87,13 +102,13 @@ test.describe('Ticket #2: Authentication with Clerk Testing', () => {
 
   test.describe('Sign-Out Flow', () => {
     test('should display user button when authenticated', async ({ page }) => {
-      // Sign in first
+      // Sign in first - NO FALLBACKS
       await clerk.signIn({
         page,
         signInParams: {
           strategy: 'password',
-          identifier: process.env.CLERK_TEST_EMAIL || 'demo@example.com',
-          password: process.env.CLERK_TEST_PASSWORD || 'PrVWdzq7tBaUZmivIKWDzbeuuXvG0GKDqiBiDaXja3',
+          identifier: TEST_EMAIL,
+          password: TEST_PASSWORD,
         },
       })
       
@@ -104,13 +119,13 @@ test.describe('Ticket #2: Authentication with Clerk Testing', () => {
     })
 
     test('should successfully sign out', async ({ page }) => {
-      // Sign in first
+      // Sign in first - NO FALLBACKS
       await clerk.signIn({
         page,
         signInParams: {
           strategy: 'password',
-          identifier: process.env.CLERK_TEST_EMAIL || 'demo@example.com',
-          password: process.env.CLERK_TEST_PASSWORD || 'PrVWdzq7tBaUZmivIKWDzbeuuXvG0GKDqiBiDaXja3',
+          identifier: TEST_EMAIL,
+          password: TEST_PASSWORD,
         },
       })
       
