@@ -1,6 +1,7 @@
 import { clerk, clerkSetup } from "@clerk/testing/playwright";
 import { test as setup } from "@playwright/test";
 import path from "path";
+import fs from "fs";
 
 // Ensures that Clerk setup is done before any tests run
 setup.describe.configure({
@@ -19,9 +20,15 @@ setup("global setup", async () => {
   }
 });
 
-const authFile = path.join(__dirname, "../playwright/.clerk/user.json");
+const authFile = path.join(__dirname, "../../../playwright/.clerk/user.json");
 
 setup("authenticate", async ({ page }) => {
+  // Ensure the directory exists
+  const authDir = path.dirname(authFile);
+  if (!fs.existsSync(authDir)) {
+    fs.mkdirSync(authDir, { recursive: true });
+  }
+  
   await page.goto("/");
   await clerk.signIn({
     page,
@@ -32,7 +39,7 @@ setup("authenticate", async ({ page }) => {
     },
   });
   await page.goto("/dashboard");
-  await page.waitForSelector("h1:has-text('Dashboard')");
+  await page.waitForSelector("h1:has-text('Dashboard')", { timeout: 15000 });
 
   await page.context().storageState({ path: authFile });
 });

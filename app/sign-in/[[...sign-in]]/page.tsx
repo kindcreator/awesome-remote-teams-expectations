@@ -1,9 +1,10 @@
 import { SignIn } from '@clerk/nextjs'
 
-export default function SignInPage({
+export default async function SignInPage({
   searchParams,
-}: { searchParams: { redirect_url?: string } }) {
-  const dest = searchParams.redirect_url || '/dashboard'
+}: { searchParams: Promise<{ redirect_url?: string }> }) {
+  const params = await searchParams
+  const dest = params.redirect_url || '/dashboard'
   return (
     <div className="flex min-h-screen items-center justify-center">
       <SignIn
