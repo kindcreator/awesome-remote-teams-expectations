@@ -35,7 +35,8 @@ test.describe("User Sign-in Flow", () => {
     
     // Should be redirected to dashboard after successful sign-in
     await page.waitForURL("**/dashboard");
-    await expect(page.locator("h1")).toContainText("Dashboard");
+    // Use a more specific selector for the dashboard heading
+    await expect(page.locator("h1.text-3xl")).toContainText("Dashboard");
   });
 
   test("user can sign out and loses access to protected content", async ({ page }) => {
