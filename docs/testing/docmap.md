@@ -42,10 +42,15 @@ The test suite uses Playwright with Clerk's official testing approach. Tests are
 
 ```
 tests/
-├── setup/
-│   └── global.setup.ts                  # Authentication setup and session storage
-├── e2e-auth-sign-in-flow.spec.ts       # Main authentication flow tests  
-└── e2e-auth-protected-routes.spec.ts   # Protected route access tests
+└── e2e/
+    ├── setup/
+    │   └── global.setup.ts              # Technical setup for authentication
+    ├── authentication/
+    │   ├── sign-in-flow.spec.ts        # Sign-in/out user journeys
+    │   └── protected-routes.spec.ts    # Authenticated access tests
+    └── [future features]/
+        ├── expectations/                # To be added for expectations feature
+        └── history/                     # To be added for history feature
 ```
 
 ## Quick Reference

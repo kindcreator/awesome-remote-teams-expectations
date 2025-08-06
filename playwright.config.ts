@@ -13,7 +13,7 @@ const baseURL = `http://localhost:${PORT}`;
 
 // Reference: https://playwright.dev/docs/test-configuration
 export default defineConfig({
-  testDir: path.join(__dirname, "tests"),
+  testDir: path.join(__dirname, "tests/e2e"),
   outputDir: "test-results/",
   timeout: 30000, // 30 seconds global timeout
   webServer: {
@@ -33,7 +33,7 @@ export default defineConfig({
     },
     {
       name: "authentication",
-      testMatch: /e2e-auth-sign-in-flow\.spec\.ts/,
+      testMatch: /authentication\/sign-in-flow\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
       },
@@ -41,7 +41,7 @@ export default defineConfig({
     },
     {
       name: "authenticated features",
-      testMatch: /e2e-auth-protected-routes\.spec\.ts/,
+      testMatch: /authentication\/protected-routes\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         // Use prepared auth state for tests that need pre-authentication
