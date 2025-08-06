@@ -67,3 +67,7 @@ TDD First:
 -Every backend feature (API routes, server actions) must follow TDD:
 1) First commit: Test
 2) Second commit: Implementation
+
+
+# Git 
+DO NOT commit or push work - only human can do that. 
