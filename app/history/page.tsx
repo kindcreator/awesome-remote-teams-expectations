@@ -35,7 +35,7 @@ export default function HistoryPage() {
 
         <main>
           <div className="relative">
-            {completedExpectations.map((exp, index) => (
+            {completedExpectations.map((exp) => (
               <HistoryTimelineItem key={exp.id} expectation={exp} />
             ))}
           </div>
