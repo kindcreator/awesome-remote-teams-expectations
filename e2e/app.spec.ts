@@ -10,8 +10,9 @@ test.describe("main tests", () => {
     await setupClerkTestingToken({ page });
 
     await page.goto("/dashboard");
-    await expect(page.locator("h1")).toContainText("Sign");
+    // Should redirect to sign-in page
     await page.waitForSelector(".cl-signIn-root", { state: "attached" });
+    await expect(page.locator("h1.cl-headerTitle")).toContainText("Sign in");
     await page
       .locator("input[name=identifier]")
       .fill(process.env.E2E_CLERK_USER_USERNAME!);
@@ -52,6 +53,6 @@ test.describe("main tests", () => {
     await clerk.signOut({ page });
     await page.goto("/dashboard");
     // should redirect to sign in page
-    await page.waitForSelector("h1:has-text('Sign')");
+    await page.waitForSelector(".cl-signIn-root", { state: "attached" });
   });
 });

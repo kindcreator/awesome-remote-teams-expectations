@@ -10,7 +10,7 @@ test.describe("authenticated tests", () => {
     await page.goto("/dashboard");
     await page.waitForSelector("h1:has-text('Dashboard')");
     
-    // Should see user button since we're authenticated
-    await page.waitForSelector("[data-clerk-user-button]");
+    // Should see user button since we're authenticated (in the header)
+    await page.waitForSelector(".cl-userButtonTrigger", { timeout: 10000 });
   });
 });

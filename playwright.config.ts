@@ -47,5 +47,6 @@ export default defineConfig({
         storageState: "playwright/.clerk/user.json",
       },
       dependencies: ["global setup"],
+    },
   ],
 });
