@@ -1,23 +1,21 @@
-# Test Organization
+# Tests Directory
 
-## Current Test Structure
+All tests for the awesome-remote-teams-expectations project.
 
-### E2E Tests (`/e2e/`)
-Our main E2E tests use Clerk's official testing approach:
-- `global.setup.ts` - Authentication setup and session storage
-- `app.spec.ts` - Main authentication flow tests (sign-in, sign-out)
-- `authenticated.spec.ts` - Protected route access tests
+## Structure
 
-**Configuration**: See `/docs/tdd/` for complete documentation
+```
+tests/
+├── setup/                             # Test setup and configuration
+│   └── global.setup.ts               # Playwright global setup with Clerk auth
+├── e2e-auth-sign-in-flow.spec.ts    # Authentication flow E2E tests
+└── e2e-auth-protected-routes.spec.ts # Protected routes E2E tests
+```
 
-### Unit Tests (`/tests/unit/`)
-For testing pure functions and utilities (to be added as needed)
+## Naming Convention
 
-### Integration Tests (`/tests/integration/`) 
-For testing component interactions (to be added as needed)
-
-### API Tests (`/tests/api/`)
-For testing API endpoints (to be added as needed)
+E2E tests use flat file structure with descriptive names:
+- `e2e-{feature}-{flow}.spec.ts` 
 
 ## Testing Approach
 
@@ -38,9 +36,6 @@ npm run test:e2e:ui
 
 # Run in debug mode
 npm run test:e2e:debug
-
-# Run unit tests
-npm run test
 ```
 
 ## Environment Setup
@@ -53,7 +48,4 @@ Required in `.env.test`:
 
 ## Documentation
 
-- `/docs/tdd/docmap.md` - Main test documentation hub
-- `/docs/tdd/authentication.md` - Authentication test details
-- `/docs/tdd/architecture.md` - Test architecture overview
-- `/docs/tdd/configuration.md` - Configuration guide
+For complete test documentation, see [Testing Documentation](../docs/testing/docmap.md)
