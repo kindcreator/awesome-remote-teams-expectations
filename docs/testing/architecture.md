@@ -12,9 +12,9 @@ graph LR
     
     subgraph "Test Projects"
         direction TB
-        GP[Global Setup<br/>global.setup.ts]
-        MP[Main Tests<br/>app.spec.ts]
-        AP[Authenticated Tests<br/>authenticated.spec.ts]
+        GP[Global Setup<br/>e2e/setup/global.setup.ts]
+        MP[Sign-in Flow Tests<br/>e2e/authentication/sign-in-flow.spec.ts]
+        AP[Protected Routes Tests<br/>e2e/authentication/protected-routes.spec.ts]
         
         GP --> |storageState| SS[playwright/.clerk/user.json]
         SS --> AP
@@ -51,7 +51,7 @@ The test architecture follows a three-project structure with dependency manageme
 
 ```mermaid
 stateDiagram-v2
-    [*] --> GlobalSetup: npm run test:e2e
+    [*] --> GlobalSetup
     
     state GlobalSetup {
         ValidateEnv --> ClerkSetup
@@ -59,8 +59,8 @@ stateDiagram-v2
         Authenticate --> SaveSession
     }
     
-    GlobalSetup --> MainTests: dependency
-    GlobalSetup --> AuthTests: dependency
+    GlobalSetup --> MainTests
+    GlobalSetup --> AuthTests
     
     state MainTests {
         SignInTest --> SignInHelper
@@ -72,8 +72,8 @@ stateDiagram-v2
         AccessDashboard --> VerifyUserButton
     }
     
-    MainTests --> [*]: 3 tests
-    AuthTests --> [*]: 2 tests
+    MainTests --> [*]
+    AuthTests --> [*]
 ```
 
 ### Description
@@ -83,10 +83,10 @@ Test execution starts with global setup that validates environment, sets up Cler
 
 | Application Component | Test Coverage | Test File |
 |----------------------|---------------|-----------|
-| `/middleware.ts` | Route protection | `authenticated.spec.ts` |
-| `/app/sign-in/` | Sign-in flow | `app.spec.ts` |
-| `/app/dashboard/` | Protected access | `authenticated.spec.ts` |
-| `UserButton` | Authentication state | `authenticated.spec.ts` |
+| `/middleware.ts` | Route protection | `e2e/authentication/protected-routes.spec.ts` |
+| `/app/sign-in/` | Sign-in flow | `e2e/authentication/sign-in-flow.spec.ts` |
+| `/app/dashboard/` | Protected access | `e2e/authentication/protected-routes.spec.ts` |
+| `UserButton` | Authentication state | `e2e/authentication/protected-routes.spec.ts` |
 
 ## Configuration Structure
 
@@ -94,13 +94,13 @@ Test execution starts with global setup that validates environment, sets up Cler
 graph TD
     CONFIG[playwright.config.ts]
     CONFIG --> TIMEOUT[timeout: 30000]
-    CONFIG --> TESTDIR[testDir: e2e/]
+    CONFIG --> TESTDIR[testDir: tests/e2e/]
     CONFIG --> OUTPUT[outputDir: test-results/]
     
     CONFIG --> PROJECTS[Projects]
-    PROJECTS --> P1[Global Setup<br/>testMatch: /global\.setup\.ts/]
-    PROJECTS --> P2[Main Tests<br/>testMatch: /.*app.spec.ts/<br/>dependencies: global setup]
-    PROJECTS --> P3[Authenticated Tests<br/>testMatch: /.*authenticated.spec.ts/<br/>storageState: playwright/.clerk/user.json<br/>dependencies: global setup]
+    PROJECTS --> P1[Setup<br/>testMatch: /setup/.*\.setup\.ts/]
+    PROJECTS --> P2[Authentication<br/>testMatch: /authentication/sign-in-flow\.spec\.ts/<br/>dependencies: setup]
+    PROJECTS --> P3[Authenticated Features<br/>testMatch: /authentication/protected-routes\.spec\.ts/<br/>storageState: playwright/.clerk/user.json<br/>dependencies: setup]
     
     CONFIG --> WEBSERVER[webServer]
     WEBSERVER --> DEV[command: npm run dev]
