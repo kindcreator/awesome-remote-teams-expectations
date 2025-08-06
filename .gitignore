@@ -18,7 +18,7 @@ yarn-error.log*
 
 # env files
 .env*
-!.env.local
+!.env.example
 
 
 # vercel
@@ -33,7 +33,16 @@ next-env.d.ts
 .idea/*
 
 tmp/
+42cc-Full-Stack-Next.js.pdf
 
 # Drizzle Studio local data
 drizzle/
 .drizzle/
+
+docs/setup/current.md
+
+test-results/
+playwright-report/
+
+# Clerk session storage (anywhere in repo)
+**/.clerk/

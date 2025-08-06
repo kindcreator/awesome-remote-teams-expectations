@@ -4,7 +4,6 @@ components/ui/**
 
 
 !Dockerfile
-!.env
 *.csv
 exported-from-ppfl-santanna-fl-client-server
 uv.lock
@@ -213,4 +212,14 @@ README.md
 
 
 
+!.env
+!.env.*
 
+
+
+
+
+playwright-report/
+test-results/
+.clerk
+**/.clerk/

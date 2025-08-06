@@ -35,11 +35,65 @@ This approach ensures we build what teams actually need, not what we think they 
 
 ## Tech Stack
 
-- Next.js 15 + React 19
-- TypeScript
-- Tailwind CSS
-- Deployed on Coolify (self-hosted)
+- **Frontend**: Next.js 15 + React 19, TypeScript, Tailwind CSS
+- **Authentication**: Clerk (with webhook sync)
+- **Database**: PostgreSQL with Drizzle ORM
+- **Testing**: Playwright for E2E and API tests
+- **Deployment**: Coolify (self-hosted)
+
+## Quick Start
+
+### Prerequisites
+- Node.js 18+
+- PostgreSQL database
+- Clerk account (free tier works)
+- ngrok account (for local webhook testing)
+
+### Setup
+```bash
+# 1. Clone and install
+git clone https://github.com/your-org/awesome-remote-teams-expectations.git
+cd awesome-remote-teams-expectations
+make install
+
+# 2. Configure environment
+cp .env.example .env
+# Edit .env with your credentials
+
+# 3. Setup database
+make db-update
+
+# 4. Run development server
+make dev
+```
+
+For complete setup including webhooks and testing, see [Complete Setup Guide](docs/setup/complete-setup-guide.md).
+
+## Development Commands
+
+```bash
+make dev              # Start development server
+make test            # Run all tests
+make db-studio       # Open database GUI
+make help            # Show all available commands
+```
+
+## Getting Started
+
+### Quick Setup
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set up environment variables: See **[Setup Guide](./docs/setup/README.md)**
+4. Run development server: `npm run dev`
+
+### Setup Guides
+- **[Complete Setup Guide](./docs/setup/README.md)** - Step-by-step instructions
+- **[Environment Variables](./docs/setup/env-variables.md)** - All configuration options
+- **[Testing Setup](./docs/setup/testing.md)** - Run tests without external services
 
 ## Documentation
 
-For technical details, see `/docs/`
+- **Setup**: `/docs/setup/` - Getting started guides
+- **Testing**: [TDD Documentation](docs/testing/docmap.md) - Test-driven development approach and E2E tests
+- **Architecture**: [Overview](docs/entrypoint.md)
+- **API**: [Documentation](docs/backend/docmap.md)
