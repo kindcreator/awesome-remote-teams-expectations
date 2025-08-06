@@ -67,8 +67,8 @@ Authentication testing follows Clerk's official testing pattern. Global setup es
 
 Required variables in `.env.test`:
 ```
-E2E_CLERK_USER_USERNAME=demo@example.com
-E2E_CLERK_USER_PASSWORD=<secure_password>
+E2E_CLERK_USER_USERNAME=<your_test_email>
+E2E_CLERK_USER_PASSWORD=<your_secure_password>
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=<clerk_key>
 CLERK_SECRET_KEY=<clerk_secret>
 ```
