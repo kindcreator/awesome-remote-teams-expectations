@@ -32,8 +32,6 @@ async function clearDatabase() {
   console.log('Clearing existing data...')
   await db.delete(expectations)
   await db.delete(users)
-  await db.execute(sql`ALTER SEQUENCE IF EXISTS expectations_id_seq RESTART WITH 1`)
-  await db.execute(sql`ALTER SEQUENCE IF EXISTS users_id_seq RESTART WITH 1`)
 }
 
 function generateAvatarUrls() {
@@ -66,10 +64,15 @@ function getExpectationStatusDistribution() {
   ]
 }
 
+function getRandomBoolean(trueWeight = 0.7) {
+  return Math.random() < trueWeight
+}
+
 async function seedRandomUsers() {
   console.log('Seeding database with demo data...')
   
-  await seed(db, { users, expectations }, { seed: DETERMINISTIC_SEED }).refine((f) => ({
+  // Seed users only (without relationships to avoid the bug)
+  const result = await seed(db, { users }, { seed: DETERMINISTIC_SEED }).refine((f) => ({
     users: {
       columns: {
         name: f.fullName(),
@@ -77,22 +80,41 @@ async function seedRandomUsers() {
         clerkUserId: generateClerkUserId(f),
         avatarUrl: f.valuesFromArray({ values: generateAvatarUrls() })
       },
-      count: 6,
-      with: {
-        expectations: {
-          columns: {
-            title: f.valuesFromArray({ values: TASK_TITLES }),
-            createdAt: f.date(generateDateRange(30)),
-            estimatedCompletion: f.date(generateDateRange(0, 14)),
-            isDone: f.weightedRandom(getExpectationStatusDistribution()),
-            doneAt: f.default({ defaultValue: null }),
-            updatedAt: f.date(generateDateRange(7))
-          },
-          count: f.int({ minValue: 3, maxValue: 8 })
-        }
-      }
+      count: 6
     }
   }))
+  
+  // Manually add expectations for each user
+  const seededUsers = await db.select().from(users).limit(6)
+  
+  for (const user of seededUsers) {
+    // Add 3-5 expectations per user
+    const expectationCount = Math.floor(Math.random() * 3) + 3
+    let hasActiveExpectation = false
+    
+    for (let i = 0; i < expectationCount; i++) {
+      // Only allow one active expectation per user
+      const isDone = hasActiveExpectation ? true : (Math.random() < 0.7)
+      if (!isDone) {
+        hasActiveExpectation = true
+      }
+      
+      const createdAt = new Date(Date.now() - Math.random() * 30 * DAYS_IN_MS)
+      const estimatedCompletion = new Date(Date.now() + Math.random() * 14 * DAYS_IN_MS)
+      
+      await db.insert(expectations).values({
+        userId: user.id,
+        title: TASK_TITLES[Math.floor(Math.random() * TASK_TITLES.length)],
+        createdAt,
+        estimatedCompletion,
+        isDone,
+        doneAt: isDone ? new Date() : null,
+        updatedAt: new Date()
+      })
+    }
+  }
+  
+  console.log('Added expectations for random users')
 }
 
 function shouldSkipDemoUser() {
