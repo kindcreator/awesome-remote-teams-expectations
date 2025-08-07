@@ -12,6 +12,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx db/seed.ts",
+    "db:reset": "npm run db:push && npm run db:seed",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:unit": "vitest run",
@@ -100,6 +102,7 @@
     "msw": "^2.10.4",
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
+    "tsx": "^4.20.3",
     "tw-animate-css": "1.3.3",
     "typescript": "^5",
     "vitest": "^3.2.4"
