@@ -13,6 +13,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx -r dotenv/config db/seed.ts",
+    "db:seed:impress": "tsx -r dotenv/config db/seed.ts --impress-reviewer",
     "db:sync-clerk": "tsx -r dotenv/config db/sync-clerk-users.ts",
     "db:reset": "npm run db:push && npm run db:seed",
     "test": "vitest",
