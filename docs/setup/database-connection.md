@@ -60,21 +60,20 @@ postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.co
 
 ### Important: WSL2 and Database Schema Setup
 
-**For WSL2 users**, there's a known limitation:
-- The direct connection (port 5432) often doesn't resolve from WSL2
-- The pooled connection (port 6543) doesn't support DDL operations (CREATE TABLE, etc.)
-- `drizzle-kit push` requires DDL support, which pooled connections don't provide
+### Creating Tables
 
-#### Solution: Manual Table Creation
+Use Drizzle to push your schema to the database:
 
-1. **Use Supabase SQL Editor**:
-   - Go to your [Supabase Dashboard](https://app.supabase.com) → SQL Editor
-   - Run the SQL from `/db/create-tables.sql`
-   - This creates all necessary tables and indexes
+```bash
+npm run db:push
+```
 
-2. **Alternative for non-WSL2 environments**:
-   - You can temporarily use the direct connection for `db:push`
-   - Then switch back to pooled connection for runtime
+This command reads the schema from `/db/schema.ts` and creates all necessary tables and indexes.
+
+**Note**: If you're using WSL2 and encounter connection issues, you may need to:
+1. Temporarily use the direct connection string for `db:push`
+2. Or run the push command from a non-WSL2 environment
+3. Then switch back to the pooled connection for runtime
 
 ### Troubleshooting
 
