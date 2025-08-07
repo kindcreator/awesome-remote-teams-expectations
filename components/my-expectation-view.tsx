@@ -21,9 +21,9 @@ const SetExpectationPrompt = () => (
         <PlusCircle className="w-8 h-8 text-slate-400" />
       </div>
     </div>
-    <CardTitle className="text-lg font-semibold text-slate-800">What's your focus?</CardTitle>
+    <CardTitle className="text-lg font-semibold text-slate-800">What&apos;s your focus?</CardTitle>
     <CardDescription className="mt-2 mb-6 max-w-xs mx-auto">
-      You have no active expectation. Set one to let your team know what you're working on.
+      You have no active expectation. Set one to let your team know what you&apos;re working on.
     </CardDescription>
     <ManageExpectationForm>
       <Button className="bg-slate-900 text-white hover:bg-slate-800">Set Expectation</Button>
