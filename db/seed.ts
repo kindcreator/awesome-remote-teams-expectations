@@ -170,6 +170,9 @@ async function seedReviewerTeam() {
     })
   }
   
+  // Track which users have active expectations (only one allowed per user)
+  const usersWithActiveExpectations = new Set()
+  
   // Add project expectations for Yaroslav's team
   YAROSLAV_EXPECTATIONS.forEach(exp => {
     let userId
@@ -189,6 +192,17 @@ async function seedReviewerTeam() {
     
     if (!userId) return
     
+    // Enforce one active expectation per user constraint
+    const isDone = exp.isDone !== undefined ? exp.isDone : true
+    if (!isDone) {
+      if (usersWithActiveExpectations.has(userId)) {
+        // User already has an active expectation, mark this one as done
+        exp.isDone = true
+      } else {
+        usersWithActiveExpectations.add(userId)
+      }
+    }
+    
     const createdAt = exp.daysAgo 
       ? new Date(Date.now() - exp.daysAgo * DAYS_IN_MS)
       : new Date(Date.now() - 1 * DAYS_IN_MS)
@@ -202,8 +216,8 @@ async function seedReviewerTeam() {
       title: exp.title,
       createdAt,
       estimatedCompletion,
-      isDone: exp.isDone,
-      doneAt: exp.isDone ? new Date(createdAt.getTime() + DAYS_IN_MS) : null,
+      isDone: exp.isDone !== undefined ? exp.isDone : true,
+      doneAt: exp.isDone || exp.isDone === undefined ? new Date(createdAt.getTime() + DAYS_IN_MS) : null,
       updatedAt: new Date()
     })
   })
