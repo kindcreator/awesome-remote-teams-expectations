@@ -1,7 +1,7 @@
 import { db } from './index'
 import { users } from './schema'
 import { eq } from 'drizzle-orm'
-import { clerkClient } from '@clerk/nextjs/server'
+import { createClerkClient } from '@clerk/nextjs/server'
 
 interface ClerkUserData {
   id: string
@@ -15,6 +15,14 @@ function validateEnvironment() {
   if (!process.env.CLERK_SECRET_KEY) {
     throw new Error('CLERK_SECRET_KEY is required in environment variables')
   }
+}
+
+function getClerkClient() {
+  const secretKey = process.env.CLERK_SECRET_KEY
+  if (!secretKey) {
+    throw new Error('CLERK_SECRET_KEY is required')
+  }
+  return createClerkClient({ secretKey })
 }
 
 function getUserDisplayName(clerkUser: ClerkUserData): string {
@@ -41,7 +49,8 @@ function getUserEmail(clerkUser: ClerkUserData): string | null {
 async function fetchClerkUsers() {
   console.log('Fetching users from Clerk...')
   
-  const clerkUsers = await clerkClient.users.getUserList({
+  const clerk = getClerkClient()
+  const clerkUsers = await clerk.users.getUserList({
     limit: 100
   })
   
