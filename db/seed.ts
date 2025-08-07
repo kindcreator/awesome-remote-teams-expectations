@@ -19,7 +19,7 @@ async function main() {
     console.log('Seeding database with demo data...')
     
     // Seed with deterministic data for consistency
-    await seed(db, { users, expectations }, { seed: 12345 }).refine((f) => ({
+    await seed(db, { users, expectations }, { seed: 5318008 }).refine((f) => ({
       users: {
         columns: {
           name: f.fullName(),
