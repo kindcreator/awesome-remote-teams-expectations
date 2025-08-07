@@ -1,5 +1,8 @@
 # Makefile for awesome-remote-teams-expectations
 
+# Default target - show help when running just 'make'
+.DEFAULT_GOAL := help
+
 # Database commands
 db-generate:
 	npm run db:generate
