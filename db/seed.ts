@@ -1,7 +1,6 @@
 import { seed } from 'drizzle-seed'
 import { db } from './index'
 import { users, expectations } from './schema'
-import { sql, eq } from 'drizzle-orm'
 
 const DETERMINISTIC_SEED = 5318008
 const DAYS_IN_MS = 24 * 60 * 60 * 1000
@@ -69,7 +68,7 @@ function getRandomBoolean(trueWeight = 0.7) {
 }
 
 async function seedRandomUsers() {
-  console.log('Seeding database with demo data...')
+  console.log('Seeding database with random test data...')
   
   // Seed users only (without relationships to avoid the bug)
   const result = await seed(db, { users }, { seed: DETERMINISTIC_SEED }).refine((f) => ({
@@ -117,160 +116,9 @@ async function seedRandomUsers() {
   console.log('Added expectations for random users')
 }
 
-function shouldSkipDemoUser() {
-  return process.argv.includes('--no-demo')
-}
-
-function getDemoUserConfig() {
-  if (shouldSkipDemoUser()) {
-    return null
-  }
-
-  const email = process.env.DEMO_USER_EMAIL
-  const clerkUserId = process.env.DEMO_USER_CLERK_ID
-  const name = process.env.DEMO_USER_NAME
-
-  if (!email) {
-    throw new Error('DEMO_USER_EMAIL is required in environment variables')
-  }
-  if (!clerkUserId) {
-    throw new Error('DEMO_USER_CLERK_ID is required in environment variables')
-  }
-  if (!name) {
-    throw new Error('DEMO_USER_NAME is required in environment variables')
-  }
-
-  return { email, clerkUserId, name }
-}
-
-function createDemoUser() {
-  const config = getDemoUserConfig()
-  if (!config) return null
-  
-  return {
-    id: 'a0000000-0000-0000-0000-000000000001',
-    clerkUserId: config.clerkUserId,
-    email: config.email,
-    name: config.name,
-    avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Demo',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-}
-
-async function checkIfDemoUserExists() {
-  const config = getDemoUserConfig()
-  if (!config) return null
-  
-  const existingUser = await db
-    .select()
-    .from(users)
-    .where(eq(users.clerkUserId, config.clerkUserId))
-    .limit(1)
-  
-  return existingUser.length > 0 ? existingUser[0] : null
-}
-
-function createActiveExpectationForDemoUser(userId: string) {
-  return {
-    id: 'b0000000-0000-0000-0000-000000000001',
-    userId,
-    title: 'Complete test assignment for 42 Coffee Cups',
-    createdAt: new Date(),
-    estimatedCompletion: new Date(Date.now() + 3 * DAYS_IN_MS),
-    isDone: false,
-    doneAt: null,
-    updatedAt: new Date()
-  }
-}
-
-function createCompletedExpectationsForDemoUser(userId: string) {
-  return [
-    {
-      userId,
-      title: 'Setup development environment',
-      createdAt: new Date(Date.now() - 7 * DAYS_IN_MS),
-      estimatedCompletion: new Date(Date.now() - 5 * DAYS_IN_MS),
-      isDone: true,
-      doneAt: new Date(Date.now() - 5 * DAYS_IN_MS),
-      updatedAt: new Date(Date.now() - 5 * DAYS_IN_MS)
-    },
-    {
-      userId,
-      title: 'Review project documentation',
-      createdAt: new Date(Date.now() - 10 * DAYS_IN_MS),
-      estimatedCompletion: new Date(Date.now() - 8 * DAYS_IN_MS),
-      isDone: true,
-      doneAt: new Date(Date.now() - 9 * DAYS_IN_MS),
-      updatedAt: new Date(Date.now() - 9 * DAYS_IN_MS)
-    }
-  ]
-}
-
-async function checkIfDemoUserHasActiveExpectation(userId: string) {
-  const activeExpectations = await db
-    .select()
-    .from(expectations)
-    .where(eq(expectations.userId, userId))
-    .where(eq(expectations.isDone, false))
-    .limit(1)
-  
-  return activeExpectations.length > 0
-}
-
-async function seedDemoUser() {
-  if (shouldSkipDemoUser()) {
-    console.log('Skipping demo user seeding (--no-demo flag provided)')
-    return null
-  }
-
-  const existingUser = await checkIfDemoUserExists()
-  
-  if (existingUser) {
-    console.log('Demo user already exists, checking expectations...')
-    
-    const hasActiveExpectation = await checkIfDemoUserHasActiveExpectation(existingUser.id)
-    
-    if (!hasActiveExpectation) {
-      const activeExpectation = createActiveExpectationForDemoUser(existingUser.id)
-      await db.insert(expectations).values(activeExpectation)
-      console.log('Added active expectation for existing demo user')
-    } else {
-      console.log('Demo user already has active expectation')
-    }
-    
-    return existingUser
-  }
-  
-  const demoUser = createDemoUser()
-  if (!demoUser) return null
-  
-  await db.insert(users).values(demoUser)
-  
-  const activeExpectation = createActiveExpectationForDemoUser(demoUser.id)
-  await db.insert(expectations).values(activeExpectation)
-  
-  const completedExpectations = createCompletedExpectationsForDemoUser(demoUser.id)
-  await db.insert(expectations).values(completedExpectations)
-  
-  console.log('Created new demo user with expectations')
-  return demoUser
-}
-
-function printDemoCredentials() {
+function printSeedingSummary() {
   console.log('✅ Database seeded successfully!')
-  
-  if (shouldSkipDemoUser()) {
-    console.log('📝 Demo user was skipped (--no-demo flag)')
-    return
-  }
-  
-  const config = getDemoUserConfig()
-  if (!config) return
-  
-  console.log('📧 Demo user credentials:')
-  console.log(`   Email: ${config.email}`)
-  console.log(`   Clerk User ID: ${config.clerkUserId}`)
+  console.log('📝 Use "make sync" to sync users from Clerk')
 }
 
 async function main() {
@@ -279,8 +127,7 @@ async function main() {
   try {
     await clearDatabase()
     await seedRandomUsers()
-    await seedDemoUser()
-    printDemoCredentials()
+    printSeedingSummary()
   } catch (error) {
     console.error('❌ Seed failed:', error)
     process.exit(1)
