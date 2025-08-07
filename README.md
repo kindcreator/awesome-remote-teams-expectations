@@ -80,8 +80,6 @@ make help            # Show all available commands
 
 ## Getting Started
 
-> **WSL2 Users**: See [WSL2 Setup Guide](docs/setup/wsl2-setup.md) for specific database configuration requirements.
-
 ### Quick Setup
 1. Clone the repository
 2. Install dependencies: `npm install`

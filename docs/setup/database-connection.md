@@ -58,8 +58,6 @@ postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
 postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?pgbouncer=true
 ```
 
-### Important: WSL2 and Database Schema Setup
-
 ### Creating Tables
 
 Use Drizzle to push your schema to the database:
