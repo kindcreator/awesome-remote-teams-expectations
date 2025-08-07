@@ -19,9 +19,6 @@ db-studio:
 db-seed:
 	npm run db:seed
 
-db-seed-no-demo:
-	npm run db:seed:no-demo
-
 db-sync:
 	npm run db:sync-clerk
 
@@ -96,8 +93,7 @@ help:
 	@echo "  make db-update        - Generate and push schema changes"
 	@echo "  make db-migrate       - Run migrations"
 	@echo "  make db-studio        - Open Drizzle Studio"
-	@echo "  make db-seed          - Seed database with demo data"
-	@echo "  make db-seed-no-demo  - Seed database without demo user"
+	@echo "  make db-seed          - Seed database with test data"
 	@echo "  make db-sync          - Sync users from Clerk to database"
 	@echo "  make db-reset         - Reset and seed database"
 	@echo ""
@@ -121,4 +117,4 @@ help:
 	@echo "  make tdd          - Start unit test watch mode"
 	@echo "  make tdd-e2e      - Start E2E test UI"
 
-.PHONY: db-generate db-push db-migrate db-studio db-seed db-seed-no-demo db-sync db-update db-reset dev build lint install test test-ui test-unit e2e e2e-ui e2e-debug test-all tdd tdd-e2e test-list help
+.PHONY: db-generate db-push db-migrate db-studio db-seed db-sync db-update db-reset dev build lint install test test-ui test-unit e2e e2e-ui e2e-debug test-all tdd tdd-e2e test-list help
