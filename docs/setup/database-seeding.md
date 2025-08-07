@@ -13,18 +13,35 @@ This guide explains how to seed the database with demo data for development and 
 Seeds the database with demo data including:
 - 6 randomized team members with realistic names and emails
 - A mix of active and completed expectations for each user
-- A special demo user for testing
+- A special demo user for testing (requires env vars)
+
+### `npm run db:seed:no-demo`
+Seeds only random users without the demo user:
+- 6 randomized team members with realistic names and emails
+- A mix of active and completed expectations for each user
+- Skips demo user creation (no env vars required)
 
 ### `npm run db:reset`
 Combines database push and seeding:
 1. Pushes the latest schema to the database
-2. Seeds with fresh demo data
+2. Seeds with fresh demo data (including demo user)
 
-## Demo User Credentials
+## Demo User Configuration
 
-After seeding, a demo user is available with:
-- **Email**: demo@42coffee.com
-- **Clerk User ID**: user_demo_42coffee
+The following environment variables are **REQUIRED** when seeding with demo user (default behavior):
+- **DEMO_USER_EMAIL**: Email for demo user (must match Clerk dashboard)
+- **DEMO_USER_CLERK_ID**: Clerk ID for demo user (must match Clerk dashboard)
+- **DEMO_USER_NAME**: Display name for demo user
+
+**Note**: 
+- The seed script will fail if these variables are not set when creating demo user
+- Use `npm run db:seed:no-demo` to skip demo user and avoid this requirement
+- No defaults are provided to ensure the demo user matches your Clerk configuration
+
+The seed script is idempotent - if the demo user already exists, it will:
+- Skip user creation
+- Check for active expectations
+- Only add an active expectation if none exists
 
 ## Seed Data Structure
 
@@ -43,11 +60,14 @@ The seed script creates:
 cp .env.example .env
 # Edit .env with your database credentials
 
-# Push schema and seed data
+# Push schema and seed data (with demo user)
 npm run db:reset
 
-# Or just seed (if schema already pushed)
+# Just seed with demo user (requires env vars)
 npm run db:seed
+
+# Seed without demo user (no env vars needed)
+npm run db:seed:no-demo
 ```
 
 ## Troubleshooting
