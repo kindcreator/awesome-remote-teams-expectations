@@ -49,5 +49,14 @@ export default defineConfig({
       },
       dependencies: ["setup"],
     },
+    {
+      name: "expectations",
+      testMatch: /expectations-list\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "playwright/.clerk/user.json",
+      },
+      dependencies: ["setup"],
+    },
   ],
 });
