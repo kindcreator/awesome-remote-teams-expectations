@@ -58,6 +58,24 @@ postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
 postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?pgbouncer=true
 ```
 
+### Important: WSL2 and Database Schema Setup
+
+**For WSL2 users**, there's a known limitation:
+- The direct connection (port 5432) often doesn't resolve from WSL2
+- The pooled connection (port 6543) doesn't support DDL operations (CREATE TABLE, etc.)
+- `drizzle-kit push` requires DDL support, which pooled connections don't provide
+
+#### Solution: Manual Table Creation
+
+1. **Use Supabase SQL Editor**:
+   - Go to your [Supabase Dashboard](https://app.supabase.com) → SQL Editor
+   - Run the SQL from `/db/create-tables.sql`
+   - This creates all necessary tables and indexes
+
+2. **Alternative for non-WSL2 environments**:
+   - You can temporarily use the direct connection for `db:push`
+   - Then switch back to pooled connection for runtime
+
 ### Troubleshooting
 
 If you get connection errors:
@@ -66,6 +84,8 @@ If you get connection errors:
 2. **Authentication failed**: Check password and project reference
 3. **Connection refused**: Verify the URL matches your Supabase region
 4. **Prepared statements error**: Ensure `prepare: false` is set
+5. **SASL_SIGNATURE_MISMATCH**: This happens when using pooled connection for DDL - use Supabase SQL Editor instead
+6. **ENOTFOUND db.[PROJECT].supabase.co**: Direct connection not resolving (common in WSL2) - use pooled connection
 
 ### Testing Your Connection
 
