@@ -1,9 +1,17 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import { migrate } from 'drizzle-orm/postgres-js/migrator'
+import * as dotenv from 'dotenv'
 
-// For schema push, we can try the pooled connection
-const DATABASE_URL = 'postgresql://postgres.skkfikedsolitxzkosmn:vZbWH8zpi2ImnzRlqRlSpRwF3e3MbwXQ0mkiWewoMl28E5TCiceNNmUZ8Kk5@aws-0-eu-central-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1'
+// Load environment variables
+dotenv.config()
+
+// Use DATABASE_URL from environment
+const DATABASE_URL = process.env.DATABASE_URL
+
+if (!DATABASE_URL) {
+  throw new Error('DATABASE_URL is required in environment variables')
+}
 
 async function pushSchema() {
   console.log('Pushing schema to Supabase...')
