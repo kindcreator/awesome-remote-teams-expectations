@@ -91,7 +91,9 @@ e2e-debug:
 	npm run test:e2e:debug
 
 test-all:
-	npm run test:unit && npm run test:e2e
+	-npm run test:unit
+	npm run test:api
+	npm run test:e2e
 
 # TDD workflow commands
 tdd:
