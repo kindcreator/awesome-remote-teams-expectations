@@ -1,9 +1,4 @@
-import { execSync } from 'child_process'
-import path from 'path'
-import dotenv from 'dotenv'
-
-// Load test environment
-dotenv.config({ path: path.resolve(__dirname, '../.env.test') })
+import { setupTestDatabase } from '../scripts/setup-test-db'
 
 async function globalSetup() {
   console.log('🧪 Global test setup starting...')
@@ -15,43 +10,14 @@ async function globalSetup() {
   }
   
   try {
-    // Set up test database schema (auto-approved with --force)
-    console.log('📦 Setting up test database schema...')
+    const success = await setupTestDatabase()
     
-    // Add timeout to prevent hanging
-    const timeout = 30000 // 30 seconds
-    const dbPushCommand = 'npm run db:push:force'
-    
-    try {
-      execSync(dbPushCommand, {
-        stdio: 'inherit',
-        env: {
-          ...process.env,
-          DATABASE_URL: process.env.DATABASE_URL
-        },
-        timeout: timeout
-      })
-    } catch (error: any) {
-      if (error.code === 'ETIMEDOUT') {
-        console.warn('⚠️ Database push timed out - skipping setup. Database may already be set up.')
-        console.warn('💡 Run tests with SKIP_DB_SETUP=true to skip database setup')
-        return
-      }
-      throw error
+    if (!success) {
+      console.error('❌ Database setup failed')
+      console.error('💡 You can skip database setup by setting SKIP_DB_SETUP=true')
+      console.error('💡 Or manually run: npm run test:db:setup')
+      throw new Error('Database setup failed')
     }
-    
-    // Seed test database with deterministic data
-    console.log('🌱 Seeding test database...')
-    execSync('npm run db:seed:test', {
-      stdio: 'inherit',
-      env: {
-        ...process.env,
-        DATABASE_URL: process.env.DATABASE_URL
-      },
-      timeout: timeout
-    })
-    
-    console.log('✅ Test database ready!')
     
   } catch (error) {
     console.error('❌ Global setup failed:', error)
