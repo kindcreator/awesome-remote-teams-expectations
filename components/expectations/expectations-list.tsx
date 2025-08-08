@@ -6,21 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { RefreshCw } from 'lucide-react'
 import { format } from 'date-fns'
-
-interface User {
-  id: string
-  name: string | null
-  email: string | null
-  avatarUrl: string | null
-}
-
-interface Expectation {
-  id: string
-  title: string
-  estimatedCompletion: string | Date
-  isDone: boolean
-  user: User
-}
+import type { Expectation } from '@/lib/types'
 
 interface ExpectationsListProps {
   expectations: Expectation[]

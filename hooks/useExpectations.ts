@@ -2,23 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
-
-interface User {
-  id: string
-  name: string | null
-  email: string | null
-  avatarUrl: string | null
-}
-
-interface Expectation {
-  id: string
-  title: string
-  estimatedCompletion: string | Date
-  isDone: boolean
-  user: User
-  createdAt?: string | Date
-  doneAt?: string | Date | null
-}
+import type { Expectation } from '@/lib/types'
 
 interface UseExpectationsReturn {
   expectations: Expectation[]
