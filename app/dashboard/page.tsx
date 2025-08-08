@@ -30,6 +30,7 @@ export default function DashboardPage() {
 
   const activeExpectations = expectations.filter(e => !e.isDone)
   const myActiveExpectations = myExpectations.filter(e => !e.isDone)
+  const teamActiveExpectations = activeExpectations.filter(e => !userId || e.user?.clerkUserId !== userId)
 
   const historyItems: HistoryItem[] = myExpectations
     .filter(e => e.isDone)
@@ -50,7 +51,7 @@ export default function DashboardPage() {
         .filter(e => !e.isDone)
         .map(e => ({
           id: e.id,
-          title: `Created expectation: ${e.title}`,
+          title: `${e.title}`,
           date: new Date(e.createdAt),
           user: {
             id: e.userId,
@@ -286,10 +287,10 @@ export default function DashboardPage() {
             <ul className="mt-4 space-y-3">
               {isLoading ? (
                 <li className="text-sm text-neutral-500">Loading...</li>
-              ) : activeExpectations.length === 0 ? (
-                <li className="text-sm text-neutral-500">No active expectations</li>
+              ) : teamActiveExpectations.length === 0 ? (
+                <li className="text-sm text-neutral-500">No team expectations</li>
               ) : (
-                activeExpectations.map((item) => (
+                teamActiveExpectations.map((item) => (
                   <li key={item.id}>
                     <ExpectationCard 
                       item={{
