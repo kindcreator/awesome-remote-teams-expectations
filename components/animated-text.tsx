@@ -14,7 +14,6 @@ export default function AnimatedText({
   className = "",
   delay = 0,
 }: AnimatedTextProps) {
-  const letters = Array.from(text)
 
   const container = {
     hidden: { opacity: 0, y: 6 },

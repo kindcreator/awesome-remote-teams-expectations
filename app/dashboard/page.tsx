@@ -21,7 +21,6 @@ export default function DashboardPage() {
   
   const { 
     myExpectations, 
-    othersExpectations, 
     expectations,
     isLoading,
     addExpectation,
@@ -29,7 +28,6 @@ export default function DashboardPage() {
   } = useExpectations(userId || undefined)
 
   const activeExpectations = expectations.filter(e => !e.isDone)
-  const completedExpectations = expectations.filter(e => e.isDone)
   const myActiveExpectations = myExpectations.filter(e => !e.isDone)
 
   const historyItems: HistoryItem[] = expectations
