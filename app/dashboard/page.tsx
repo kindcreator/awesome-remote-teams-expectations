@@ -17,7 +17,7 @@ export default function DashboardPage() {
   const { user } = useUser()
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [activeView, setActiveView] = useState<'dashboard' | 'add'>('dashboard')
-  const [showHistory, setShowHistory] = useState(true)
+  const [showHistory, setShowHistory] = useState(false)
   
   const { 
     myExpectations, 
@@ -72,7 +72,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-neutral-50 via-emerald-50/20 to-white">
+    <div className="relative min-h-screen bg-gradient-to-b from-neutral-50 via-emerald-50/20 to-white flex flex-col">
       <ParallaxBackground />
 
       <header className="sticky top-0 z-20 border-b bg-white/80 backdrop-blur">
@@ -95,7 +95,7 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="relative mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 px-4 py-6 md:grid-cols-[280px_minmax(0,1fr)_360px] lg:gap-8">
+      <main className="relative mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 px-4 py-6 md:grid-cols-[280px_minmax(0,1fr)_360px] lg:gap-8 flex-1">
         <nav aria-label="Primary" className="hidden h-fit rounded-2xl border bg-white/90 p-4 shadow-sm backdrop-blur md:block">
           <div className="flex items-center gap-3 rounded-xl bg-gradient-to-r from-emerald-50 to-transparent p-3 ring-1 ring-inset ring-emerald-100/60">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500 text-white shadow-sm">
@@ -349,9 +349,10 @@ function ExpectationCard({
   isOwn?: boolean
 }) {
   return (
-    <article className="group relative overflow-hidden rounded-xl border border-white/50 bg-white/60 p-4 shadow-md backdrop-blur-sm transition-colors transform-gpu transition-transform duration-200 hover:-translate-y-0.5 hover:bg-white/70 hover:shadow-xl focus-visible:-translate-y-0.5 focus-visible:shadow-xl">
+    <article className="group relative overflow-hidden rounded-xl border border-white/50 bg-white/60 p-4 shadow-md backdrop-blur-sm transition-all duration-300 transform-gpu hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-100/50 hover:border-emerald-200/50 focus-visible:-translate-y-0.5 focus-visible:shadow-xl">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-50/0 to-emerald-100/0 opacity-0 transition-opacity duration-300 group-hover:from-emerald-50/50 group-hover:to-emerald-100/30 group-hover:opacity-100" aria-hidden="true" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/70 to-transparent" aria-hidden="true" />
-      <div className="flex items-start gap-3">
+      <div className="relative flex items-start gap-3">
         <Avatar className="h-8 w-8 ring-1 ring-neutral-200">
           <AvatarImage
             src={item.user.avatarUrl ?? "/placeholder.svg?height=64&width=64&query=team%20member%20avatar"}

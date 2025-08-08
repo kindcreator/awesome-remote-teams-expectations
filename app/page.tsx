@@ -16,7 +16,7 @@ export default async function Home() {
   }
 
   return (
-    <main className="relative min-h-[100dvh] overflow-hidden bg-white">
+    <main className="relative min-h-[100dvh] overflow-hidden bg-white flex flex-col">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10"
@@ -47,7 +47,8 @@ export default async function Home() {
         </div>
       </header>
 
-      <section className="mx-auto max-w-7xl px-6 py-20 md:py-28">
+      <div className="flex-1">
+        <section className="mx-auto max-w-7xl px-6 py-20 md:py-28">
         <div className="grid items-center gap-12 md:grid-cols-2 md:gap-16">
           <div className="relative">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1 text-xs text-emerald-700 shadow-sm">
@@ -185,6 +186,7 @@ export default async function Home() {
           </Reveal>
         </div>
       </section>
+      </div>
 
       <Footer />
     </main>
