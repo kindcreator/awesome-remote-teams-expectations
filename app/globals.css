@@ -3,6 +3,21 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Prevent layout shift when scrollbar appears on Windows/Linux */
+/* This reserves space for the scrollbar but only when content might overflow */
+@supports (scrollbar-gutter: stable) {
+  body {
+    scrollbar-gutter: stable;
+  }
+}
+
+/* Alternative: Always show scrollbar (less elegant but works everywhere) */
+@media (min-width: 768px) {
+  body {
+    overflow-y: scroll;
+  }
+}
+
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);

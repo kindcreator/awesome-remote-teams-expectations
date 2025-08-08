@@ -1,14 +1,14 @@
 import { seedDemoData } from './seed/demo'
-import { seedImpressReviewer } from './seed/impress-reviewer'
+import { seedDemoReviewer } from './seed/demo-reviewer'
 
 async function main() {
   console.log('🌱 Starting database seed...')
   
-  const isImpressMode = process.argv.includes('--impress-reviewer')
+  const isDemoMode = process.argv.includes('--demo')
   
   try {
-    if (isImpressMode) {
-      await seedImpressReviewer()
+    if (isDemoMode) {
+      await seedDemoReviewer()
     } else {
       await seedDemoData()
     }

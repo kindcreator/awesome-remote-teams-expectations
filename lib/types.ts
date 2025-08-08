@@ -1,5 +1,6 @@
 export type User = {
   id: string
+  clerkUserId: string
   name: string
   email: string
   avatarUrl: string | null

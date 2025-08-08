@@ -11,14 +11,15 @@ const baseURL = `http://localhost:${PORT}`;
 export default defineConfig({
   testDir: path.join(__dirname, "tests/api"),
   outputDir: "test-results/api/",
-  timeout: 10000, // 10 seconds for API tests
+  timeout: 30000, // 30 seconds for API tests (to account for server startup)
   
   // Global setup to prepare test database
   globalSetup: path.join(__dirname, "tests/global-setup.ts"),
   
   webServer: {
-    command: "npm run dev",
-    url: baseURL,
+    command: "next dev",
+    port: Number(PORT),
+    timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
   },
   use: {

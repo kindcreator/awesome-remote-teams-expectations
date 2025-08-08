@@ -19,8 +19,8 @@ db-studio:
 db-seed:
 	npm run db:seed
 
-db-impress:
-	npm run db:seed:impress
+db-demo:
+	npm run db:seed:demo
 
 db-sync:
 	npm run db:sync-clerk
@@ -127,7 +127,7 @@ help:
 	@echo "  make db-migrate       - Run migrations"
 	@echo "  make db-studio        - Open Drizzle Studio"
 	@echo "  make db-seed          - Seed database with test data"
-	@echo "  make db-impress       - Seed with Yaroslav's team for review"
+	@echo "  make db-demo          - Seed with demo team for review"
 	@echo "  make db-sync          - Sync users from Clerk to database"
 	@echo "  make db-reset         - Reset and seed database"
 	@echo ""

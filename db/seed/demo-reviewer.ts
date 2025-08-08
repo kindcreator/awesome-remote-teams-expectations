@@ -1,6 +1,7 @@
 import { db } from '../index'
 import { users, expectations } from '../schema'
 import { clearDatabase, createExpectation, DAYS_IN_MS } from './common'
+import { ensureDemoUser } from './ensure-demo-user'
 
 // Avatar URLs from environment variables (for security)
 const YAROSLAV_AVATARS = [
@@ -33,10 +34,11 @@ const YAROSLAV_EXPECTATIONS = [
   // Current sprint - Dashboard implementation review (Ticket 3)
   { title: 'Review dashboard component architecture and state management', isDone: true, daysAgo: 3, assignTo: 'yaroslav' },
   { title: 'Evaluate CRUD operations and API design', isDone: true, daysAgo: 2, assignTo: 'not-yaroslav' },
+  
+  // ACTIVE TASKS - One for each team member
   { title: 'Deploy staging environment on Vercel for client demo', isDone: false, daysFromNow: 1, assignTo: 'reviewer' },
   { title: 'Conduct final code review and performance audit', isDone: false, daysFromNow: 3, assignTo: 'yaroslav' },
-  { title: 'Prepare hiring recommendation based on test task', isDone: false, daysFromNow: 5, assignTo: 'yaroslav' },
-  { title: 'Schedule technical interview with candidate', isDone: false, daysFromNow: 7, assignTo: 'not-yaroslav' },
+  { title: 'Prepare hiring recommendation based on test task', isDone: false, daysFromNow: 5, assignTo: 'not-yaroslav' },
 ]
 
 // Networking/referral tasks for akhavr (Quantum Wiring / DeSci enthusiast)
@@ -48,38 +50,57 @@ const AKHAVR_EXPECTATIONS = [
   { title: 'Prototype quantum computing interface for biomarker analysis', isDone: true, daysAgo: 10 },
   { title: 'Implement blockchain-based research data sharing protocol', isDone: true, daysAgo: 5 },
   { title: 'Be awesome (as always)', isDone: true, daysAgo: 1 },
+  // Active task for akhavr
+  { title: 'Evaluate Web3 integration for decentralized science platform', isDone: false, daysFromNow: 4 },
 ]
 
-export async function seedImpressReviewer() {
+export async function seedDemoReviewer() {
   await clearDatabase()
   
   console.log('🎯 Seeding review team with networking chain...')
   
+  // Ensure the demo/E2E user exists (after clearing)
+  const demoUser = await ensureDemoUser()
+  
+  // Add an active expectation for the demo user if they exist
+  if (demoUser) {
+    const demoExpectation = createExpectation(
+      demoUser.id,
+      'Complete product demo and gather feedback',
+      {
+        daysFromNow: 2,
+        isDone: false
+      }
+    )
+    await db.insert(expectations).values(demoExpectation)
+    console.log('✅ Added active expectation for demo user')
+  }
+  
   // Create the networking chain: akhavr -> Yaroslav -> 42 Coffee Cups team
   const teamMembers = [
     {
-      name: 'akhavr (Anarchist)',
+      name: 'akhavr (Anarchist 🔪)',
       email: 'akhavr@network.dev',
       clerkUserId: 'user_akhavr_000',
-      avatarUrl: AKHAVR_AVATAR || 'https://api.dicebear.com/7.x/avataaars/svg?seed=akhavr'
+      avatarUrl: AKHAVR_AVATAR || 'https://api.dicebear.com/7.x/lorelei/svg?seed=akhavr'
     },
     {
-      name: 'TotallyNotEvilTwit Luzin (CTO)',
+      name: 'TotallyNotEvilTwit Luzin (😈)',
       email: 'yaroslav@42coffeecups.com',
       clerkUserId: 'user_yaroslav_001',
-      avatarUrl: YAROSLAV_AVATARS[0] || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Yaroslav'
+      avatarUrl: YAROSLAV_AVATARS[0] || 'https://api.dicebear.com/7.x/lorelei/svg?seed=Yaroslav'
     },
     {
-      name: 'Nizul (Tech Lead)',
+      name: 'Nizul (Tech Lead 🧠 )',
       email: 'tech.lead@42coffeecups.com',
       clerkUserId: 'user_techlead_002',
-      avatarUrl: YAROSLAV_AVATARS[1] || 'https://api.dicebear.com/7.x/avataaars/svg?seed=TechLead'
+      avatarUrl: YAROSLAV_AVATARS[1] || 'https://api.dicebear.com/7.x/lorelei/svg?seed=TechLead'
     },
     {
-      name: 'Yaroslav L. (Senior Dev)',
+      name: 'Yaroslav L. (Senior Dev 🤓)',
       email: 'senior.dev@42coffeecups.com',
       clerkUserId: 'user_senior_003',
-      avatarUrl: YAROSLAV_AVATARS[2] || 'https://api.dicebear.com/7.x/avataaars/svg?seed=SeniorDev'
+      avatarUrl: YAROSLAV_AVATARS[2] || 'https://api.dicebear.com/7.x/lorelei/svg?seed=SeniorDev'
     }
   ]
   
@@ -99,11 +120,18 @@ export async function seedImpressReviewer() {
   
   // Find team members for task assignment
   const akhavr = insertedUsers.find(u => u.name.includes('akhavr'))
-  const yaroslav = insertedUsers.find(u => u.name.includes('(CTO)'))
-  const techLead = insertedUsers.find(u => u.name.includes('(Tech Lead)'))
-  const seniorDev = insertedUsers.find(u => u.name.includes('(Senior Dev)'))
+  const yaroslav = insertedUsers.find(u => u.name.includes('TotallyNotEvilTwit'))
+  const techLead = insertedUsers.find(u => u.name.includes('Tech Lead'))
+  const seniorDev = insertedUsers.find(u => u.name.includes('Senior Dev'))
   
-  // Add akhavr's networking expectations
+  console.log('User mapping:', {
+    akhavr: akhavr?.name,
+    yaroslav: yaroslav?.name,
+    techLead: techLead?.name,
+    seniorDev: seniorDev?.name
+  })
+  
+  // Add akhavr's networking expectations - use hardcoded values directly
   if (akhavr) {
     AKHAVR_EXPECTATIONS.forEach(exp => {
       allExpectations.push(createExpectation(
@@ -111,16 +139,14 @@ export async function seedImpressReviewer() {
         exp.title,
         {
           daysAgo: exp.daysAgo,
-          isDone: exp.isDone
+          daysFromNow: exp.daysFromNow,
+          isDone: exp.isDone !== undefined ? exp.isDone : true
         }
       ))
     })
   }
   
-  // Track which users have active expectations (only one allowed per user)
-  const usersWithActiveExpectations = new Set()
-  
-  // Add project expectations for Yaroslav's team
+  // Add project expectations for Yaroslav's team - use hardcoded values directly
   YAROSLAV_EXPECTATIONS.forEach(exp => {
     let userId
     switch(exp.assignTo) {
@@ -139,24 +165,13 @@ export async function seedImpressReviewer() {
     
     if (!userId) return
     
-    // Enforce one active expectation per user constraint
-    let isDone = exp.isDone !== undefined ? exp.isDone : true
-    if (!isDone) {
-      if (usersWithActiveExpectations.has(userId)) {
-        // User already has an active expectation, mark this one as done
-        isDone = true
-      } else {
-        usersWithActiveExpectations.add(userId)
-      }
-    }
-    
     allExpectations.push(createExpectation(
       userId,
       exp.title,
       {
         daysAgo: exp.daysAgo,
         daysFromNow: exp.daysFromNow,
-        isDone
+        isDone: exp.isDone !== undefined ? exp.isDone : true
       }
     ))
   })
@@ -165,6 +180,25 @@ export async function seedImpressReviewer() {
   if (allExpectations.length > 0) {
     await db.insert(expectations).values(allExpectations)
     console.log(`Added ${allExpectations.length} project expectations`)
+  }
+  
+  // Log summary of active expectations per user
+  console.log('\n📊 Active expectations summary:')
+  const allUsers = demoUser ? [demoUser, ...insertedUsers] : insertedUsers
+  
+  // Debug: Show all active expectations
+  console.log('\nActive tasks being created:')
+  allExpectations.filter(e => !e.isDone).forEach(e => {
+    const user = allUsers.find(u => u.id === e.userId)
+    console.log(`  - ${user?.name}: "${e.title}"`)
+  })
+  
+  // Count active per user
+  for (const user of allUsers) {
+    const userActiveExpectations = allExpectations.filter(e => e.userId === user.id && !e.isDone)
+    const demoActiveCount = demoUser?.id === user.id ? 1 : 0
+    const totalActive = userActiveExpectations.length + demoActiveCount
+    console.log(`   ${user.name}: ${totalActive} active expectation(s)`)
   }
   
   console.log('✨ Yaroslav\'s team ready for review!')

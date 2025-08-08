@@ -2,6 +2,7 @@ import { seed } from 'drizzle-seed'
 import { db } from '../index'
 import { users, expectations } from '../schema'
 import { clearDatabase, createExpectation, generateClerkUserId, DAYS_IN_MS } from './common'
+import { ensureDemoUser } from './ensure-demo-user'
 
 const DETERMINISTIC_SEED = 5318008
 
@@ -38,6 +39,9 @@ export async function seedDemoData() {
   await clearDatabase()
   
   console.log('🎲 Seeding database with random demo data...')
+  
+  // Ensure the demo/E2E user exists (after clearing)
+  const demoUser = await ensureDemoUser()
   
   // Seed users with drizzle-seed
   await seed(db, { users }, { seed: DETERMINISTIC_SEED }).refine((f) => ({
@@ -82,6 +86,20 @@ export async function seedDemoData() {
       
       await db.insert(expectations).values(expectation)
     }
+  }
+  
+  // Add an active expectation for the demo user if they exist
+  if (demoUser) {
+    const demoExpectation = createExpectation(
+      demoUser.id,
+      'Explore the awesome remote teams platform',
+      {
+        daysFromNow: 3,
+        isDone: false
+      }
+    )
+    await db.insert(expectations).values(demoExpectation)
+    console.log('✅ Added active expectation for demo user')
   }
   
   console.log('✅ Demo data seeded successfully!')
