@@ -1,55 +1,137 @@
-import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
-import Link from 'next/link'
+'use client'
 
-export default async function DashboardPage() {
-  const { userId } = await auth()
+import { useState } from 'react'
+import { useAuth, useUser } from '@clerk/nextjs'
+import { type HistoryItem } from "@/components/history-timeline"
+import ParallaxBackground from "@/components/parallax-background"
+import ExpectationModal from "@/components/expectation-modal"
+import Footer from "@/components/footer"
+import { useExpectations } from '@/hooks/useExpectations'
+import DashboardHeader from '@/components/dashboard/dashboard-header'
+import SidebarNav from '@/components/dashboard/sidebar-nav'
+import MobileMenu from '@/components/layout/mobile-menu'
+import MyExpectationsSection from '@/components/dashboard/my-expectations-section'
+import TeamExpectationsSection from '@/components/dashboard/team-expectations-section'
+import HistorySection from '@/components/dashboard/history-section'
+
+export default function DashboardPage() {
+  const { userId } = useAuth()
+  const { user } = useUser()
+  const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [activeView, setActiveView] = useState<'dashboard' | 'add'>('dashboard')
+  const [showHistory, setShowHistory] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   
-  if (!userId) {
-    redirect('/sign-in')
+  const { 
+    myExpectations, 
+    expectations,
+    isLoading,
+    addExpectation,
+    markAsDone
+  } = useExpectations(userId || undefined)
+
+  const activeExpectations = expectations.filter(e => !e.isDone)
+  const myActiveExpectations = myExpectations.filter(e => !e.isDone)
+  const teamActiveExpectations = activeExpectations.filter(e => !userId || e.user?.clerkUserId !== userId)
+
+  const historyItems: HistoryItem[] = myExpectations
+    .filter(e => e.isDone)
+    .map(e => ({
+      id: e.id,
+      title: `Completed: ${e.title}`,
+      date: e.doneAt ? new Date(e.doneAt) : new Date(),
+      user: {
+        id: e.userId,
+        name: user?.fullName || user?.username || 'You',
+        email: user?.primaryEmailAddress?.emailAddress || '',
+        avatarUrl: user?.imageUrl || null
+      },
+      status: 'completed' as const
+    }))
+    .concat(
+      myExpectations
+        .filter(e => !e.isDone)
+        .map(e => ({
+          id: e.id,
+          title: `${e.title}`,
+          date: new Date(e.createdAt),
+          user: {
+            id: e.userId,
+            name: user?.fullName || user?.username || 'You',
+            email: user?.primaryEmailAddress?.emailAddress || '',
+            avatarUrl: user?.imageUrl || null
+          },
+          status: 'created' as const
+        }))
+    )
+    .sort((a, b) => b.date.getTime() - a.date.getTime())
+    .slice(0, 10)
+
+  async function handleCreateExpectation(data: { title: string; estimatedCompletion: string }) {
+    const date = new Date(data.estimatedCompletion)
+    await addExpectation(data.title, date)
+    setIsCreateOpen(false)
   }
-  
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
-        
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="bg-white p-6 rounded-lg shadow-md border">
-            <h2 className="text-xl font-semibold mb-4">Current Expectations</h2>
-            <p className="text-gray-600 mb-4">
-              View and manage your current work commitments
-            </p>
-            <Link
-              href="/expectations"
-              className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Manage Expectations
-            </Link>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-md border">
-            <h2 className="text-xl font-semibold mb-4">History</h2>
-            <p className="text-gray-600 mb-4">
-              Review your past expectations and achievements
-            </p>
-            <Link
-              href="/history"
-              className="inline-flex items-center justify-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
-            >
-              View History
-            </Link>
-          </div>
+    <div className="relative min-h-screen bg-gradient-to-b from-neutral-50 via-emerald-50/20 to-white flex flex-col">
+      <ParallaxBackground />
+
+      <DashboardHeader 
+        mobileMenuOpen={mobileMenuOpen}
+        setMobileMenuOpen={setMobileMenuOpen}
+      />
+
+      <MobileMenu
+        mobileMenuOpen={mobileMenuOpen}
+        setMobileMenuOpen={setMobileMenuOpen}
+        activeView={activeView}
+        showHistory={showHistory}
+        onDashboardClick={() => setActiveView('dashboard')}
+        onAddClick={() => setIsCreateOpen(true)}
+        onHistoryClick={() => setShowHistory(!showHistory)}
+      />
+
+      <main className="relative mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 px-4 py-6 md:grid-cols-[280px_minmax(0,1fr)] lg:grid-cols-[280px_minmax(0,1fr)_360px] lg:gap-8 flex-1">
+        <SidebarNav
+          activeView={activeView}
+          showHistory={showHistory}
+          onDashboardClick={() => setActiveView('dashboard')}
+          onAddClick={() => setIsCreateOpen(true)}
+          onHistoryClick={() => setShowHistory(!showHistory)}
+        />
+
+        <div className="space-y-4">
+          <MyExpectationsSection
+            activeView={activeView}
+            myActiveExpectations={myActiveExpectations}
+            user={user}
+            onAddClick={() => setIsCreateOpen(true)}
+            onMarkAsDone={markAsDone}
+          />
+
+          <HistorySection
+            showHistory={showHistory}
+            historyItems={historyItems}
+          />
         </div>
-        
-        <div className="mt-8 p-6 bg-blue-50 rounded-lg">
-          <h3 className="text-lg font-semibold mb-2">Welcome to Remote Teams Expectations</h3>
-          <p className="text-gray-700">
-            This platform helps you manage and communicate your work commitments effectively.
-            Set clear expectations, track progress, and maintain transparency with your team.
-          </p>
-        </div>
-      </div>
+
+        <ExpectationModal 
+          open={isCreateOpen} 
+          onOpenChange={setIsCreateOpen} 
+          mode="create"
+          onSubmit={handleCreateExpectation}
+        />
+
+        <TeamExpectationsSection
+          teamActiveExpectations={teamActiveExpectations}
+          isLoading={isLoading}
+          userId={userId || undefined}
+          onMarkAsDone={markAsDone}
+        />
+      </main>
+
+      <Footer />
     </div>
   )
 }

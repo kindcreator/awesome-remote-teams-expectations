@@ -16,10 +16,17 @@ export default defineConfig({
   testDir: path.join(__dirname, "tests/e2e"),
   outputDir: "test-results/",
   timeout: 30000, // 30 seconds global timeout
+  
+  // Global setup to prepare test database
+  globalSetup: path.join(__dirname, "tests/global-setup.ts"),
+  
   webServer: {
-    command: "npm run dev",
-    url: baseURL,
+    command: "next dev",
+    port: Number(PORT),
+    timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
+    // This will reuse the existing server if it's already running on the port
+    // If not, it will start a new one. If port is busy by non-Next app, tests will fail.
   },
 
   use: {
@@ -45,6 +52,15 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         // Use prepared auth state for tests that need pre-authentication
+        storageState: "playwright/.clerk/user.json",
+      },
+      dependencies: ["setup"],
+    },
+    {
+      name: "expectations",
+      testMatch: /expectations-list\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
         storageState: "playwright/.clerk/user.json",
       },
       dependencies: ["setup"],
