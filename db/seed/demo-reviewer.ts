@@ -76,25 +76,25 @@ export async function seedDemoReviewer() {
   // Create the networking chain: akhavr -> Yaroslav -> 42 Coffee Cups team
   const teamMembers = [
     {
-      name: 'akhavr (Anarchist)',
+      name: 'akhavr (Anarchist 🔪)',
       email: 'akhavr@network.dev',
       clerkUserId: 'user_akhavr_000',
       avatarUrl: AKHAVR_AVATAR || 'https://api.dicebear.com/7.x/lorelei/svg?seed=akhavr'
     },
     {
-      name: 'TotallyNotEvilTwit Luzin (CTO)',
+      name: 'TotallyNotEvilTwit Luzin (😈)',
       email: 'yaroslav@42coffeecups.com',
       clerkUserId: 'user_yaroslav_001',
       avatarUrl: YAROSLAV_AVATARS[0] || 'https://api.dicebear.com/7.x/lorelei/svg?seed=Yaroslav'
     },
     {
-      name: 'Nizul (Tech Lead)',
+      name: 'Nizul (Tech Lead 🧠 )',
       email: 'tech.lead@42coffeecups.com',
       clerkUserId: 'user_techlead_002',
       avatarUrl: YAROSLAV_AVATARS[1] || 'https://api.dicebear.com/7.x/lorelei/svg?seed=TechLead'
     },
     {
-      name: 'Yaroslav L. (Senior Dev)',
+      name: 'Yaroslav L. (Senior Dev 🤓)',
       email: 'senior.dev@42coffeecups.com',
       clerkUserId: 'user_senior_003',
       avatarUrl: YAROSLAV_AVATARS[2] || 'https://api.dicebear.com/7.x/lorelei/svg?seed=SeniorDev'
