@@ -47,7 +47,7 @@ export default function AnimatedText({
     <div className="relative">
       <motion.h1
         className={cn(
-          "bg-gradient-to-b from-emerald-700 to-emerald-600 bg-clip-text text-transparent dark:from-emerald-300 dark:to-emerald-500",
+          "text-emerald-700",
           "tracking-tight",
           className
         )}
