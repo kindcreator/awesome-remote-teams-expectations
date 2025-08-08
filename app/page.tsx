@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Reveal from "@/components/reveal"
 import AnimatedText from "@/components/animated-text"
+import Footer from "@/components/footer"
 
 export default async function Home() {
   const { userId } = await auth()
@@ -184,6 +185,8 @@ export default async function Home() {
           </Reveal>
         </div>
       </section>
+
+      <Footer />
     </main>
   )
 }

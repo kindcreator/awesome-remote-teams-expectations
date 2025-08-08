@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import HistoryTimeline, { type HistoryItem } from "@/components/history-timeline"
 import ParallaxBackground from "@/components/parallax-background"
 import ExpectationModal from "@/components/expectation-modal"
+import Footer from "@/components/footer"
 import { useExpectations } from '@/hooks/useExpectations'
 
 export default function DashboardPage() {
@@ -94,7 +95,7 @@ export default function DashboardPage() {
       </header>
 
       <main className="relative mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 px-4 py-6 md:grid-cols-[280px_minmax(0,1fr)_360px] lg:gap-8">
-        <nav aria-label="Primary" className="hidden rounded-2xl border bg-white/90 p-4 shadow-sm backdrop-blur md:block">
+        <nav aria-label="Primary" className="hidden h-fit rounded-2xl border bg-white/90 p-4 shadow-sm backdrop-blur md:block">
           <div className="flex items-center gap-3 rounded-xl bg-gradient-to-r from-emerald-50 to-transparent p-3 ring-1 ring-inset ring-emerald-100/60">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500 text-white shadow-sm">
               <Target className="h-5 w-5" aria-hidden="true" />
@@ -240,11 +241,7 @@ export default function DashboardPage() {
         </aside>
       </main>
 
-      <footer className="mx-auto w-full max-w-7xl px-4 pb-8">
-        <div className="rounded-xl border bg-white/70 p-3 text-center text-xs text-neutral-500">
-          Keep your team aligned with clear expectations and delivery dates.
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
