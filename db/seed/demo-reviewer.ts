@@ -51,7 +51,7 @@ const AKHAVR_EXPECTATIONS = [
   { title: 'Implement blockchain-based research data sharing protocol', isDone: true, daysAgo: 5 },
   { title: 'Be awesome (as always)', isDone: true, daysAgo: 1 },
   // Active task for akhavr
-  { title: 'Evaluate Web3 integration for decentralized science platform', isDone: false, daysFromNow: 4 },
+  { title: 'Watch it burn 🔥 ', isDone: false, daysFromNow: 4 },
 ]
 
 export async function seedDemoReviewer() {
