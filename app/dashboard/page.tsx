@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useAuth, useUser, UserButton } from '@clerk/nextjs'
-import { CalendarDays, LayoutDashboard, ListChecks, PlusCircle, Search, Target, CheckCircle2, Users, History } from 'lucide-react'
+import { CalendarDays, LayoutDashboard, ListChecks, PlusCircle, Search, Target, CheckCircle2, Users, History, Menu, X } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
@@ -18,6 +18,7 @@ export default function DashboardPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [activeView, setActiveView] = useState<'dashboard' | 'add'>('dashboard')
   const [showHistory, setShowHistory] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   
   const { 
     myExpectations, 
@@ -76,10 +77,17 @@ export default function DashboardPage() {
       <header className="sticky top-0 z-20 border-b bg-white/80 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-b from-emerald-500 to-emerald-600 text-white shadow-sm">
               <Target className="h-4 w-4" aria-hidden="true" />
             </div>
-            <span className="text-sm font-semibold tracking-tight">Remote Teams Expectations</span>
+            <span className="hidden sm:inline text-sm font-semibold tracking-tight">Remote Teams Expectations</span>
           </div>
           <UserButton 
             afterSignOutUrl="/"
@@ -93,7 +101,59 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="relative mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 px-4 py-6 md:grid-cols-[280px_minmax(0,1fr)_360px] lg:gap-8 flex-1">
+      {/* Mobile menu overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-30 md:hidden">
+          <div className="fixed inset-0 bg-black/20" onClick={() => setMobileMenuOpen(false)} />
+          <nav className="fixed left-0 top-14 bottom-0 w-72 bg-white/95 backdrop-blur border-r shadow-xl p-4 overflow-y-auto">
+            <div className="flex items-center gap-3 rounded-xl bg-gradient-to-r from-emerald-50 to-transparent p-3 ring-1 ring-inset ring-emerald-100/60 mb-4">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500 text-white shadow-sm">
+                <Target className="h-5 w-5" aria-hidden="true" />
+              </div>
+              <div>
+                <div className="text-sm font-semibold leading-5">Team</div>
+                <div className="text-xs leading-4 text-neutral-500">Expectations</div>
+              </div>
+            </div>
+
+            <ul className="space-y-1.5">
+              <SidebarItem 
+                icon={LayoutDashboard} 
+                label="Dashboard" 
+                active={activeView === 'dashboard'}
+                onClick={() => {
+                  setActiveView('dashboard')
+                  setMobileMenuOpen(false)
+                }}
+              />
+              <SidebarItem 
+                icon={PlusCircle} 
+                label="Add New" 
+                active={activeView === 'add'}
+                onClick={() => {
+                  setIsCreateOpen(true)
+                  setMobileMenuOpen(false)
+                }} 
+              />
+              <SidebarItem 
+                icon={ListChecks} 
+                label="History" 
+                active={showHistory}
+                onClick={() => {
+                  setShowHistory(!showHistory)
+                  setMobileMenuOpen(false)
+                }}
+              />
+            </ul>
+
+            <div className="mt-5 rounded-xl border bg-neutral-50 p-3 text-xs text-neutral-600">
+              Keep your team aligned with clear, time&#45;bound expectations.
+            </div>
+          </nav>
+        </div>
+      )}
+
+      <main className="relative mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 px-4 py-6 md:grid-cols-[280px_minmax(0,1fr)] lg:grid-cols-[280px_minmax(0,1fr)_360px] lg:gap-8 flex-1">
         <nav aria-label="Primary" className="hidden h-fit rounded-2xl border bg-white/90 p-4 shadow-sm backdrop-blur md:block">
           <div className="flex items-center gap-3 rounded-xl bg-gradient-to-r from-emerald-50 to-transparent p-3 ring-1 ring-inset ring-emerald-100/60">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500 text-white shadow-sm">
@@ -131,15 +191,15 @@ export default function DashboardPage() {
           </div>
         </nav>
 
-        <section aria-labelledby="dashboard-title" className="space-y-4">
-          <div className="relative overflow-hidden rounded-2xl border border-white/50 bg-white/60 p-6 shadow-md backdrop-blur-md">
+        <section aria-labelledby="dashboard-title" className="space-y-4 md:col-span-1 lg:col-span-1">
+          <div className="relative overflow-hidden rounded-2xl border border-white/50 bg-white/60 p-4 sm:p-6 shadow-md backdrop-blur-md">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent" aria-hidden="true" />
             <div className="flex items-center justify-between">
-              <div>
-                <h1 id="dashboard-title" className="text-xl font-semibold leading-7 tracking-tight">
+              <div className="min-w-0">
+                <h1 id="dashboard-title" className="text-lg sm:text-xl font-semibold leading-7 tracking-tight truncate">
                   Dashboard
                 </h1>
-                <p className="mt-1 text-sm leading-6 text-neutral-600">
+                <p className="mt-1 text-xs sm:text-sm leading-5 sm:leading-6 text-neutral-600">
                   A clear overview of current expectations.
                 </p>
               </div>
@@ -147,7 +207,7 @@ export default function DashboardPage() {
           </div>
 
           {activeView === 'dashboard' && myActiveExpectations.length === 0 && (
-            <div className="rounded-2xl border border-white/50 bg-white/60 p-10 shadow-md backdrop-blur-md">
+            <div className="rounded-2xl border border-white/50 bg-white/60 p-6 sm:p-10 shadow-md backdrop-blur-md">
               <EmptyState onAddClick={() => setIsCreateOpen(true)} />
             </div>
           )}
@@ -197,8 +257,8 @@ export default function DashboardPage() {
           />
         </section>
 
-        <aside aria-labelledby="team-expectations-title" className="space-y-4">
-          <div className="rounded-2xl border border-white/50 bg-white/60 p-6 shadow-md backdrop-blur-md">
+        <aside aria-labelledby="team-expectations-title" className="space-y-4 md:col-span-2 lg:col-span-1">
+          <div className="rounded-2xl border border-white/50 bg-white/60 p-4 sm:p-6 shadow-md backdrop-blur-md">
             <div className="flex items-center gap-2 mb-1">
               <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100">
                 <Users className="h-4 w-4 text-emerald-600" />
@@ -299,11 +359,11 @@ function SidebarItem({
 
 function EmptyState({ onAddClick }: { onAddClick: () => void }) {
   return (
-    <div className="relative mx-auto grid max-w-2xl place-items-center gap-3 rounded-xl border border-dashed bg-gradient-to-b from-neutral-50 to-white px-8 py-16 text-center">
+    <div className="relative mx-auto grid max-w-2xl place-items-center gap-3 rounded-xl border border-dashed bg-gradient-to-b from-neutral-50 to-white px-6 py-12 sm:px-8 sm:py-16 text-center">
       <div className="relative">
         <div className="absolute inset-0 rounded-full bg-emerald-300/30 blur-2xl" aria-hidden="true" />
-        <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-emerald-200">
-          <CheckCircle2 className="h-8 w-8 text-emerald-600" aria-hidden="true" />
+        <div className="relative mx-auto flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-emerald-200">
+          <CheckCircle2 className="h-7 w-7 sm:h-8 sm:w-8 text-emerald-600" aria-hidden="true" />
         </div>
       </div>
       <h3 className="text-base font-semibold leading-7 text-neutral-900">No Active Expectation</h3>
