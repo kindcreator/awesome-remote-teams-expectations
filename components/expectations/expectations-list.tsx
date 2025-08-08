@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -15,7 +15,6 @@ interface ExpectationsListProps {
 export function ExpectationsList({ expectations: initialExpectations }: ExpectationsListProps) {
   const [expectations, setExpectations] = useState(initialExpectations)
   const [isLoading, setIsLoading] = useState(false)
-  const [isInitialLoad, setIsInitialLoad] = useState(false)
 
   const refreshData = async () => {
     setIsLoading(true)

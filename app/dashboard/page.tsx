@@ -17,8 +17,7 @@ export default function DashboardPage() {
     expectations,
     isLoading,
     addExpectation,
-    markAsDone,
-    refresh 
+    markAsDone
   } = useExpectations(userId || undefined)
 
   const activeExpectations = expectations.filter(e => !e.isDone)
@@ -43,7 +42,7 @@ export default function DashboardPage() {
             <div>
               <h1 className="text-3xl font-bold mb-2">Team Dashboard</h1>
               <p className="text-muted-foreground">
-                Track what everyone is working on and when they'll deliver
+                Track what everyone is working on and when they&apos;ll deliver
               </p>
             </div>
 

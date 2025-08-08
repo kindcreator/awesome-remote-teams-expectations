@@ -1,6 +1,6 @@
 import { db } from '@/db'
 import { expectations, users } from '@/db/schema'
-import { eq, and, asc, desc } from 'drizzle-orm'
+import { eq, and, asc } from 'drizzle-orm'
 import type { ExpectationWithUser } from '@/lib/types'
 
 export class ExpectationsService {
