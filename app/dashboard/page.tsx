@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useAuth, useUser, UserButton } from '@clerk/nextjs'
-import { CalendarDays, LayoutDashboard, ListChecks, PlusCircle, Search, Target, CheckCircle2 } from 'lucide-react'
+import { CalendarDays, LayoutDashboard, ListChecks, PlusCircle, Search, Target, CheckCircle2, Users, History } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
@@ -16,7 +16,8 @@ export default function DashboardPage() {
   const { userId } = useAuth()
   const { user } = useUser()
   const [isCreateOpen, setIsCreateOpen] = useState(false)
-  const [activeView, setActiveView] = useState<'dashboard' | 'add' | 'history'>('dashboard')
+  const [activeView, setActiveView] = useState<'dashboard' | 'add'>('dashboard')
+  const [showHistory, setShowHistory] = useState(true)
   
   const { 
     myExpectations, 
@@ -122,8 +123,8 @@ export default function DashboardPage() {
             <SidebarItem 
               icon={ListChecks} 
               label="History" 
-              active={activeView === 'history'}
-              onClick={() => setActiveView('history')}
+              active={showHistory}
+              onClick={() => setShowHistory(!showHistory)}
             />
           </ul>
 
@@ -138,12 +139,10 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 id="dashboard-title" className="text-xl font-semibold leading-7 tracking-tight">
-                  {activeView === 'dashboard' && 'Dashboard'}
-                  {activeView === 'history' && 'History'}
+                  Dashboard
                 </h1>
                 <p className="mt-1 text-sm leading-6 text-neutral-600">
-                  {activeView === 'dashboard' && 'A clear overview of current expectations.'}
-                  {activeView === 'history' && 'Review what the team has accomplished.'}
+                  A clear overview of current expectations.
                 </p>
               </div>
             </div>
@@ -177,10 +176,15 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {(activeView === 'dashboard' || activeView === 'history') && (
+          {showHistory && (
             <div className="rounded-2xl border border-white/50 bg-white/60 p-6 shadow-md backdrop-blur-md">
               <div className="mb-4">
-                <h2 className="text-base font-semibold tracking-tight">Recent History</h2>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100">
+                    <History className="h-4 w-4 text-emerald-600" />
+                  </div>
+                  <h2 className="text-base font-semibold tracking-tight">Recent History</h2>
+                </div>
                 <p className="mt-1 text-sm text-neutral-600">A readable record of your latest expectation activity.</p>
               </div>
               <HistoryTimeline items={historyItems} />
@@ -197,9 +201,14 @@ export default function DashboardPage() {
 
         <aside aria-labelledby="team-expectations-title" className="space-y-4">
           <div className="rounded-2xl border border-white/50 bg-white/60 p-6 shadow-md backdrop-blur-md">
-            <h2 id="team-expectations-title" className="text-base font-semibold leading-7 tracking-tight">
-              Team Expectations
-            </h2>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100">
+                <Users className="h-4 w-4 text-emerald-600" />
+              </div>
+              <h2 id="team-expectations-title" className="text-base font-semibold leading-7 tracking-tight">
+                Team Expectations
+              </h2>
+            </div>
 
             <div className="mt-4">
               <div className="relative">
