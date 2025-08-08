@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth, useUser } from '@clerk/nextjs'
+import { useAuth, useUser, UserButton } from '@clerk/nextjs'
 import { CalendarDays, LayoutDashboard, ListChecks, PlusCircle, Search, Target, CheckCircle2 } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
@@ -81,7 +81,15 @@ export default function DashboardPage() {
             </div>
             <span className="text-sm font-semibold tracking-tight">Remote Teams Expectations</span>
           </div>
-          <span className="sr-only">User Menu</span>
+          <UserButton 
+            afterSignOutUrl="/"
+            appearance={{
+              elements: {
+                userButtonPopoverCard: "shadow-lg",
+                userButtonPopoverActionButton: "hover:bg-gray-100"
+              }
+            }}
+          />
         </div>
       </header>
 
