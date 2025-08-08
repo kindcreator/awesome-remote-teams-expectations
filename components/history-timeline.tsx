@@ -108,12 +108,13 @@ function TimelineRow({
         )}
       </div>
 
-      <Card className="relative overflow-hidden border border-white/50 bg-white/60 backdrop-blur-sm shadow-md transition-colors transform-gpu transition-transform duration-200 hover:-translate-y-0.5 hover:bg-white/70 hover:shadow-xl focus-visible:-translate-y-0.5 focus-visible:shadow-xl cursor-pointer">
+      <Card className="group relative overflow-hidden border border-white/50 bg-white/60 backdrop-blur-sm shadow-md transition-all duration-300 transform-gpu hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-100/50 hover:border-emerald-200/50 focus-visible:-translate-y-0.5 focus-visible:shadow-xl cursor-pointer">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-50/0 to-emerald-100/0 opacity-0 transition-opacity duration-300 group-hover:from-emerald-50/50 group-hover:to-emerald-100/30 group-hover:opacity-100" aria-hidden="true" />
         <div
           className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/70 to-transparent"
           aria-hidden="true"
         />
-        <CardContent className={cn("p-4", dense && "p-3")}>
+        <CardContent className={cn("relative p-4", dense && "p-3")}>
           <div className="flex items-start gap-3">
             <Avatar className="h-8 w-8 ring-1 ring-neutral-200">
               <AvatarImage
