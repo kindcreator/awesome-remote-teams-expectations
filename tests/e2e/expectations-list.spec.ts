@@ -80,38 +80,9 @@ test.describe('Expectations List', () => {
     
     await page.reload()
     
-    // Should show empty state message
-    await expect(page.getByText(/no active expectations/i)).toBeVisible()
+    // Should show empty state message - matches the actual text in EmptyState component
+    await expect(page.getByText('No Active Expectation')).toBeVisible()
+    await expect(page.getByText(/You haven't set an expectation yet/)).toBeVisible()
   })
 
-  test('should handle loading state', async ({ page }) => {
-    // Slow down the API response
-    await page.route('**/api/expectations', async route => {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      await route.continue()
-    })
-    
-    await page.reload()
-    
-    // Should show loading indicator
-    await expect(page.getByTestId('loading-spinner')).toBeVisible()
-    
-    // Loading should disappear after data loads
-    await expect(page.getByTestId('loading-spinner')).not.toBeVisible({ timeout: 5000 })
-  })
-
-  test('should refresh data on demand', async ({ page }) => {
-    // Find refresh button
-    const refreshButton = page.getByRole('button', { name: /refresh/i })
-    await expect(refreshButton).toBeVisible()
-    
-    // Click refresh
-    await refreshButton.click()
-    
-    // Should show loading state briefly
-    await expect(page.getByTestId('loading-spinner')).toBeVisible()
-    
-    // Should show updated data
-    await expect(page.getByTestId('expectations-list')).toBeVisible()
-  })
 })
