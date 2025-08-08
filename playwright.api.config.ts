@@ -12,6 +12,10 @@ export default defineConfig({
   testDir: path.join(__dirname, "tests/api"),
   outputDir: "test-results/api/",
   timeout: 10000, // 10 seconds for API tests
+  
+  // Global setup to prepare test database
+  globalSetup: path.join(__dirname, "tests/global-setup.ts"),
+  
   webServer: {
     command: "npm run dev",
     url: baseURL,

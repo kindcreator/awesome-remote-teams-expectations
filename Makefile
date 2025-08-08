@@ -146,9 +146,11 @@ help:
 	@echo "  make e2e-debug    - Debug E2E tests"
 	@echo "  make test-all     - Run all tests"
 	@echo "  make test-list    - List all available tests"
+	@echo "  make test-e2e-fresh - Run E2E with fresh test DB"
+	@echo "  make test-api-fresh - Run API tests with fresh test DB"
 	@echo ""
 	@echo "🎯 TDD Workflow:"
 	@echo "  make tdd          - Start unit test watch mode"
 	@echo "  make tdd-e2e      - Start E2E test UI"
 
-.PHONY: db-generate db-push db-migrate db-studio db-seed db-impress db-sync db-update db-reset test-db-setup test-db-seed test-db-reset test-db-clean dev build lint install test test-ui test-unit e2e e2e-ui e2e-debug test-all tdd tdd-e2e test-list help
+.PHONY: db-generate db-push db-migrate db-studio db-seed db-impress db-sync db-update db-reset test-db-setup test-db-seed test-db-reset test-db-clean test-e2e-fresh test-api-fresh dev build lint install test test-ui test-unit e2e e2e-ui e2e-debug test-all tdd tdd-e2e test-list help
