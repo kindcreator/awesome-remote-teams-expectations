@@ -1,22 +1,7 @@
 import { db } from '@/db'
 import { expectations, users } from '@/db/schema'
 import { eq, and, asc, desc } from 'drizzle-orm'
-
-export type ExpectationWithUser = {
-  id: string
-  title: string
-  estimatedCompletion: Date
-  isDone: boolean
-  createdAt: Date
-  doneAt: Date | null
-  updatedAt: Date
-  user: {
-    id: string
-    name: string
-    email: string
-    avatarUrl: string | null
-  }
-}
+import type { ExpectationWithUser } from '@/lib/types'
 
 export class ExpectationsService {
   /**

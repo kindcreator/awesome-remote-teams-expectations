@@ -6,10 +6,10 @@ import { Card, CardContent } from '@/components/ui/card'
 import { CheckCircle2, Clock, User } from 'lucide-react'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
-import type { Expectation } from '@/lib/types'
+import type { ExpectationWithUser } from '@/lib/types'
 
 interface ExpectationsDashboardListProps {
-  expectations: Expectation[]
+  expectations: ExpectationWithUser[]
   currentUserId?: string
   onMarkAsDone?: (id: string) => Promise<void>
   isLoading?: boolean

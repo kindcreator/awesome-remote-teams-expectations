@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
-import type { Expectation } from '@/lib/types'
+import type { ExpectationWithUser } from '@/lib/types'
 
 interface UseExpectationsReturn {
-  expectations: Expectation[]
-  myExpectations: Expectation[]
-  othersExpectations: Expectation[]
+  expectations: ExpectationWithUser[]
+  myExpectations: ExpectationWithUser[]
+  othersExpectations: ExpectationWithUser[]
   isLoading: boolean
   error: string | null
   addExpectation: (title: string, estimatedCompletion: Date) => Promise<void>
@@ -16,7 +16,7 @@ interface UseExpectationsReturn {
 }
 
 export function useExpectations(userId?: string): UseExpectationsReturn {
-  const [expectations, setExpectations] = useState<Expectation[]>([])
+  const [expectations, setExpectations] = useState<ExpectationWithUser[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
