@@ -2,7 +2,7 @@
 
 A simple, focused tool for remote teams to share what they're working on and when they'll be done.
 
-![Web App Initial Version](preview/web%20app%20init%20version%20.png)
+![Remote Teams Expectations - Welcome Page](preview/welcome-page.png)
 
 ## 🚀 Live Demo
 
