@@ -1,38 +1,27 @@
-import { execSync } from 'child_process'
-import path from 'path'
-import dotenv from 'dotenv'
-
-// Load test environment
-dotenv.config({ path: path.resolve(__dirname, '../.env.test') })
+import { setupTestDatabase } from '../scripts/setup-test-db'
 
 async function globalSetup() {
   console.log('🧪 Global test setup starting...')
   
+  // Skip database setup if SKIP_DB_SETUP is set
+  if (process.env.SKIP_DB_SETUP === 'true') {
+    console.log('⏭️ Skipping database setup (SKIP_DB_SETUP=true)')
+    return
+  }
+  
   try {
-    // Set up test database schema (auto-approved with --force)
-    console.log('📦 Setting up test database schema...')
-    execSync('npm run db:push:force', {
-      stdio: 'inherit',
-      env: {
-        ...process.env,
-        DATABASE_URL: process.env.DATABASE_URL
-      }
-    })
+    const success = await setupTestDatabase()
     
-    // Seed test database with deterministic data
-    console.log('🌱 Seeding test database...')
-    execSync('npm run db:seed:test', {
-      stdio: 'inherit',
-      env: {
-        ...process.env,
-        DATABASE_URL: process.env.DATABASE_URL
-      }
-    })
-    
-    console.log('✅ Test database ready!')
+    if (!success) {
+      console.error('❌ Database setup failed')
+      console.error('💡 You can skip database setup by setting SKIP_DB_SETUP=true')
+      console.error('💡 Or manually run: npm run test:db:setup')
+      throw new Error('Database setup failed')
+    }
     
   } catch (error) {
     console.error('❌ Global setup failed:', error)
+    console.error('💡 You can skip database setup by setting SKIP_DB_SETUP=true')
     throw error
   }
 }

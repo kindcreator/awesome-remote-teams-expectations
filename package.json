@@ -19,13 +19,19 @@
     "db:sync-clerk": "tsx -r dotenv/config db/sync-clerk-users.ts",
     "db:reset": "npm run db:push && npm run db:seed",
     "db:clean": "tsx -r dotenv/config db/clean.ts",
+    "populate-user": "tsx -r dotenv/config scripts/populate-user.ts",
+    "test:db:setup": "tsx -r dotenv/config scripts/setup-test-db.ts",
+    "db:check": "tsx scripts/check-db-connection.ts",
+    "db:check:test": "tsx scripts/check-db-connection.ts --test",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:e2e:ui:skip-db": "SKIP_DB_SETUP=true playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
-    "test:api": "playwright test --config=playwright.api.config.ts"
+    "test:api": "playwright test --config=playwright.api.config.ts",
+    "test:integration": "npm run test:api && npm run test:e2e"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.28.1",

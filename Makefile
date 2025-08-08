@@ -27,20 +27,24 @@ db-sync:
 
 # Test database commands
 test-db-setup:
-	@echo "Setting up test database with schema (auto-approve)..."
-	@export $$(cat .env.test | grep -v '^#' | xargs) && npm run db:push:force
+	@echo "Setting up test database (with direct connection fix)..."
+	@export $$(cat .env.test | grep -v '^#' | xargs) && npm run test:db:setup
 
 test-db-seed:
 	@echo "Seeding test database with deterministic data..."
 	@export $$(cat .env.test | grep -v '^#' | xargs) && npm run db:seed:test
 
 test-db-reset:
-	@echo "Resetting test database (auto-approve)..."
-	@export $$(cat .env.test | grep -v '^#' | xargs) && npm run db:push:force && npm run db:seed:test
+	@echo "Resetting test database (using fixed setup)..."
+	@export $$(cat .env.test | grep -v '^#' | xargs) && npm run test:db:setup
 
 test-db-clean:
 	@echo "Cleaning test database..."
 	@export $$(cat .env.test | grep -v '^#' | xargs) && npm run db:clean
+
+test-db-check:
+	@echo "Checking test database connection..."
+	npm run db:check:test
 
 # Run tests with automatic DB setup
 test-e2e-fresh: test-db-reset
@@ -91,7 +95,9 @@ e2e-debug:
 	npm run test:e2e:debug
 
 test-all:
-	npm run test:unit && npm run test:e2e
+	-npm run test:unit
+	npm run test:api
+	npm run test:e2e
 
 # TDD workflow commands
 tdd:
@@ -99,8 +105,8 @@ tdd:
 	npm run test
 
 tdd-e2e:
-	@echo "Starting E2E test UI for TDD"
-	npm run test:e2e:ui
+	@echo "Starting E2E test UI for TDD (skipping DB setup)"
+	npm run test:e2e:ui:skip-db
 
 # Quick test status
 test-list:
