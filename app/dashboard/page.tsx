@@ -31,7 +31,7 @@ export default function DashboardPage() {
   const activeExpectations = expectations.filter(e => !e.isDone)
   const myActiveExpectations = myExpectations.filter(e => !e.isDone)
 
-  const historyItems: HistoryItem[] = expectations
+  const historyItems: HistoryItem[] = myExpectations
     .filter(e => e.isDone)
     .map(e => ({
       id: e.id,
@@ -39,14 +39,14 @@ export default function DashboardPage() {
       date: e.doneAt ? new Date(e.doneAt) : new Date(),
       user: {
         id: e.userId,
-        name: e.user?.name || 'Unknown',
-        email: e.user?.email || '',
-        avatarUrl: e.user?.imageUrl || null
+        name: user?.fullName || user?.username || 'You',
+        email: user?.primaryEmailAddress?.emailAddress || '',
+        avatarUrl: user?.imageUrl || null
       },
       status: 'completed' as const
     }))
     .concat(
-      expectations
+      myExpectations
         .filter(e => !e.isDone)
         .map(e => ({
           id: e.id,
@@ -54,9 +54,9 @@ export default function DashboardPage() {
           date: new Date(e.createdAt),
           user: {
             id: e.userId,
-            name: e.user?.name || 'Unknown',
-            email: e.user?.email || '',
-            avatarUrl: e.user?.imageUrl || null
+            name: user?.fullName || user?.username || 'You',
+            email: user?.primaryEmailAddress?.emailAddress || '',
+            avatarUrl: user?.imageUrl || null
           },
           status: 'created' as const
         }))
@@ -245,7 +245,11 @@ export default function DashboardPage() {
                 </div>
                 <p className="mt-1 text-sm text-neutral-600">A readable record of your latest expectation activity.</p>
               </div>
-              <HistoryTimeline items={historyItems} />
+              {historyItems.length > 0 ? (
+                <HistoryTimeline items={historyItems} />
+              ) : (
+                <p className="text-sm text-neutral-500 text-center py-4">No history yet. Complete an expectation to see it here.</p>
+              )}
             </div>
           )}
 
@@ -294,7 +298,7 @@ export default function DashboardPage() {
                           id: item.userId,
                           name: item.user?.name || 'Unknown',
                           email: item.user?.email || '',
-                          avatarUrl: item.user?.imageUrl || null
+                          avatarUrl: item.user?.avatarUrl || null
                         }
                       }}
                       onMarkAsDone={item.userId === userId ? () => markAsDone(item.id) : undefined}
@@ -419,6 +423,7 @@ function ExpectationCard({
           <AvatarFallback className="text-[11px]">{getInitials(item.user.name)}</AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-medium text-neutral-500 mb-0.5">{item.user.name}</p>
           <h4 className="line-clamp-1 text-[13.5px] font-medium leading-5 text-neutral-900">{item.title}</h4>
           <div className="mt-2 flex items-center gap-2 text-[12px] leading-4 text-neutral-600">
             <CalendarDays className="h-3.5 w-3.5 text-neutral-400" aria-hidden="true" />

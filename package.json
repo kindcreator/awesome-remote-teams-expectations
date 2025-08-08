@@ -14,7 +14,7 @@
     "db:push:force": "drizzle-kit push --force",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx -r dotenv/config db/seed.ts",
-    "db:seed:impress": "tsx -r dotenv/config db/seed.ts --impress-reviewer",
+    "db:seed:demo": "tsx -r dotenv/config db/seed.ts --demo",
     "db:seed:test": "tsx -r dotenv/config db/seed-test.ts",
     "db:sync-clerk": "tsx -r dotenv/config db/sync-clerk-users.ts",
     "db:reset": "npm run db:push && npm run db:seed",

@@ -2,6 +2,7 @@ import { seed } from 'drizzle-seed'
 import { db } from '../index'
 import { users, expectations } from '../schema'
 import { clearDatabase, createExpectation, generateClerkUserId, printSummary } from './common'
+import { ensureDemoUser } from './ensure-demo-user'
 
 const FIXED_TEST_SEED = 5318008
 
@@ -9,6 +10,9 @@ export async function seedTestData() {
   await clearDatabase()
   
   console.log('🧪 Seeding test database with deterministic data...')
+  
+  // Ensure the demo/E2E user exists (after clearing)
+  const demoUser = await ensureDemoUser()
   
   // Use drizzle-seed for deterministic user generation
   await seed(db, { users }, { seed: FIXED_TEST_SEED }).refine((f) => ({

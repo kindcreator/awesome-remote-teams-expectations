@@ -1,6 +1,7 @@
 import { db } from '../index'
 import { users, expectations } from '../schema'
 import { clearDatabase, createExpectation, DAYS_IN_MS } from './common'
+import { ensureDemoUser } from './ensure-demo-user'
 
 // Avatar URLs from environment variables (for security)
 const YAROSLAV_AVATARS = [
@@ -35,8 +36,8 @@ const YAROSLAV_EXPECTATIONS = [
   { title: 'Evaluate CRUD operations and API design', isDone: true, daysAgo: 2, assignTo: 'not-yaroslav' },
   { title: 'Deploy staging environment on Vercel for client demo', isDone: false, daysFromNow: 1, assignTo: 'reviewer' },
   { title: 'Conduct final code review and performance audit', isDone: false, daysFromNow: 3, assignTo: 'yaroslav' },
-  { title: 'Prepare hiring recommendation based on test task', isDone: false, daysFromNow: 5, assignTo: 'yaroslav' },
-  { title: 'Schedule technical interview with candidate', isDone: false, daysFromNow: 7, assignTo: 'not-yaroslav' },
+  { title: 'Prepare hiring recommendation based on test task', isDone: false, daysFromNow: 5, assignTo: 'not-yaroslav' },
+  { title: 'Schedule technical interview with candidate', isDone: false, daysFromNow: 7, assignTo: 'akhavr' },
 ]
 
 // Networking/referral tasks for akhavr (Quantum Wiring / DeSci enthusiast)
@@ -50,10 +51,27 @@ const AKHAVR_EXPECTATIONS = [
   { title: 'Be awesome (as always)', isDone: true, daysAgo: 1 },
 ]
 
-export async function seedImpressReviewer() {
+export async function seedDemoReviewer() {
   await clearDatabase()
   
   console.log('🎯 Seeding review team with networking chain...')
+  
+  // Ensure the demo/E2E user exists (after clearing)
+  const demoUser = await ensureDemoUser()
+  
+  // Add an active expectation for the demo user if they exist
+  if (demoUser) {
+    const demoExpectation = createExpectation(
+      demoUser.id,
+      'Complete product demo and gather feedback',
+      {
+        daysFromNow: 2,
+        isDone: false
+      }
+    )
+    await db.insert(expectations).values(demoExpectation)
+    console.log('✅ Added active expectation for demo user')
+  }
   
   // Create the networking chain: akhavr -> Yaroslav -> 42 Coffee Cups team
   const teamMembers = [
@@ -61,25 +79,25 @@ export async function seedImpressReviewer() {
       name: 'akhavr (Anarchist)',
       email: 'akhavr@network.dev',
       clerkUserId: 'user_akhavr_000',
-      avatarUrl: AKHAVR_AVATAR || 'https://api.dicebear.com/7.x/avataaars/svg?seed=akhavr'
+      avatarUrl: AKHAVR_AVATAR || 'https://api.dicebear.com/7.x/lorelei/svg?seed=akhavr'
     },
     {
       name: 'TotallyNotEvilTwit Luzin (CTO)',
       email: 'yaroslav@42coffeecups.com',
       clerkUserId: 'user_yaroslav_001',
-      avatarUrl: YAROSLAV_AVATARS[0] || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Yaroslav'
+      avatarUrl: YAROSLAV_AVATARS[0] || 'https://api.dicebear.com/7.x/lorelei/svg?seed=Yaroslav'
     },
     {
       name: 'Nizul (Tech Lead)',
       email: 'tech.lead@42coffeecups.com',
       clerkUserId: 'user_techlead_002',
-      avatarUrl: YAROSLAV_AVATARS[1] || 'https://api.dicebear.com/7.x/avataaars/svg?seed=TechLead'
+      avatarUrl: YAROSLAV_AVATARS[1] || 'https://api.dicebear.com/7.x/lorelei/svg?seed=TechLead'
     },
     {
       name: 'Yaroslav L. (Senior Dev)',
       email: 'senior.dev@42coffeecups.com',
       clerkUserId: 'user_senior_003',
-      avatarUrl: YAROSLAV_AVATARS[2] || 'https://api.dicebear.com/7.x/avataaars/svg?seed=SeniorDev'
+      avatarUrl: YAROSLAV_AVATARS[2] || 'https://api.dicebear.com/7.x/lorelei/svg?seed=SeniorDev'
     }
   ]
   
@@ -132,6 +150,9 @@ export async function seedImpressReviewer() {
         break
       case 'reviewer':
         userId = seniorDev?.id
+        break
+      case 'akhavr':
+        userId = akhavr?.id
         break
       default:
         userId = yaroslav?.id
