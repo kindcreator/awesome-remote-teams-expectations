@@ -35,6 +35,10 @@ test.describe('Expectations API', () => {
     const response = await request.get('/api/expectations')
     const data = await response.json()
     
+    // Should return exactly 4 active expectations from seed data
+    expect(data.expectations.length).toBe(4)
+    expect(data.count).toBe(4)
+    
     // All expectations should have isDone = false
     data.expectations.forEach((exp: any) => {
       expect(exp.isDone).toBe(false)
@@ -51,6 +55,13 @@ test.describe('Expectations API', () => {
       const currDate = new Date(data.expectations[i].estimatedCompletion).getTime()
       expect(currDate).toBeGreaterThanOrEqual(prevDate)
     }
+    
+    // Verify the specific order based on our seed data (sorted by days from now: 1, 2, 3, 7)
+    const titles = data.expectations.map((exp: any) => exp.title)
+    expect(titles[0]).toBe('Deploy authentication system') // 1 day from now
+    expect(titles[1]).toBe('Review pull requests') // 2 days from now
+    expect(titles[2]).toBe('Complete API documentation') // 3 days from now
+    expect(titles[3]).toBe('Implement dashboard analytics') // 7 days from now
   })
 
   test('GET /api/expectations?includeCompleted=true - should include completed expectations', async ({ request }) => {
@@ -59,12 +70,16 @@ test.describe('Expectations API', () => {
     
     expect(response.ok()).toBeTruthy()
     
-    // Should potentially have both completed and active expectations
-    const hasCompleted = data.expectations.some((exp: any) => exp.isDone === true)
-    const hasActive = data.expectations.some((exp: any) => exp.isDone === false)
+    // Should return all 6 expectations (4 active + 2 completed from seed data)
+    expect(data.expectations.length).toBe(6)
+    expect(data.count).toBe(6)
     
-    // At least one type should exist
-    expect(hasCompleted || hasActive).toBeTruthy()
+    // Should have both completed and active expectations
+    const completedCount = data.expectations.filter((exp: any) => exp.isDone === true).length
+    const activeCount = data.expectations.filter((exp: any) => exp.isDone === false).length
+    
+    expect(completedCount).toBe(2)
+    expect(activeCount).toBe(4)
   })
 
   test('GET /api/expectations - should handle errors gracefully', async ({ request }) => {
