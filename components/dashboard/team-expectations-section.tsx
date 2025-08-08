@@ -1,3 +1,6 @@
+'use client'
+
+import { useState, useMemo } from 'react'
 import { Users, Search } from 'lucide-react'
 import { Input } from "@/components/ui/input"
 import ExpectationCard, { type ExpectationWithUser } from './expectation-card'
@@ -15,6 +18,21 @@ export default function TeamExpectationsSection({
   userId,
   onMarkAsDone
 }: TeamExpectationsSectionProps) {
+  const [searchQuery, setSearchQuery] = useState('')
+  
+  // Filter expectations based on search query (task title or user name)
+  const filteredExpectations = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return teamActiveExpectations
+    }
+    
+    const query = searchQuery.toLowerCase()
+    return teamActiveExpectations.filter(expectation => {
+      const titleMatch = expectation.title.toLowerCase().includes(query)
+      const userNameMatch = expectation.user?.name?.toLowerCase().includes(query)
+      return titleMatch || userNameMatch
+    })
+  }, [teamActiveExpectations, searchQuery])
   return (
     <aside aria-labelledby="team-expectations-title" className="space-y-4 md:col-span-2 lg:col-span-1">
       <div className="rounded-2xl border border-white/50 bg-white/60 p-4 sm:p-6 shadow-md backdrop-blur-md">
@@ -32,8 +50,10 @@ export default function TeamExpectationsSection({
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" aria-hidden="true" />
             <Input
               className="h-9 rounded-lg pl-9"
-              placeholder="Search team expectations..."
+              placeholder="Search by task or user name..."
               aria-label="Search team expectations"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
         </div>
@@ -43,8 +63,10 @@ export default function TeamExpectationsSection({
             <li className="text-sm text-neutral-500">Loading...</li>
           ) : teamActiveExpectations.length === 0 ? (
             <li className="text-sm text-neutral-500">No team expectations</li>
+          ) : filteredExpectations.length === 0 ? (
+            <li className="text-sm text-neutral-500">No matching expectations found</li>
           ) : (
-            teamActiveExpectations.map((item) => (
+            filteredExpectations.map((item) => (
               <li key={item.id}>
                 <ExpectationCard 
                   item={{
