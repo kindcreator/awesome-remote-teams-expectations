@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { RefreshCw } from 'lucide-react'
 import { format } from 'date-fns'
-import type { Expectation } from '@/lib/types'
+import type { ExpectationWithUser } from '@/lib/types'
 
 export function ExpectationsListClient() {
-  const [expectations, setExpectations] = useState<Expectation[]>([])
+  const [expectations, setExpectations] = useState<ExpectationWithUser[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   const fetchData = async () => {

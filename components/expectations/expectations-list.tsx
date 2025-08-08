@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { RefreshCw } from 'lucide-react'
 import { format } from 'date-fns'
-import type { Expectation } from '@/lib/types'
+import type { ExpectationWithUser } from '@/lib/types'
 
 interface ExpectationsListProps {
-  expectations: Expectation[]
+  expectations: ExpectationWithUser[]
 }
 
 export function ExpectationsList({ expectations: initialExpectations }: ExpectationsListProps) {
