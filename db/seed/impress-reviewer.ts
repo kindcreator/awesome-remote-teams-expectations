@@ -58,19 +58,19 @@ export async function seedImpressReviewer() {
   // Create the networking chain: akhavr -> Yaroslav -> 42 Coffee Cups team
   const teamMembers = [
     {
-      name: 'akhavr (Scientist Anarchist)',
+      name: 'akhavr (Anarchist)',
       email: 'akhavr@network.dev',
       clerkUserId: 'user_akhavr_000',
       avatarUrl: AKHAVR_AVATAR || 'https://api.dicebear.com/7.x/avataaars/svg?seed=akhavr'
     },
     {
-      name: 'Yaroslav Luzin (CTO)',
+      name: 'TotallyNotEvilTwit Luzin (CTO)',
       email: 'yaroslav@42coffeecups.com',
       clerkUserId: 'user_yaroslav_001',
       avatarUrl: YAROSLAV_AVATARS[0] || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Yaroslav'
     },
     {
-      name: 'Y. Luzin (Tech Lead)',
+      name: 'Nizul (Tech Lead)',
       email: 'tech.lead@42coffeecups.com',
       clerkUserId: 'user_techlead_002',
       avatarUrl: YAROSLAV_AVATARS[1] || 'https://api.dicebear.com/7.x/avataaars/svg?seed=TechLead'

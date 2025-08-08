@@ -101,8 +101,8 @@ tdd:
 	npm run test
 
 tdd-e2e:
-	@echo "Starting E2E test UI for TDD"
-	npm run test:e2e:ui
+	@echo "Starting E2E test UI for TDD (skipping DB setup)"
+	npm run test:e2e:ui:skip-db
 
 # Quick test status
 test-list:
