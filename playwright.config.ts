@@ -21,9 +21,12 @@ export default defineConfig({
   globalSetup: path.join(__dirname, "tests/global-setup.ts"),
   
   webServer: {
-    command: "npm run dev",
-    url: baseURL,
+    command: "next dev",
+    port: Number(PORT),
+    timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
+    // This will reuse the existing server if it's already running on the port
+    // If not, it will start a new one. If port is busy by non-Next app, tests will fail.
   },
 
   use: {

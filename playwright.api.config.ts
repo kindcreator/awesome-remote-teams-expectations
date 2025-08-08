@@ -17,8 +17,9 @@ export default defineConfig({
   globalSetup: path.join(__dirname, "tests/global-setup.ts"),
   
   webServer: {
-    command: "npm run dev",
-    url: baseURL,
+    command: "next dev",
+    port: Number(PORT),
+    timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
   },
   use: {
