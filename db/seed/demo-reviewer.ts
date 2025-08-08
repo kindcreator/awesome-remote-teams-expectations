@@ -121,40 +121,32 @@ export async function seedDemoReviewer() {
   // Find team members for task assignment
   const akhavr = insertedUsers.find(u => u.name.includes('akhavr'))
   const yaroslav = insertedUsers.find(u => u.name.includes('TotallyNotEvilTwit'))
-  const techLead = insertedUsers.find(u => u.name.includes('(Tech Lead)'))
-  const seniorDev = insertedUsers.find(u => u.name.includes('(Senior Dev)'))
+  const techLead = insertedUsers.find(u => u.name.includes('Tech Lead'))
+  const seniorDev = insertedUsers.find(u => u.name.includes('Senior Dev'))
   
-  // Track which users have been assigned active expectations
-  const usersWithActiveExpectations = new Set()
-  if (demoUser) {
-    usersWithActiveExpectations.add(demoUser.id)
-  }
+  console.log('User mapping:', {
+    akhavr: akhavr?.name,
+    yaroslav: yaroslav?.name,
+    techLead: techLead?.name,
+    seniorDev: seniorDev?.name
+  })
   
-  // Add akhavr's networking expectations - ensure only ONE is active
+  // Add akhavr's networking expectations - use hardcoded values directly
   if (akhavr) {
-    let hasActiveTask = false
     AKHAVR_EXPECTATIONS.forEach(exp => {
-      // Force the task to be done if user already has an active task
-      const isDone = exp.isDone || (exp.isDone === false && hasActiveTask)
-      
-      if (!isDone) {
-        hasActiveTask = true
-        usersWithActiveExpectations.add(akhavr.id)
-      }
-      
       allExpectations.push(createExpectation(
         akhavr.id,
         exp.title,
         {
           daysAgo: exp.daysAgo,
           daysFromNow: exp.daysFromNow,
-          isDone
+          isDone: exp.isDone !== undefined ? exp.isDone : true
         }
       ))
     })
   }
   
-  // Add project expectations for Yaroslav's team - ensure only ONE active per user
+  // Add project expectations for Yaroslav's team - use hardcoded values directly
   YAROSLAV_EXPECTATIONS.forEach(exp => {
     let userId
     switch(exp.assignTo) {
@@ -173,23 +165,13 @@ export async function seedDemoReviewer() {
     
     if (!userId) return
     
-    // Only allow one active task per user
-    let isDone = exp.isDone !== undefined ? exp.isDone : true
-    if (!isDone && usersWithActiveExpectations.has(userId)) {
-      // User already has an active task, force this to be done
-      isDone = true
-    } else if (!isDone) {
-      // This is their first active task, allow it
-      usersWithActiveExpectations.add(userId)
-    }
-    
     allExpectations.push(createExpectation(
       userId,
       exp.title,
       {
         daysAgo: exp.daysAgo,
         daysFromNow: exp.daysFromNow,
-        isDone
+        isDone: exp.isDone !== undefined ? exp.isDone : true
       }
     ))
   })
@@ -203,10 +185,19 @@ export async function seedDemoReviewer() {
   // Log summary of active expectations per user
   console.log('\n📊 Active expectations summary:')
   const allUsers = demoUser ? [demoUser, ...insertedUsers] : insertedUsers
+  
+  // Debug: Show all active expectations
+  console.log('\nActive tasks being created:')
+  allExpectations.filter(e => !e.isDone).forEach(e => {
+    const user = allUsers.find(u => u.id === e.userId)
+    console.log(`  - ${user?.name}: "${e.title}"`)
+  })
+  
+  // Count active per user
   for (const user of allUsers) {
-    const activeCount = allExpectations.filter(e => e.userId === user.id && !e.isDone).length
+    const userActiveExpectations = allExpectations.filter(e => e.userId === user.id && !e.isDone)
     const demoActiveCount = demoUser?.id === user.id ? 1 : 0
-    const totalActive = activeCount + demoActiveCount
+    const totalActive = userActiveExpectations.length + demoActiveCount
     console.log(`   ${user.name}: ${totalActive} active expectation(s)`)
   }
   
