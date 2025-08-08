@@ -19,6 +19,7 @@ export class ExpectationsService {
         updatedAt: expectations.updatedAt,
         user: {
           id: users.id,
+          clerkUserId: users.clerkUserId,
           name: users.name,
           email: users.email,
           avatarUrl: users.avatarUrl
@@ -47,6 +48,7 @@ export class ExpectationsService {
         updatedAt: expectations.updatedAt,
         user: {
           id: users.id,
+          clerkUserId: users.clerkUserId,
           name: users.name,
           email: users.email,
           avatarUrl: users.avatarUrl
@@ -84,6 +86,7 @@ export class ExpectationsService {
         updatedAt: expectations.updatedAt,
         user: {
           id: users.id,
+          clerkUserId: users.clerkUserId,
           name: users.name,
           email: users.email,
           avatarUrl: users.avatarUrl
@@ -116,6 +119,7 @@ export class ExpectationsService {
         updatedAt: expectations.updatedAt,
         user: {
           id: users.id,
+          clerkUserId: users.clerkUserId,
           name: users.name,
           email: users.email,
           avatarUrl: users.avatarUrl

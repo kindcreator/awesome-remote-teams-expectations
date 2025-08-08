@@ -79,8 +79,8 @@ export function useExpectations(userId?: string): UseExpectationsReturn {
     }
   }, [fetchExpectations])
 
-  const myExpectations = expectations.filter(e => userId && e.user.id === userId)
-  const othersExpectations = expectations.filter(e => !userId || e.user.id !== userId)
+  const myExpectations = expectations.filter(e => userId && e.user.clerkUserId === userId)
+  const othersExpectations = expectations.filter(e => !userId || e.user.clerkUserId !== userId)
 
   return {
     expectations,
