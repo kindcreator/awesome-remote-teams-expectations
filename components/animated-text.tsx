@@ -43,6 +43,9 @@ export default function AnimatedText({
     },
   }
 
+  // Split text into words to prevent breaking within words
+  const words = text.split(" ")
+  
   return (
     <div className="relative">
       <motion.h1
@@ -57,16 +60,23 @@ export default function AnimatedText({
         aria-label={text}
         role="heading"
       >
-        {letters.map((char, i) => (
-          <motion.span
-            key={`${char}-${i}`}
-            variants={child}
-            className={cn(
-              char === " " ? "inline-block w-2 sm:w-3" : "inline-block"
+        {words.map((word, wordIndex) => (
+          <span key={`word-${wordIndex}`} className="inline-block">
+            {Array.from(word).map((char, charIndex) => (
+              <motion.span
+                key={`${wordIndex}-${charIndex}`}
+                variants={child}
+                className="inline-block"
+              >
+                {char}
+              </motion.span>
+            ))}
+            {wordIndex < words.length - 1 && (
+              <motion.span variants={child} className="inline-block w-2 sm:w-3">
+                &nbsp;
+              </motion.span>
             )}
-          >
-            {char}
-          </motion.span>
+          </span>
         ))}
       </motion.h1>
 
