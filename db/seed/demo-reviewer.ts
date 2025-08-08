@@ -34,10 +34,11 @@ const YAROSLAV_EXPECTATIONS = [
   // Current sprint - Dashboard implementation review (Ticket 3)
   { title: 'Review dashboard component architecture and state management', isDone: true, daysAgo: 3, assignTo: 'yaroslav' },
   { title: 'Evaluate CRUD operations and API design', isDone: true, daysAgo: 2, assignTo: 'not-yaroslav' },
+  
+  // ACTIVE TASKS - One for each team member
   { title: 'Deploy staging environment on Vercel for client demo', isDone: false, daysFromNow: 1, assignTo: 'reviewer' },
   { title: 'Conduct final code review and performance audit', isDone: false, daysFromNow: 3, assignTo: 'yaroslav' },
   { title: 'Prepare hiring recommendation based on test task', isDone: false, daysFromNow: 5, assignTo: 'not-yaroslav' },
-  { title: 'Schedule technical interview with candidate', isDone: false, daysFromNow: 7, assignTo: 'akhavr' },
 ]
 
 // Networking/referral tasks for akhavr (Quantum Wiring / DeSci enthusiast)
@@ -49,6 +50,8 @@ const AKHAVR_EXPECTATIONS = [
   { title: 'Prototype quantum computing interface for biomarker analysis', isDone: true, daysAgo: 10 },
   { title: 'Implement blockchain-based research data sharing protocol', isDone: true, daysAgo: 5 },
   { title: 'Be awesome (as always)', isDone: true, daysAgo: 1 },
+  // Active task for akhavr
+  { title: 'Evaluate Web3 integration for decentralized science platform', isDone: false, daysFromNow: 4 },
 ]
 
 export async function seedDemoReviewer() {
@@ -117,28 +120,41 @@ export async function seedDemoReviewer() {
   
   // Find team members for task assignment
   const akhavr = insertedUsers.find(u => u.name.includes('akhavr'))
-  const yaroslav = insertedUsers.find(u => u.name.includes('(CTO)'))
+  const yaroslav = insertedUsers.find(u => u.name.includes('TotallyNotEvilTwit'))
   const techLead = insertedUsers.find(u => u.name.includes('(Tech Lead)'))
   const seniorDev = insertedUsers.find(u => u.name.includes('(Senior Dev)'))
   
-  // Add akhavr's networking expectations
+  // Track which users have been assigned active expectations
+  const usersWithActiveExpectations = new Set()
+  if (demoUser) {
+    usersWithActiveExpectations.add(demoUser.id)
+  }
+  
+  // Add akhavr's networking expectations - ensure only ONE is active
   if (akhavr) {
+    let hasActiveTask = false
     AKHAVR_EXPECTATIONS.forEach(exp => {
+      // Force the task to be done if user already has an active task
+      const isDone = exp.isDone || (exp.isDone === false && hasActiveTask)
+      
+      if (!isDone) {
+        hasActiveTask = true
+        usersWithActiveExpectations.add(akhavr.id)
+      }
+      
       allExpectations.push(createExpectation(
         akhavr.id,
         exp.title,
         {
           daysAgo: exp.daysAgo,
-          isDone: exp.isDone
+          daysFromNow: exp.daysFromNow,
+          isDone
         }
       ))
     })
   }
   
-  // Track which users have active expectations (only one allowed per user)
-  const usersWithActiveExpectations = new Set()
-  
-  // Add project expectations for Yaroslav's team
+  // Add project expectations for Yaroslav's team - ensure only ONE active per user
   YAROSLAV_EXPECTATIONS.forEach(exp => {
     let userId
     switch(exp.assignTo) {
@@ -151,24 +167,20 @@ export async function seedDemoReviewer() {
       case 'reviewer':
         userId = seniorDev?.id
         break
-      case 'akhavr':
-        userId = akhavr?.id
-        break
       default:
         userId = yaroslav?.id
     }
     
     if (!userId) return
     
-    // Enforce one active expectation per user constraint
+    // Only allow one active task per user
     let isDone = exp.isDone !== undefined ? exp.isDone : true
-    if (!isDone) {
-      if (usersWithActiveExpectations.has(userId)) {
-        // User already has an active expectation, mark this one as done
-        isDone = true
-      } else {
-        usersWithActiveExpectations.add(userId)
-      }
+    if (!isDone && usersWithActiveExpectations.has(userId)) {
+      // User already has an active task, force this to be done
+      isDone = true
+    } else if (!isDone) {
+      // This is their first active task, allow it
+      usersWithActiveExpectations.add(userId)
     }
     
     allExpectations.push(createExpectation(
@@ -186,6 +198,16 @@ export async function seedDemoReviewer() {
   if (allExpectations.length > 0) {
     await db.insert(expectations).values(allExpectations)
     console.log(`Added ${allExpectations.length} project expectations`)
+  }
+  
+  // Log summary of active expectations per user
+  console.log('\n📊 Active expectations summary:')
+  const allUsers = demoUser ? [demoUser, ...insertedUsers] : insertedUsers
+  for (const user of allUsers) {
+    const activeCount = allExpectations.filter(e => e.userId === user.id && !e.isDone).length
+    const demoActiveCount = demoUser?.id === user.id ? 1 : 0
+    const totalActive = activeCount + demoActiveCount
+    console.log(`   ${user.name}: ${totalActive} active expectation(s)`)
   }
   
   console.log('✨ Yaroslav\'s team ready for review!')
