@@ -14,6 +14,15 @@ import { CLERK_WEBHOOK_EVENTS } from '@/lib/constants/webhook-events'
  * Flow: Clerk (source) → Webhook → Our Database (read-only copy for joins)
  */
 export async function POST(req: Request) {
+  // Validate webhook secret exists - fail fast for security
+  const webhookSecret = process.env.CLERK_WEBHOOK_SECRET
+  if (!webhookSecret) {
+    console.error('CLERK_WEBHOOK_SECRET environment variable is not set. Webhook verification disabled for security.')
+    return new Response('Webhook configuration error', {
+      status: 500,
+    })
+  }
+
   // Get the headers
   const headerPayload = await headers()
   const svix_id = headerPayload.get('svix-id')
@@ -32,7 +41,7 @@ export async function POST(req: Request) {
   const body = JSON.stringify(payload)
 
   // Create a new Svix instance with your webhook secret
-  const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET || '')
+  const wh = new Webhook(webhookSecret)
 
   let evt: WebhookEvent
 

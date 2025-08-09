@@ -7,31 +7,48 @@ import {
   getUserActiveExpectation 
 } from './expectations'
 import { auth } from '@clerk/nextjs/server'
-import { db } from '@/db'
-import { expectations, users } from '@/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { usersService } from '@/lib/services/users.service'
+import { expectationsService } from '@/lib/services/expectations.service'
+import { daysFromNow } from '@/tests/helpers/date'
 
 // Mock Clerk auth
 vi.mock('@clerk/nextjs/server', () => ({
   auth: vi.fn()
 }))
 
-// Mock database
-vi.mock('@/db', () => ({
-  db: {
-    select: vi.fn(),
-    insert: vi.fn(),
+// Mock services
+vi.mock('@/lib/services/users.service', () => ({
+  usersService: {
+    getByClerkId: vi.fn(),
+    getById: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    exists: vi.fn()
+  }
+}))
+
+vi.mock('@/lib/services/expectations.service', () => ({
+  expectationsService: {
+    createWithAutoComplete: vi.fn(),
     update: vi.fn(),
     delete: vi.fn(),
-    transaction: vi.fn()
+    getByIdAndUser: vi.fn(),
+    getByUserId: vi.fn(),
+    markAsDone: vi.fn()
   }
+}))
+
+// Mock next/cache
+vi.mock('next/cache', () => ({
+  revalidatePath: vi.fn()
 }))
 
 describe('Expectation Server Actions', () => {
   const mockUserId = 'user_123'
   const mockDbUserId = 'db_user_123'
   const mockAuth = auth as ReturnType<typeof vi.fn>
-  const mockDb = db as any
+  const mockUsersService = vi.mocked(usersService)
+  const mockExpectationsService = vi.mocked(expectationsService)
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -46,37 +63,26 @@ describe('Expectation Server Actions', () => {
   describe('addExpectation', () => {
     const validExpectationData = {
       title: 'Complete project documentation',
-      estimatedCompletion: new Date('2025-01-20T10:00:00Z')
+      estimatedCompletion: daysFromNow(7)
     }
 
     beforeEach(() => {
       // Mock user lookup
-      const selectMock = {
-        from: vi.fn().mockReturnThis(),
-        where: vi.fn().mockReturnThis(),
-        limit: vi.fn().mockResolvedValue([{ id: mockDbUserId }])
-      }
-      mockDb.select.mockReturnValue(selectMock)
+      mockUsersService.getByClerkId.mockResolvedValue({
+        id: mockDbUserId,
+        clerkUserId: mockUserId,
+        email: 'test@example.com',
+        name: 'Test User'
+      })
 
-      // Mock transaction for replacing existing expectation
-      mockDb.transaction.mockImplementation(async (callback) => {
-        return callback({
-          update: vi.fn().mockReturnValue({
-            set: vi.fn().mockReturnThis(),
-            where: vi.fn().mockResolvedValue({ rowCount: 1 })
-          }),
-          insert: vi.fn().mockReturnValue({
-            values: vi.fn().mockReturnThis(),
-            returning: vi.fn().mockResolvedValue([{
-              id: 'exp_123',
-              ...validExpectationData,
-              userId: mockDbUserId,
-              isDone: false,
-              createdAt: new Date(),
-              updatedAt: new Date()
-            }])
-          })
-        })
+      // Mock expectation creation
+      mockExpectationsService.createWithAutoComplete.mockResolvedValue({
+        id: 'exp_123',
+        ...validExpectationData,
+        userId: mockDbUserId,
+        isDone: false,
+        createdAt: new Date(),
+        updatedAt: new Date()
       })
     })
 
@@ -129,27 +135,13 @@ describe('Expectation Server Actions', () => {
       const result = await addExpectation(validExpectationData)
 
       expect(result.success).toBe(true)
-      expect(mockDb.transaction).toHaveBeenCalled()
       
-      // Verify transaction callback was called
-      const transactionCallback = mockDb.transaction.mock.calls[0][0]
-      const mockTx = {
-        update: vi.fn().mockReturnValue({
-          set: vi.fn().mockReturnThis(),
-          where: vi.fn().mockResolvedValue({ rowCount: 1 })
-        }),
-        insert: vi.fn().mockReturnValue({
-          values: vi.fn().mockReturnThis(),
-          returning: vi.fn().mockResolvedValue([{ id: 'exp_123' }])
-        })
-      }
-      
-      await transactionCallback(mockTx)
-      
-      // Should update existing expectations to done
-      expect(mockTx.update).toHaveBeenCalledWith(expectations)
-      // Should insert new expectation
-      expect(mockTx.insert).toHaveBeenCalledWith(expectations)
+      // Verify service was called with correct data
+      expect(mockExpectationsService.createWithAutoComplete).toHaveBeenCalledWith({
+        userId: mockDbUserId,
+        title: validExpectationData.title,
+        estimatedCompletion: validExpectationData.estimatedCompletion
+      })
     })
 
     it('should create new expectation successfully', async () => {
@@ -165,9 +157,15 @@ describe('Expectation Server Actions', () => {
     })
 
     it('should handle database errors gracefully', async () => {
-      mockDb.transaction.mockRejectedValue(new Error('Database connection failed'))
+      // Set valid date
+      const validData = {
+        title: 'Test expectation',
+        estimatedCompletion: daysFromNow(7)
+      }
+      
+      mockExpectationsService.createWithAutoComplete.mockRejectedValue(new Error('Database connection failed'))
 
-      const result = await addExpectation(validExpectationData)
+      const result = await addExpectation(validData)
 
       expect(result.success).toBe(false)
       expect(result.error).toContain('Failed to add expectation')
@@ -178,29 +176,34 @@ describe('Expectation Server Actions', () => {
     const updateData = {
       id: 'exp_123',
       title: 'Updated title',
-      estimatedCompletion: new Date('2025-01-25T10:00:00Z')
+      estimatedCompletion: daysFromNow(10)
     }
 
     beforeEach(() => {
       // Mock user lookup
-      const selectMock = {
-        from: vi.fn().mockReturnThis(),
-        where: vi.fn().mockReturnThis(),
-        limit: vi.fn().mockResolvedValue([{ id: mockDbUserId }])
-      }
-      mockDb.select.mockReturnValue(selectMock)
+      mockUsersService.getByClerkId.mockResolvedValue({
+        id: mockDbUserId,
+        clerkUserId: mockUserId,
+        email: 'test@example.com',
+        name: 'Test User'
+      })
+
+      // Mock expectation lookup
+      mockExpectationsService.getByIdAndUser.mockResolvedValue({
+        id: updateData.id,
+        userId: mockDbUserId,
+        isDone: false,
+        title: 'Original title',
+        estimatedCompletion: daysFromNow(5)
+      })
 
       // Mock update
-      mockDb.update.mockReturnValue({
-        set: vi.fn().mockReturnThis(),
-        where: vi.fn().mockReturnThis(),
-        returning: vi.fn().mockResolvedValue([{
-          ...updateData,
-          userId: mockDbUserId,
-          isDone: false,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }])
+      mockExpectationsService.update.mockResolvedValue({
+        ...updateData,
+        userId: mockDbUserId,
+        isDone: false,
+        createdAt: new Date(),
+        updatedAt: new Date()
       })
     })
 
@@ -240,11 +243,8 @@ describe('Expectation Server Actions', () => {
     })
 
     it('should only update user\'s own expectations', async () => {
-      mockDb.update.mockReturnValue({
-        set: vi.fn().mockReturnThis(),
-        where: vi.fn().mockReturnThis(),
-        returning: vi.fn().mockResolvedValue([])
-      })
+      // Mock expectation not found/unauthorized
+      mockExpectationsService.getByIdAndUser.mockResolvedValue(null)
 
       const result = await updateExpectation(updateData)
 
@@ -253,14 +253,12 @@ describe('Expectation Server Actions', () => {
     })
 
     it('should not allow updating completed expectations', async () => {
-      mockDb.update.mockReturnValue({
-        set: vi.fn().mockReturnThis(),
-        where: vi.fn().mockReturnThis(),
-        returning: vi.fn().mockResolvedValue([{
-          ...updateData,
-          isDone: true,
-          doneAt: new Date()
-        }])
+      // Mock completed expectation
+      mockExpectationsService.getByIdAndUser.mockResolvedValue({
+        id: updateData.id,
+        userId: mockDbUserId,
+        isDone: true,
+        doneAt: new Date()
       })
 
       const result = await updateExpectation(updateData)
@@ -278,7 +276,7 @@ describe('Expectation Server Actions', () => {
         title: updateData.title,
         estimatedCompletion: updateData.estimatedCompletion
       })
-      expect(mockDb.update).toHaveBeenCalledWith(expectations)
+      expect(mockExpectationsService.update).toHaveBeenCalled()
     })
 
     it('should handle partial updates', async () => {
@@ -290,7 +288,7 @@ describe('Expectation Server Actions', () => {
       const result = await updateExpectation(partialUpdate)
 
       expect(result.success).toBe(true)
-      expect(mockDb.update).toHaveBeenCalled()
+      expect(mockExpectationsService.update).toHaveBeenCalled()
     })
   })
 
@@ -299,20 +297,17 @@ describe('Expectation Server Actions', () => {
 
     beforeEach(() => {
       // Mock user lookup
-      const selectMock = {
-        from: vi.fn().mockReturnThis(),
-        where: vi.fn().mockReturnThis(),
-        limit: vi.fn().mockResolvedValue([{ id: mockDbUserId }])
-      }
-      mockDb.select.mockReturnValue(selectMock)
+      mockUsersService.getByClerkId.mockResolvedValue({
+        id: mockDbUserId,
+        clerkUserId: mockUserId,
+        email: 'test@example.com',
+        name: 'Test User'
+      })
 
       // Mock delete
-      mockDb.delete.mockReturnValue({
-        where: vi.fn().mockReturnThis(),
-        returning: vi.fn().mockResolvedValue([{
-          id: expectationId,
-          userId: mockDbUserId
-        }])
+      mockExpectationsService.delete.mockResolvedValue({
+        id: expectationId,
+        userId: mockDbUserId
       })
     })
 
@@ -333,10 +328,8 @@ describe('Expectation Server Actions', () => {
     })
 
     it('should only delete user\'s own expectations', async () => {
-      mockDb.delete.mockReturnValue({
-        where: vi.fn().mockReturnThis(),
-        returning: vi.fn().mockResolvedValue([])
-      })
+      // Mock delete returning null (not found/unauthorized)
+      mockExpectationsService.delete.mockResolvedValue(null)
 
       const result = await deleteExpectation(expectationId)
 
@@ -349,14 +342,11 @@ describe('Expectation Server Actions', () => {
 
       expect(result.success).toBe(true)
       expect(result.data).toEqual({ id: expectationId })
-      expect(mockDb.delete).toHaveBeenCalledWith(expectations)
+      expect(mockExpectationsService.delete).toHaveBeenCalled()
     })
 
     it('should handle database errors', async () => {
-      mockDb.delete.mockReturnValue({
-        where: vi.fn().mockReturnThis(),
-        returning: vi.fn().mockRejectedValue(new Error('Database error'))
-      })
+      mockExpectationsService.delete.mockRejectedValue(new Error('Database error'))
 
       const result = await deleteExpectation(expectationId)
 
@@ -378,27 +368,27 @@ describe('Expectation Server Actions', () => {
   describe('getUserActiveExpectation', () => {
     beforeEach(() => {
       // Mock user lookup
-      const userSelectMock = {
-        from: vi.fn().mockReturnThis(),
-        where: vi.fn().mockReturnThis(),
-        limit: vi.fn().mockResolvedValue([{ id: mockDbUserId }])
-      }
+      mockUsersService.getByClerkId.mockResolvedValue({
+        id: mockDbUserId,
+        clerkUserId: mockUserId,
+        email: 'test@example.com',
+        name: 'Test User'
+      })
       
       // Mock expectation lookup
-      const expectationSelectMock = {
-        from: vi.fn().mockReturnThis(),
-        where: vi.fn().mockReturnThis(),
-        limit: vi.fn().mockResolvedValue([{
-          id: 'exp_123',
-          title: 'Active expectation',
-          estimatedCompletion: new Date('2025-01-20'),
-          isDone: false
-        }])
-      }
-
-      mockDb.select
-        .mockReturnValueOnce(userSelectMock)
-        .mockReturnValueOnce(expectationSelectMock)
+      mockExpectationsService.getByUserId.mockResolvedValue([{
+        id: 'exp_123',
+        title: 'Active expectation',
+        estimatedCompletion: daysFromNow(7),
+        isDone: false,
+        user: {
+          id: mockDbUserId,
+          clerkUserId: mockUserId,
+          name: 'Test User',
+          email: 'test@example.com',
+          avatarUrl: null
+        }
+      }])
     })
 
     it('should require authentication', async () => {
@@ -422,21 +412,8 @@ describe('Expectation Server Actions', () => {
     })
 
     it('should return null when no active expectation exists', async () => {
-      // Override second select mock for expectations
-      const expectationSelectMock = {
-        from: vi.fn().mockReturnThis(),
-        where: vi.fn().mockReturnThis(),
-        limit: vi.fn().mockResolvedValue([])
-      }
-      
-      mockDb.select.mockReset()
-      mockDb.select
-        .mockReturnValueOnce({
-          from: vi.fn().mockReturnThis(),
-          where: vi.fn().mockReturnThis(),
-          limit: vi.fn().mockResolvedValue([{ id: mockDbUserId }])
-        })
-        .mockReturnValueOnce(expectationSelectMock)
+      // Mock no expectations
+      mockExpectationsService.getByUserId.mockResolvedValue([])
 
       const result = await getUserActiveExpectation()
 
@@ -445,9 +422,7 @@ describe('Expectation Server Actions', () => {
     })
 
     it('should handle database errors', async () => {
-      mockDb.select.mockImplementation(() => {
-        throw new Error('Database connection failed')
-      })
+      mockExpectationsService.getByUserId.mockRejectedValue(new Error('Database connection failed'))
 
       const result = await getUserActiveExpectation()
 

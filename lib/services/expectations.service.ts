@@ -208,7 +208,7 @@ export class ExpectationsService {
    * Only updates provided fields
    */
   async update(data: UpdateExpectationDto) {
-    const updateData: any = { updatedAt: new Date() }
+    const updateData: Record<string, Date | string> = { updatedAt: new Date() }
     
     if (data.title !== undefined) {
       updateData.title = data.title
@@ -233,7 +233,8 @@ export class ExpectationsService {
    * Mark an expectation as done
    * TODO: Implement in Ticket #5
    */
-  async markAsDone(expectationId: string, userId: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async markAsDone(_expectationId: string, _userId: string) {
     console.log('markAsDone - Waiting for Ticket #5 implementation')
     throw new Error('Feature not yet implemented (Ticket #5)')
   }

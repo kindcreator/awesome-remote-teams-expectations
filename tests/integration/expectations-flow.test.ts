@@ -7,11 +7,89 @@ import {
   getUserActiveExpectation 
 } from '@/app/actions/expectations'
 import { auth } from '@clerk/nextjs/server'
+import { expectationsService } from '@/lib/services/expectations.service'
+import { daysFromNow } from '../helpers/date'
 
 // Mock Clerk auth
 vi.mock('@clerk/nextjs/server', () => ({
   auth: vi.fn()
 }))
+
+// Mock next/cache
+vi.mock('next/cache', () => ({
+  revalidatePath: vi.fn()
+}))
+
+// Mock services
+vi.mock('@/lib/services/users.service', () => ({
+  usersService: {
+    getByClerkId: vi.fn().mockResolvedValue({
+      id: 'db_user_123',
+      clerkUserId: 'clerk_user_123',
+      email: 'test@example.com',
+      name: 'Test User'
+    }),
+    getById: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    exists: vi.fn()
+  }
+}))
+
+vi.mock('@/lib/services/expectations.service', () => {
+  let expectations = new Map()
+  
+  return {
+    expectationsService: {
+      createWithAutoComplete: vi.fn().mockImplementation(async (data) => {
+        // Mark all existing expectations for this user as done
+        for (const exp of expectations.values()) {
+          if (exp.userId === data.userId && !exp.isDone) {
+            exp.isDone = true
+            exp.doneAt = new Date()
+          }
+        }
+        
+        const newExpectation = {
+          id: `exp_${Date.now()}`,
+          ...data,
+          isDone: false,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+        expectations.set(newExpectation.id, newExpectation)
+        return newExpectation
+      }),
+      update: vi.fn().mockImplementation(async (data) => {
+        const exp = expectations.get(data.id)
+        if (!exp || exp.userId !== data.userId) return null
+        Object.assign(exp, data, { updatedAt: new Date() })
+        return exp
+      }),
+      delete: vi.fn().mockImplementation(async (id, userId) => {
+        const exp = expectations.get(id)
+        if (exp && exp.userId === userId) {
+          expectations.delete(id)
+          return exp
+        }
+        return null
+      }),
+      getByIdAndUser: vi.fn().mockImplementation((id, userId) => {
+        const exp = expectations.get(id)
+        return (exp && exp.userId === userId) ? exp : null
+      }),
+      getByUserId: vi.fn().mockImplementation((userId) => {
+        return Array.from(expectations.values())
+          .filter(e => e.userId === userId && !e.isDone)
+      }),
+      markAsDone: vi.fn(),
+      // Helper to clear state between tests
+      _clearExpectations: () => {
+        expectations = new Map()
+      }
+    }
+  }
+})
 
 // Mock database with more realistic behavior
 vi.mock('@/db', () => {
@@ -89,9 +167,14 @@ vi.mock('@/db', () => {
 
 describe('Expectation Management Integration Flow', () => {
   const mockAuth = auth as ReturnType<typeof vi.fn>
+  const mockExpectationsService = expectationsService as any
   
   beforeEach(() => {
     vi.clearAllMocks()
+    // Clear expectations state between tests
+    if (mockExpectationsService._clearExpectations) {
+      mockExpectationsService._clearExpectations()
+    }
     // Authenticate user
     mockAuth.mockResolvedValue({ userId: 'clerk_user_123' })
   })
@@ -110,7 +193,7 @@ describe('Expectation Management Integration Flow', () => {
       // Step 2: User creates their first expectation
       const firstExpectation = {
         title: 'Complete project setup',
-        estimatedCompletion: new Date('2025-01-25T10:00:00Z')
+        estimatedCompletion: daysFromNow(7)
       }
       
       const createResult = await addExpectation(firstExpectation)
@@ -127,7 +210,7 @@ describe('Expectation Management Integration Flow', () => {
       const updateResult = await updateExpectation({
         id: expectationId!,
         title: 'Complete project setup and documentation',
-        estimatedCompletion: new Date('2025-01-26T10:00:00Z')
+        estimatedCompletion: daysFromNow(8)
       })
       
       expect(updateResult.success).toBe(true)
@@ -139,7 +222,7 @@ describe('Expectation Management Integration Flow', () => {
       // Step 5: User creates a new expectation (old one should be marked as done)
       const secondExpectation = {
         title: 'Implement authentication',
-        estimatedCompletion: new Date('2025-01-30T10:00:00Z')
+        estimatedCompletion: daysFromNow(10)
       }
       
       const createSecondResult = await addExpectation(secondExpectation)
@@ -151,7 +234,7 @@ describe('Expectation Management Integration Flow', () => {
       // Create first expectation
       const firstExpectation = {
         title: 'First task',
-        estimatedCompletion: new Date('2025-01-25T10:00:00Z')
+        estimatedCompletion: daysFromNow(7)
       }
       
       const firstResult = await addExpectation(firstExpectation)
@@ -161,7 +244,7 @@ describe('Expectation Management Integration Flow', () => {
       // Create second expectation (should replace first)
       const secondExpectation = {
         title: 'Second task',
-        estimatedCompletion: new Date('2025-01-26T10:00:00Z')
+        estimatedCompletion: daysFromNow(8)
       }
       
       const secondResult = await addExpectation(secondExpectation)
@@ -176,7 +259,7 @@ describe('Expectation Management Integration Flow', () => {
       // Create an expectation
       const expectation = {
         title: 'Task to be deleted',
-        estimatedCompletion: new Date('2025-01-25T10:00:00Z')
+        estimatedCompletion: daysFromNow(7)
       }
       
       const createResult = await addExpectation(expectation)
@@ -203,7 +286,7 @@ describe('Expectation Management Integration Flow', () => {
 
       const result = await addExpectation({
         title: 'Test',
-        estimatedCompletion: new Date('2025-01-25')
+        estimatedCompletion: daysFromNow(7)
       })
 
       expect(result.success).toBe(false)
@@ -214,7 +297,7 @@ describe('Expectation Management Integration Flow', () => {
       // Empty title
       const emptyTitleResult = await addExpectation({
         title: '',
-        estimatedCompletion: new Date('2025-01-25')
+        estimatedCompletion: daysFromNow(7)
       })
       
       expect(emptyTitleResult.success).toBe(false)
@@ -232,7 +315,7 @@ describe('Expectation Management Integration Flow', () => {
       // Title too long
       const longTitleResult = await addExpectation({
         title: 'a'.repeat(256),
-        estimatedCompletion: new Date('2025-01-25')
+        estimatedCompletion: daysFromNow(7)
       })
       
       expect(longTitleResult.success).toBe(false)
@@ -243,12 +326,12 @@ describe('Expectation Management Integration Flow', () => {
       // Simulate concurrent add operations
       const expectation1 = {
         title: 'Concurrent task 1',
-        estimatedCompletion: new Date('2025-01-25T10:00:00Z')
+        estimatedCompletion: daysFromNow(7)
       }
       
       const expectation2 = {
         title: 'Concurrent task 2',
-        estimatedCompletion: new Date('2025-01-26T10:00:00Z')
+        estimatedCompletion: daysFromNow(8)
       }
 
       // Execute concurrently
