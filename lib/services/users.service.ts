@@ -76,14 +76,8 @@ export class UsersService {
     return updated || null
   }
 
-  async delete(userId: string) {
-    const [deleted] = await db
-      .delete(users)
-      .where(eq(users.id, userId))
-      .returning()
-    
-    return deleted || null
-  }
+  // Note: We don't handle user deletion as we're not subscribed to user.deleted events
+  // Users remain in our database for historical data integrity
 
   async exists(clerkUserId: string): Promise<boolean> {
     const [result] = await db
