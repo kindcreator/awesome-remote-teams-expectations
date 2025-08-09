@@ -25,11 +25,11 @@ const updateExpectationSchema = z.object({
     .max(255, 'Title must be less than 255 characters')
     .optional(),
   estimatedCompletion: z.date()
+    .optional()
     .refine(
       (date) => !date || date > new Date(),
       'Estimated completion must be in the future'
     )
-    .optional()
 })
 
 /**
