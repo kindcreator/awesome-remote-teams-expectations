@@ -169,12 +169,12 @@ describe('Clerk Webhook Handler', () => {
   })
 
   describe('User Creation', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       // Set up valid webhook environment
       process.env.CLERK_WEBHOOK_SECRET = 'test-secret'
       
       // Mock headers
-      const { headers } = require('next/headers')
+      const { headers } = await import('next/headers')
       vi.mocked(headers).mockResolvedValue({
         get: (key: string) => {
           const headerMap: Record<string, string> = {
