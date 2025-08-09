@@ -2,37 +2,262 @@
 
 import { auth } from '@clerk/nextjs/server'
 import { expectationsService } from '@/lib/services/expectations.service'
-import { db } from '@/db'
-import { users } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { usersService } from '@/lib/services/users.service'
+import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
 
-// Stub implementations for TDD Red Phase
-// These will be properly implemented in the Green Phase
+// Input validation schemas - domain rules
+const addExpectationSchema = z.object({
+  title: z.string()
+    .min(1, 'Title is required')
+    .max(255, 'Title must be less than 255 characters'),
+  estimatedCompletion: z.date()
+    .refine(
+      (date) => date > new Date(),
+      'Estimated completion must be in the future'
+    )
+})
 
+const updateExpectationSchema = z.object({
+  id: z.string().min(1, 'Expectation ID is required'),
+  title: z.string()
+    .min(1, 'Title cannot be empty')
+    .max(255, 'Title must be less than 255 characters')
+    .optional(),
+  estimatedCompletion: z.date()
+    .refine(
+      (date) => !date || date > new Date(),
+      'Estimated completion must be in the future'
+    )
+    .optional()
+})
+
+/**
+ * Add a new expectation for the current user
+ * Pure orchestration - no database logic
+ */
 export async function addExpectation(data: {
   title: string
   estimatedCompletion: Date
 }) {
-  throw new Error('Not implemented')
+  try {
+    // Authentication (domain concern)
+    const { userId: clerkUserId } = await auth()
+    if (!clerkUserId) {
+      return { success: false, error: 'Unauthorized' }
+    }
+
+    // Input validation (domain rules)
+    const validationResult = addExpectationSchema.safeParse(data)
+    if (!validationResult.success) {
+      return { 
+        success: false, 
+        error: validationResult.error.errors[0].message 
+      }
+    }
+
+    // Get user from service layer
+    const user = await usersService.getByClerkId(clerkUserId)
+    if (!user) {
+      console.error(`User ${clerkUserId} not found in database - webhook may have failed`)
+      return { success: false, error: 'User not found in database. Please contact support.' }
+    }
+
+    // Business rule enforcement delegated to service
+    const newExpectation = await expectationsService.createWithAutoComplete({
+      userId: user.id,
+      title: validationResult.data.title,
+      estimatedCompletion: validationResult.data.estimatedCompletion
+    })
+
+    // Cache invalidation (presentation concern)
+    revalidatePath('/dashboard')
+    revalidatePath('/api/expectations')
+
+    return { success: true, data: newExpectation }
+  } catch (error) {
+    console.error('Failed to add expectation:', error)
+    return { 
+      success: false, 
+      error: 'Failed to add expectation. Please try again.' 
+    }
+  }
 }
 
+/**
+ * Update an expectation
+ * Pure orchestration - no database logic
+ */
 export async function updateExpectation(data: {
   id: string
   title?: string
   estimatedCompletion?: Date
 }) {
-  throw new Error('Not implemented')
+  try {
+    // Authentication
+    const { userId: clerkUserId } = await auth()
+    if (!clerkUserId) {
+      return { success: false, error: 'Unauthorized' }
+    }
+
+    // Validation
+    const validationResult = updateExpectationSchema.safeParse(data)
+    if (!validationResult.success) {
+      return { 
+        success: false, 
+        error: validationResult.error.errors[0].message 
+      }
+    }
+
+    // Get user
+    const user = await usersService.getByClerkId(clerkUserId)
+    if (!user) {
+      return { success: false, error: 'User not found' }
+    }
+
+    // Check ownership and status
+    const existing = await expectationsService.getByIdAndUser(data.id, user.id)
+    if (!existing) {
+      return { success: false, error: 'Expectation not found or unauthorized' }
+    }
+
+    // Business rule: Cannot update completed expectations
+    if (existing.isDone) {
+      return { success: false, error: 'Cannot update completed expectation' }
+    }
+
+    // Delegate update to service
+    const updated = await expectationsService.update({
+      id: data.id,
+      userId: user.id,
+      title: validationResult.data.title,
+      estimatedCompletion: validationResult.data.estimatedCompletion
+    })
+
+    if (!updated) {
+      return { success: false, error: 'Failed to update expectation' }
+    }
+
+    // Cache invalidation
+    revalidatePath('/dashboard')
+    revalidatePath('/api/expectations')
+
+    return { success: true, data: updated }
+  } catch (error) {
+    console.error('Failed to update expectation:', error)
+    return { 
+      success: false, 
+      error: 'Failed to update expectation' 
+    }
+  }
 }
 
+/**
+ * Delete an expectation
+ * Pure orchestration - no database logic
+ */
 export async function deleteExpectation(id: string) {
-  throw new Error('Not implemented')
+  try {
+    // Authentication
+    const { userId: clerkUserId } = await auth()
+    if (!clerkUserId) {
+      return { success: false, error: 'Unauthorized' }
+    }
+
+    // Validation
+    if (!id) {
+      return { success: false, error: 'Expectation ID is required' }
+    }
+
+    // Get user
+    const user = await usersService.getByClerkId(clerkUserId)
+    if (!user) {
+      return { success: false, error: 'User not found' }
+    }
+
+    // Delegate deletion to service
+    const deleted = await expectationsService.delete(id, user.id)
+    if (!deleted) {
+      return { success: false, error: 'Expectation not found or unauthorized' }
+    }
+
+    // Cache invalidation
+    revalidatePath('/dashboard')
+    revalidatePath('/api/expectations')
+
+    return { success: true, data: { id } }
+  } catch (error) {
+    console.error('Failed to delete expectation:', error)
+    return { 
+      success: false, 
+      error: 'Failed to delete expectation' 
+    }
+  }
 }
 
+/**
+ * Mark an expectation as done
+ * Pure orchestration - no database logic
+ * 
+ * TODO: TICKET #5 - Move this to next PR (Mark as Done & View History)
+ * This functionality should be implemented in a separate PR as per requirements
+ */
+/*
 export async function markExpectationAsDone(id: string) {
-  throw new Error('Not implemented')
-}
+  try {
+    // Authentication
+    const { userId: clerkUserId } = await auth()
+    if (!clerkUserId) {
+      return { success: false, error: 'Unauthorized' }
+    }
 
-// This is a read operation - using existing service
+    // Validation
+    if (!id) {
+      return { success: false, error: 'Expectation ID is required' }
+    }
+
+    // Get user from service
+    const user = await usersService.getByClerkId(clerkUserId)
+    if (!user) {
+      return { success: false, error: 'User not found' }
+    }
+
+    // Check if expectation exists and belongs to user
+    const existing = await expectationsService.getByIdAndUser(id, user.id)
+    if (!existing) {
+      return { success: false, error: 'Expectation not found or unauthorized' }
+    }
+
+    // Business rule: Cannot mark already completed expectations
+    if (existing.isDone) {
+      return { success: false, error: 'Expectation is already completed' }
+    }
+
+    // Delegate to service layer
+    const updated = await expectationsService.markAsDone(id, user.id)
+    if (!updated) {
+      return { success: false, error: 'Failed to update expectation' }
+    }
+
+    // Cache invalidation
+    revalidatePath('/dashboard')
+    revalidatePath('/api/expectations')
+
+    return { success: true, data: updated }
+  } catch (error) {
+    console.error('Failed to mark expectation as done:', error)
+    return { 
+      success: false, 
+      error: 'Failed to mark expectation as done' 
+    }
+  }
+}
+*/
+
+/**
+ * Get user's active expectation
+ * Read operation using existing service
+ */
 export async function getUserActiveExpectation() {
   const { userId: clerkUserId } = await auth()
   
@@ -41,15 +266,11 @@ export async function getUserActiveExpectation() {
   }
 
   try {
-    // Get the database user ID from Clerk ID
-    const [user] = await db
-      .select()
-      .from(users)
-      .where(eq(users.clerkUserId, clerkUserId))
-      .limit(1)
-    
+    // Get user from service
+    const user = await usersService.getByClerkId(clerkUserId)
     if (!user) {
-      return { success: false, error: 'User not found' }
+      console.error(`User ${clerkUserId} not found in database - webhook may have failed`)
+      return { success: false, error: 'User not found in database. Please contact support.' }
     }
 
     // Use existing service to get active expectations

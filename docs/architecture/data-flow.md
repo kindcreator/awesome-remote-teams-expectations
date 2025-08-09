@@ -1,39 +1,62 @@
 # Data Flow Architecture
 
 ## Overview
-This document explains the data flow architecture for the expectations management system.
+This document explains the data flow architecture for the expectations management system following Clean Architecture principles.
 
 ## Layers
 
 ### 1. Service Layer (`/lib/services/`)
-**Purpose**: Core business logic and data access
+**Purpose**: Data Access Layer (DAO) - Pure database operations
 - No authentication logic (receives userId as parameter)
-- Pure database operations
+- ALL database operations encapsulated here
+- No business logic, just data access
 - Reusable across different entry points
 - Unit testable in isolation
+- Each service handles its own domain (SRP)
 
-**Example Methods**:
+**Implemented Services**:
+
+#### ExpectationsService
 ```typescript
 class ExpectationsService {
   // READ operations
-  async getAllActive(): Promise<Expectation[]>
-  async getByUserId(userId: string): Promise<Expectation[]>
+  async getAllActive(): Promise<ExpectationWithUser[]>
+  async getAll(includeCompleted: boolean): Promise<ExpectationWithUser[]>
+  async getByUserId(userId: string, includeCompleted: boolean): Promise<ExpectationWithUser[]>
+  async getById(id: string): Promise<ExpectationWithUser | null>
   
-  // WRITE operations (to be added)
-  async create(userId: string, data: CreateExpectationDto): Promise<Expectation>
-  async update(userId: string, id: string, data: UpdateExpectationDto): Promise<Expectation>
-  async delete(userId: string, id: string): Promise<void>
-  async markAsDone(userId: string, id: string): Promise<Expectation>
+  // WRITE operations
+  async getByIdAndUser(expectationId: string, userId: string): Promise<Expectation | null>
+  async createWithAutoComplete(data: CreateExpectationDto): Promise<Expectation>
+  async update(data: UpdateExpectationDto): Promise<Expectation | null>
+  async markAsDone(expectationId: string, userId: string): Promise<Expectation | null>
+  async delete(expectationId: string, userId: string): Promise<Expectation | null>
+}
+```
+
+#### UsersService
+```typescript
+class UsersService {
+  async getByClerkId(clerkUserId: string): Promise<User | null>
+  async getById(userId: string): Promise<User | null>
+  async create(data: CreateUserDto): Promise<User>
+  async update(userId: string, data: UpdateUserDto): Promise<User | null>
+  async delete(userId: string): Promise<User | null>
+  async exists(clerkUserId: string): Promise<boolean>
 }
 ```
 
 ### 2. Server Actions (`/app/actions/`)
-**Purpose**: Handle user interactions from React components
+**Purpose**: Domain/Business Logic Layer - Pure orchestration
 - Authentication via Clerk's `auth()`
-- Input validation
-- User authorization
-- Calls service layer methods
+- Input validation with Zod schemas
+- Business rules enforcement
+- User authorization checks
+- Delegates ALL database operations to service layer
+- Cache invalidation with `revalidatePath`
 - Returns typed responses for components
+
+**Key Principle**: NO database logic here - only orchestration
 
 **When to use**:
 - Form submissions
@@ -41,30 +64,46 @@ class ExpectationsService {
 - Real-time updates from UI
 - Components that need server-side data mutations
 
-**Example**:
+**Implementation Example**:
 ```typescript
 'use server'
 
-export async function addExpectation(data: FormData) {
-  const { userId } = await auth()
-  if (!userId) return { error: 'Unauthorized' }
+export async function addExpectation(data: {
+  title: string
+  estimatedCompletion: Date
+}) {
+  // 1. Authentication
+  const { userId: clerkUserId } = await auth()
+  if (!clerkUserId) return { error: 'Unauthorized' }
   
-  // Validate input
-  const validated = schema.parse(data)
+  // 2. Validation (Zod)
+  const validated = addExpectationSchema.safeParse(data)
+  if (!validated.success) return { error: validated.error.errors[0].message }
   
-  // Get DB user and call service
-  const dbUser = await getUserByClerkId(userId)
-  const result = await expectationsService.create(dbUser.id, validated)
+  // 3. Get user from service (NO direct DB access)
+  const user = await usersService.getByClerkId(clerkUserId)
+  if (!user) return { error: 'User not found' }
+  
+  // 4. Business rule delegated to service
+  const result = await expectationsService.createWithAutoComplete({
+    userId: user.id,
+    title: validated.data.title,
+    estimatedCompletion: validated.data.estimatedCompletion
+  })
+  
+  // 5. Cache invalidation
+  revalidatePath('/dashboard')
   
   return { success: true, data: result }
 }
 ```
 
 ### 3. API Routes (`/app/api/`)
-**Purpose**: HTTP endpoints for external access
+**Purpose**: HTTP Layer - Protocol translation
 - RESTful operations
+- HTTP status codes and headers
 - Public or token-based auth
-- JSON responses
+- JSON request/response handling
 - CORS handling
 
 **When to use**:
@@ -72,15 +111,59 @@ export async function addExpectation(data: FormData) {
 - Third-party integrations
 - Mobile app backends
 - Webhooks
-- Data that needs HTTP caching
+- External API access
 
-**Example**:
+**Current Implementation**:
 ```typescript
-export async function GET(request: Request) {
-  // Public endpoint - no auth required
+// For READ operations - direct to service
+export async function GET(request: NextRequest) {
+  const includeCompleted = searchParams.get('includeCompleted') === 'true'
   const expectations = await expectationsService.getAllActive()
-  return Response.json(expectations)
+  return NextResponse.json({ expectations })
 }
+
+// For WRITE operations - delegate to server actions (future)
+export async function POST(request: NextRequest) {
+  const body = await request.json()
+  const result = await addExpectation(body) // Delegate to server action
+  
+  if (result.success) {
+    return NextResponse.json(result.data, { status: 201 })
+  } else {
+    return NextResponse.json({ error: result.error }, { status: 400 })
+  }
+}
+```
+
+## Clean Architecture Flow
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   Client Components                  │
+│                  (React Server/Client)               │
+└─────────────┬───────────────────┬───────────────────┘
+              │                   │
+              ▼                   ▼
+┌──────────────────────┐  ┌───────────────────────────┐
+│    Server Actions    │  │      API Routes           │
+│  (Domain Logic)      │  │   (HTTP Layer)            │
+│  ✓ Authentication    │  │   ✓ Status codes          │
+│  ✓ Validation (Zod)  │  │   ✓ Headers               │
+│  ✓ Business rules    │  │   ✓ Public access         │
+│  ✓ Orchestration     │  │   ✓ External APIs         │
+│  ✗ NO DB logic       │  │   ✗ Delegates to actions  │
+└──────────┬───────────┘  └────────┬──────────────────┘
+           │                        │
+           ▼                        ▼
+┌──────────────────────────────────────────────────────┐
+│              Service Layer (DAO)                     │
+│         ALL Database Operations Here                 │
+│         ✓ Drizzle ORM queries                       │
+│         ✓ Transactions                              │
+│         ✓ Raw SQL if needed                         │
+│         ✗ NO business logic                         │
+│         ✗ NO authentication                         │
+└──────────────────────────────────────────────────────┘
 ```
 
 ## Decision Matrix
@@ -88,43 +171,40 @@ export async function GET(request: Request) {
 | Use Case | Server Action | API Route | Service Layer |
 |----------|--------------|-----------|---------------|
 | Form submission | ✅ Primary | ❌ | Called by action |
-| User mutation | ✅ Primary | ⚠️ If needed | Called by action |
+| User mutation | ✅ Primary | ⚠️ Delegates to action | Called by action |
 | Public data fetch | ❌ | ✅ Primary | Called by route |
 | Component data fetch | ✅ RSC | ✅ Client | Called by both |
-| Third-party integration | ❌ | ✅ Primary | Called by route |
-| Background jobs | ❌ | ❌ | ✅ Direct |
-| Unit testing | Test the action | Test the route | ✅ Test directly |
+| Third-party integration | ❌ | ✅ Primary | Calls action or service |
+| Database operations | ❌ Never | ❌ Never | ✅ Always |
+| Business logic | ✅ Yes | ❌ No | ❌ No |
+| Unit testing | Test orchestration | Test HTTP | Test data access |
 
-## Current Implementation Status
+## Key Principles
 
-### ✅ Implemented
-- Service layer for READ operations
-- API route for public expectations list
-- Tests for service layer
+1. **Service Layer**: 
+   - Pure data access - knows HOW to store/retrieve data
+   - No business logic - doesn't know WHY
+   - No authentication - receives userId as parameter
 
-### 🔴 In Progress (Red Phase)
-- Server actions for mutations (add, update, delete, markAsDone)
-- Integration tests
+2. **Server Actions**: 
+   - Pure orchestration - knows WHAT to do
+   - Business logic - knows WHY and WHEN
+   - No database access - delegates to service
 
-### 📝 Future Considerations
-- Add WRITE operations to service layer
-- Consider using tRPC for type-safe API if needed
-- Add caching layer for frequently accessed data
-- Implement optimistic updates for better UX
+3. **API Routes**: 
+   - Pure HTTP translation - knows HTTP protocol
+   - For mutations: delegates to server actions
+   - For reads: can call service directly (simple cases)
 
-## Best Practices
+4. **Testing**: 
+   - Service: Test with actual test database
+   - Actions: Mock service layer, test logic
+   - Routes: Mock actions/service, test HTTP
 
-1. **Service Layer**: Keep it pure - no framework dependencies
-2. **Server Actions**: Handle auth and validation, delegate to service
-3. **API Routes**: Use for external access, keep thin
-4. **Testing**: Test each layer independently
-5. **Types**: Share types between layers using TypeScript
+## Clean Architecture Benefits
 
-## Migration Path
-
-Current state → Target state:
-1. Keep existing service layer (READ operations)
-2. Add WRITE operations to service layer
-3. Implement server actions for UI mutations
-4. Keep API routes for public/external access
-5. Gradually migrate UI to use server actions instead of API routes for mutations
+- **Testability**: Each layer can be tested independently
+- **Maintainability**: Changes to DB don't affect business logic
+- **Reusability**: Service methods used by both actions and routes
+- **Clarity**: Each layer has single responsibility
+- **Flexibility**: Can swap database without changing business logic

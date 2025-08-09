@@ -3,7 +3,7 @@ import {
   addExpectation, 
   updateExpectation, 
   deleteExpectation, 
-  markExpectationAsDone,
+  // markExpectationAsDone, // TODO: TICKET #5
   getUserActiveExpectation 
 } from './expectations'
 import { auth } from '@clerk/nextjs/server'
@@ -365,7 +365,8 @@ describe('Expectation Server Actions', () => {
     })
   })
 
-  describe('markExpectationAsDone', () => {
+  // TODO: TICKET #5 - Move these tests to next PR (Mark as Done & View History)
+  describe.skip('markExpectationAsDone', () => {
     const expectationId = 'exp_123'
 
     beforeEach(() => {

@@ -71,16 +71,17 @@ Our `users` table exists ONLY for:
 ## Implementation
 
 ### Webhook Handler (`/app/api/webhooks/clerk/route.ts`)
-- Handles `user.created`, `user.updated`, `user.deleted`
+- Handles `user.created`, `user.updated`
 - Only place that writes to users table
 - Validates webhook signatures for security
+- Note: We don't handle `user.deleted` to maintain referential integrity
 
 ### Users Service (`/lib/services/users.service.ts`)
 - `create()` - Only called by webhook
-- `update()` - Only called by webhook
-- `delete()` - Only called by webhook
+- `update()` - Only called by webhook  
 - `getByClerkId()` - For verification only
 - `getById()` - For joins only
+- `exists()` - Check if user exists
 
 ### Server Actions (`/app/actions/users.ts`)
 - `ensureUserExists()` - Verifies webhook worked, doesn't create
