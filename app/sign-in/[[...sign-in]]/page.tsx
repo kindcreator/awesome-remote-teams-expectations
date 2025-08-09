@@ -1,10 +1,9 @@
 import { SignIn } from '@clerk/nextjs'
 
-export default async function SignInPage({
-  searchParams,
-}: { searchParams: Promise<{ redirect_url?: string }> }) {
-  const params = await searchParams
-  const dest = params.redirect_url || '/dashboard'
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
+export default function SignInPage() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <SignIn
@@ -20,7 +19,7 @@ export default async function SignInPage({
         }}
         path="/sign-in"
         signUpUrl="/sign-up"
-        afterSignInUrl={dest}
+        afterSignInUrl="/dashboard"
       />
     </div>
   )

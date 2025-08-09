@@ -32,6 +32,35 @@ DATABASE_URL=postgresql://postgres:password@db.xxxxxxxxxxxx.supabase.co:5432/pos
 npm run db:push
 ```
 
+5. **Enable Row Level Security (MANDATORY)**
+   
+   Since we use Clerk for authentication (not Supabase Auth), we need to configure RLS to only allow backend access:
+   
+   - Go to **Supabase Dashboard** → **SQL Editor**
+   - Run this SQL to enable security:
+
+```sql
+-- Enable Row Level Security on all tables
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.expectations ENABLE ROW LEVEL SECURITY;
+
+-- Only allow service role access (your Next.js backend)
+CREATE POLICY "Service role only for users" 
+ON public.users 
+FOR ALL 
+USING (auth.role() = 'service_role');
+
+CREATE POLICY "Service role only for expectations" 
+ON public.expectations 
+FOR ALL 
+USING (auth.role() = 'service_role');
+```
+
+   **Important**: This configuration ensures:
+   - Your Next.js app (using SERVICE_ROLE_KEY) can access everything
+   - Direct database access with ANON_KEY is blocked
+   - All authorization happens in your Next.js backend via Clerk
+
 ## Test Environment
 
 For testing, you can:

@@ -1,15 +1,18 @@
 export type User = {
   id: string
+  clerkUserId: string
   name: string
-  avatarUrl: string
+  email: string
+  avatarUrl: string | null
 }
 
-export type Expectation = {
+export type ExpectationWithUser = {
   id: string
-  userId: string
   title: string
-  createdAt: string
-  estimatedCompletion: string
+  estimatedCompletion: Date
   isDone: boolean
-  doneAt: string | null
+  createdAt: Date
+  doneAt: Date | null
+  updatedAt: Date
+  user: User
 }

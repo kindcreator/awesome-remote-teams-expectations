@@ -223,3 +223,7 @@ playwright-report/
 test-results/
 .clerk
 **/.clerk/
+
+pnpm-lock.yaml
+#agent-sessions/*
+#*.md
