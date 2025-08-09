@@ -14,38 +14,6 @@ This document explains the data flow architecture for the expectations managemen
 - Unit testable in isolation
 - Each service handles its own domain (SRP)
 
-**Implemented Services**:
-
-#### ExpectationsService
-```typescript
-class ExpectationsService {
-  // READ operations
-  async getAllActive(): Promise<ExpectationWithUser[]>
-  async getAll(includeCompleted: boolean): Promise<ExpectationWithUser[]>
-  async getByUserId(userId: string, includeCompleted: boolean): Promise<ExpectationWithUser[]>
-  async getById(id: string): Promise<ExpectationWithUser | null>
-  
-  // WRITE operations
-  async getByIdAndUser(expectationId: string, userId: string): Promise<Expectation | null>
-  async createWithAutoComplete(data: CreateExpectationDto): Promise<Expectation>
-  async update(data: UpdateExpectationDto): Promise<Expectation | null>
-  async markAsDone(expectationId: string, userId: string): Promise<Expectation | null>
-  async delete(expectationId: string, userId: string): Promise<Expectation | null>
-}
-```
-
-#### UsersService
-```typescript
-class UsersService {
-  async getByClerkId(clerkUserId: string): Promise<User | null>
-  async getById(userId: string): Promise<User | null>
-  async create(data: CreateUserDto): Promise<User>
-  async update(userId: string, data: UpdateUserDto): Promise<User | null>
-  async delete(userId: string): Promise<User | null>
-  async exists(clerkUserId: string): Promise<boolean>
-}
-```
-
 ### 2. Server Actions (`/app/actions/`)
 **Purpose**: Domain/Business Logic Layer - Pure orchestration
 - Authentication via Clerk's `auth()`
@@ -64,40 +32,6 @@ class UsersService {
 - Real-time updates from UI
 - Components that need server-side data mutations
 
-**Implementation Example**:
-```typescript
-'use server'
-
-export async function addExpectation(data: {
-  title: string
-  estimatedCompletion: Date
-}) {
-  // 1. Authentication
-  const { userId: clerkUserId } = await auth()
-  if (!clerkUserId) return { error: 'Unauthorized' }
-  
-  // 2. Validation (Zod)
-  const validated = addExpectationSchema.safeParse(data)
-  if (!validated.success) return { error: validated.error.errors[0].message }
-  
-  // 3. Get user from service (NO direct DB access)
-  const user = await usersService.getByClerkId(clerkUserId)
-  if (!user) return { error: 'User not found' }
-  
-  // 4. Business rule delegated to service
-  const result = await expectationsService.createWithAutoComplete({
-    userId: user.id,
-    title: validated.data.title,
-    estimatedCompletion: validated.data.estimatedCompletion
-  })
-  
-  // 5. Cache invalidation
-  revalidatePath('/dashboard')
-  
-  return { success: true, data: result }
-}
-```
-
 ### 3. API Routes (`/app/api/`)
 **Purpose**: HTTP Layer - Protocol translation
 - RESTful operations
@@ -113,27 +47,6 @@ export async function addExpectation(data: {
 - Webhooks
 - External API access
 
-**Current Implementation**:
-```typescript
-// For READ operations - direct to service
-export async function GET(request: NextRequest) {
-  const includeCompleted = searchParams.get('includeCompleted') === 'true'
-  const expectations = await expectationsService.getAllActive()
-  return NextResponse.json({ expectations })
-}
-
-// For WRITE operations - delegate to server actions (future)
-export async function POST(request: NextRequest) {
-  const body = await request.json()
-  const result = await addExpectation(body) // Delegate to server action
-  
-  if (result.success) {
-    return NextResponse.json(result.data, { status: 201 })
-  } else {
-    return NextResponse.json({ error: result.error }, { status: 400 })
-  }
-}
-```
 
 ## Clean Architecture Flow
 
