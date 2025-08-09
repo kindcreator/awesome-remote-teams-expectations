@@ -9,6 +9,7 @@ import {
 import { auth } from '@clerk/nextjs/server'
 import { usersService } from '@/lib/services/users.service'
 import { expectationsService } from '@/lib/services/expectations.service'
+import { daysFromNow } from '@/tests/helpers/date'
 
 // Mock Clerk auth
 vi.mock('@clerk/nextjs/server', () => ({
@@ -62,7 +63,7 @@ describe('Expectation Server Actions', () => {
   describe('addExpectation', () => {
     const validExpectationData = {
       title: 'Complete project documentation',
-      estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
+      estimatedCompletion: daysFromNow(7)
     }
 
     beforeEach(() => {
@@ -159,7 +160,7 @@ describe('Expectation Server Actions', () => {
       // Set valid date
       const validData = {
         title: 'Test expectation',
-        estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        estimatedCompletion: daysFromNow(7)
       }
       
       mockExpectationsService.createWithAutoComplete.mockRejectedValue(new Error('Database connection failed'))
@@ -175,7 +176,7 @@ describe('Expectation Server Actions', () => {
     const updateData = {
       id: 'exp_123',
       title: 'Updated title',
-      estimatedCompletion: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) // 10 days from now
+      estimatedCompletion: daysFromNow(10)
     }
 
     beforeEach(() => {
@@ -193,7 +194,7 @@ describe('Expectation Server Actions', () => {
         userId: mockDbUserId,
         isDone: false,
         title: 'Original title',
-        estimatedCompletion: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)
+        estimatedCompletion: daysFromNow(5)
       })
 
       // Mock update
@@ -378,7 +379,7 @@ describe('Expectation Server Actions', () => {
       mockExpectationsService.getByUserId.mockResolvedValue([{
         id: 'exp_123',
         title: 'Active expectation',
-        estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        estimatedCompletion: daysFromNow(7),
         isDone: false,
         user: {
           id: mockDbUserId,

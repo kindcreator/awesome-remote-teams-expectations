@@ -8,6 +8,7 @@ import {
 } from '@/app/actions/expectations'
 import { auth } from '@clerk/nextjs/server'
 import { expectationsService } from '@/lib/services/expectations.service'
+import { daysFromNow } from '../helpers/date'
 
 // Mock Clerk auth
 vi.mock('@clerk/nextjs/server', () => ({
@@ -192,7 +193,7 @@ describe('Expectation Management Integration Flow', () => {
       // Step 2: User creates their first expectation
       const firstExpectation = {
         title: 'Complete project setup',
-        estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
+        estimatedCompletion: daysFromNow(7)
       }
       
       const createResult = await addExpectation(firstExpectation)
@@ -209,7 +210,7 @@ describe('Expectation Management Integration Flow', () => {
       const updateResult = await updateExpectation({
         id: expectationId!,
         title: 'Complete project setup and documentation',
-        estimatedCompletion: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000) // 8 days from now
+        estimatedCompletion: daysFromNow(8)
       })
       
       expect(updateResult.success).toBe(true)
@@ -221,7 +222,7 @@ describe('Expectation Management Integration Flow', () => {
       // Step 5: User creates a new expectation (old one should be marked as done)
       const secondExpectation = {
         title: 'Implement authentication',
-        estimatedCompletion: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) // 10 days from now
+        estimatedCompletion: daysFromNow(10)
       }
       
       const createSecondResult = await addExpectation(secondExpectation)
@@ -233,7 +234,7 @@ describe('Expectation Management Integration Flow', () => {
       // Create first expectation
       const firstExpectation = {
         title: 'First task',
-        estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
+        estimatedCompletion: daysFromNow(7)
       }
       
       const firstResult = await addExpectation(firstExpectation)
@@ -243,7 +244,7 @@ describe('Expectation Management Integration Flow', () => {
       // Create second expectation (should replace first)
       const secondExpectation = {
         title: 'Second task',
-        estimatedCompletion: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000) // 8 days from now
+        estimatedCompletion: daysFromNow(8)
       }
       
       const secondResult = await addExpectation(secondExpectation)
@@ -258,7 +259,7 @@ describe('Expectation Management Integration Flow', () => {
       // Create an expectation
       const expectation = {
         title: 'Task to be deleted',
-        estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
+        estimatedCompletion: daysFromNow(7)
       }
       
       const createResult = await addExpectation(expectation)
@@ -285,7 +286,7 @@ describe('Expectation Management Integration Flow', () => {
 
       const result = await addExpectation({
         title: 'Test',
-        estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        estimatedCompletion: daysFromNow(7)
       })
 
       expect(result.success).toBe(false)
@@ -296,7 +297,7 @@ describe('Expectation Management Integration Flow', () => {
       // Empty title
       const emptyTitleResult = await addExpectation({
         title: '',
-        estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        estimatedCompletion: daysFromNow(7)
       })
       
       expect(emptyTitleResult.success).toBe(false)
@@ -314,7 +315,7 @@ describe('Expectation Management Integration Flow', () => {
       // Title too long
       const longTitleResult = await addExpectation({
         title: 'a'.repeat(256),
-        estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        estimatedCompletion: daysFromNow(7)
       })
       
       expect(longTitleResult.success).toBe(false)
@@ -325,12 +326,12 @@ describe('Expectation Management Integration Flow', () => {
       // Simulate concurrent add operations
       const expectation1 = {
         title: 'Concurrent task 1',
-        estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        estimatedCompletion: daysFromNow(7)
       }
       
       const expectation2 = {
         title: 'Concurrent task 2',
-        estimatedCompletion: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000)
+        estimatedCompletion: daysFromNow(8)
       }
 
       // Execute concurrently
