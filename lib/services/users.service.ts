@@ -55,7 +55,7 @@ export class UsersService {
   async update(userId: string, data: UpdateUserDto) {
     // Note: This should only be called by webhook handlers
     // User updates should come from Clerk -> webhook -> this method
-    const updateData: any = { updatedAt: new Date() }
+    const updateData: Record<string, Date | string | null> = { updatedAt: new Date() }
     
     if (data.name !== undefined) {
       updateData.name = data.name

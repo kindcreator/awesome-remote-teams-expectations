@@ -47,8 +47,8 @@ describe('Expectation Server Actions', () => {
   const mockUserId = 'user_123'
   const mockDbUserId = 'db_user_123'
   const mockAuth = auth as ReturnType<typeof vi.fn>
-  const mockUsersService = usersService as any
-  const mockExpectationsService = expectationsService as any
+  const mockUsersService = vi.mocked(usersService)
+  const mockExpectationsService = vi.mocked(expectationsService)
 
   beforeEach(() => {
     vi.clearAllMocks()

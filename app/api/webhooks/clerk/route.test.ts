@@ -13,7 +13,7 @@ vi.mock('next/headers', () => ({
 
 describe('Clerk Webhook Handler', () => {
   const mockWebhookVerify = vi.fn()
-  const mockUsersService = usersService as any
+  const mockUsersService = vi.mocked(usersService)
   
   beforeEach(() => {
     vi.clearAllMocks()
@@ -24,7 +24,7 @@ describe('Clerk Webhook Handler', () => {
     // Mock Webhook constructor
     vi.mocked(Webhook).mockImplementation(() => ({
       verify: mockWebhookVerify
-    } as any))
+    } as unknown as Webhook))
   })
 
   afterEach(() => {
@@ -71,7 +71,7 @@ describe('Clerk Webhook Handler', () => {
           }
           return headerMap[key] || null
         }
-      } as any)
+      } as unknown as Headers)
       
       // Mock webhook verification
       mockWebhookVerify.mockReturnValue({
@@ -119,7 +119,7 @@ describe('Clerk Webhook Handler', () => {
       const { headers } = await import('next/headers')
       vi.mocked(headers).mockResolvedValue({
         get: () => null
-      } as any)
+      } as unknown as Headers)
       
       const mockRequest = new Request('http://localhost/api/webhooks/clerk', {
         method: 'POST',
@@ -148,7 +148,7 @@ describe('Clerk Webhook Handler', () => {
           }
           return headerMap[key] || null
         }
-      } as any)
+      } as unknown as Headers)
       
       // Mock webhook verification to throw error
       mockWebhookVerify.mockImplementation(() => {
@@ -184,7 +184,7 @@ describe('Clerk Webhook Handler', () => {
           }
           return headerMap[key] || null
         }
-      } as any)
+      } as unknown as Headers)
     })
 
     it('should create user on user.created event', async () => {

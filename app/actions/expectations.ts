@@ -199,7 +199,8 @@ export async function deleteExpectation(id: string) {
  * Mark an expectation as done
  * TODO: Implement in Ticket #5
  */
-export async function markExpectationAsDone(id: string) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function markExpectationAsDone(_id: string) {
   console.log('markExpectationAsDone - Waiting for Ticket #5 implementation')
   return { success: false, error: 'Feature not yet implemented (Ticket #5)' }
 }
@@ -231,7 +232,7 @@ export async function getUserActiveExpectation() {
       success: true, 
       data: expectations.length > 0 ? expectations[0] : null 
     }
-  } catch (error) {
+  } catch {
     return { 
       success: false, 
       error: 'Failed to get active expectation' 
