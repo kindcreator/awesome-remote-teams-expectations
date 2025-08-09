@@ -3,6 +3,20 @@ import { expectations, users } from '@/db/schema'
 import { eq, and, asc } from 'drizzle-orm'
 import type { ExpectationWithUser } from '@/lib/types'
 
+// DTOs for service operations
+export interface CreateExpectationDto {
+  userId: string
+  title: string
+  estimatedCompletion: Date
+}
+
+export interface UpdateExpectationDto {
+  id: string
+  userId: string
+  title?: string
+  estimatedCompletion?: Date
+}
+
 export class ExpectationsService {
   /**
    * Get all active expectations sorted by estimated completion date
@@ -35,6 +49,7 @@ export class ExpectationsService {
 
   /**
    * Get all expectations (active and completed) sorted by status and completion date
+   * NOTE: includeCompleted=true will be primarily used in TICKET #5 for history view
    */
   async getAll(includeCompleted: boolean = false): Promise<ExpectationWithUser[]> {
     const query = db
@@ -73,6 +88,7 @@ export class ExpectationsService {
 
   /**
    * Get expectations for a specific user
+   * NOTE: includeCompleted=true will be primarily used in TICKET #5 for history view
    */
   async getByUserId(userId: string, includeCompleted: boolean = false): Promise<ExpectationWithUser[]> {
     const query = db
@@ -131,6 +147,111 @@ export class ExpectationsService {
       .limit(1)
     
     return results[0] || null
+  }
+
+  /**
+   * Get a single expectation by ID and user
+   * Used for authorization checks
+   */
+  async getByIdAndUser(expectationId: string, userId: string) {
+    const [expectation] = await db
+      .select()
+      .from(expectations)
+      .where(and(
+        eq(expectations.id, expectationId),
+        eq(expectations.userId, userId)
+      ))
+      .limit(1)
+    
+    return expectation || null
+  }
+
+  /**
+   * Create expectation with automatic completion of previous active expectations
+   * This handles the business rule: "only one active expectation per user"
+   * Uses a transaction to ensure data consistency
+   */
+  async createWithAutoComplete(data: CreateExpectationDto) {
+    return await db.transaction(async (tx) => {
+      // First, mark all existing active expectations as done
+      await tx
+        .update(expectations)
+        .set({ 
+          isDone: true, 
+          doneAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(and(
+          eq(expectations.userId, data.userId),
+          eq(expectations.isDone, false)
+        ))
+
+      // Then create the new expectation
+      const [newExpectation] = await tx
+        .insert(expectations)
+        .values({
+          userId: data.userId,
+          title: data.title,
+          estimatedCompletion: data.estimatedCompletion,
+          isDone: false,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        .returning()
+      
+      return newExpectation
+    })
+  }
+
+  /**
+   * Update an expectation
+   * Only updates provided fields
+   */
+  async update(data: UpdateExpectationDto) {
+    const updateData: Record<string, Date | string> = { updatedAt: new Date() }
+    
+    if (data.title !== undefined) {
+      updateData.title = data.title
+    }
+    if (data.estimatedCompletion !== undefined) {
+      updateData.estimatedCompletion = data.estimatedCompletion
+    }
+
+    const [updated] = await db
+      .update(expectations)
+      .set(updateData)
+      .where(and(
+        eq(expectations.id, data.id),
+        eq(expectations.userId, data.userId)
+      ))
+      .returning()
+    
+    return updated || null
+  }
+
+  /**
+   * Mark an expectation as done
+   * TODO: Implement in Ticket #5
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async markAsDone(_expectationId: string, _userId: string) {
+    console.log('markAsDone - Waiting for Ticket #5 implementation')
+    throw new Error('Feature not yet implemented (Ticket #5)')
+  }
+
+  /**
+   * Delete an expectation
+   */
+  async delete(expectationId: string, userId: string) {
+    const [deleted] = await db
+      .delete(expectations)
+      .where(and(
+        eq(expectations.id, expectationId),
+        eq(expectations.userId, userId)
+      ))
+      .returning()
+    
+    return deleted || null
   }
 }
 
