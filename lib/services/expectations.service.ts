@@ -231,26 +231,12 @@ export class ExpectationsService {
 
   /**
    * Mark an expectation as done
-   * TODO: TICKET #5 - Move to next PR (Mark as Done & View History)
+   * TODO: Implement in Ticket #5
    */
-  /*
   async markAsDone(expectationId: string, userId: string) {
-    const [updated] = await db
-      .update(expectations)
-      .set({ 
-        isDone: true, 
-        doneAt: new Date(),
-        updatedAt: new Date()
-      })
-      .where(and(
-        eq(expectations.id, expectationId),
-        eq(expectations.userId, userId)
-      ))
-      .returning()
-    
-    return updated || null
+    console.log('markAsDone - Waiting for Ticket #5 implementation')
+    throw new Error('Feature not yet implemented (Ticket #5)')
   }
-  */
 
   /**
    * Delete an expectation

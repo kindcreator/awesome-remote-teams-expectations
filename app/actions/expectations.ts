@@ -197,62 +197,12 @@ export async function deleteExpectation(id: string) {
 
 /**
  * Mark an expectation as done
- * Pure orchestration - no database logic
- * 
- * TODO: TICKET #5 - Move this to next PR (Mark as Done & View History)
- * This functionality should be implemented in a separate PR as per requirements
+ * TODO: Implement in Ticket #5
  */
-/*
 export async function markExpectationAsDone(id: string) {
-  try {
-    // Authentication
-    const { userId: clerkUserId } = await auth()
-    if (!clerkUserId) {
-      return { success: false, error: 'Unauthorized' }
-    }
-
-    // Validation
-    if (!id) {
-      return { success: false, error: 'Expectation ID is required' }
-    }
-
-    // Get user from service
-    const user = await usersService.getByClerkId(clerkUserId)
-    if (!user) {
-      return { success: false, error: 'User not found' }
-    }
-
-    // Check if expectation exists and belongs to user
-    const existing = await expectationsService.getByIdAndUser(id, user.id)
-    if (!existing) {
-      return { success: false, error: 'Expectation not found or unauthorized' }
-    }
-
-    // Business rule: Cannot mark already completed expectations
-    if (existing.isDone) {
-      return { success: false, error: 'Expectation is already completed' }
-    }
-
-    // Delegate to service layer
-    const updated = await expectationsService.markAsDone(id, user.id)
-    if (!updated) {
-      return { success: false, error: 'Failed to update expectation' }
-    }
-
-    // Cache invalidation
-    revalidatePath('/dashboard')
-    revalidatePath('/api/expectations')
-
-    return { success: true, data: updated }
-  } catch (error) {
-    console.error('Failed to mark expectation as done:', error)
-    return { 
-      success: false, 
-      error: 'Failed to mark expectation as done' 
-    }
-  }
+  console.log('markExpectationAsDone - Waiting for Ticket #5 implementation')
+  return { success: false, error: 'Feature not yet implemented (Ticket #5)' }
 }
-*/
 
 /**
  * Get user's active expectation

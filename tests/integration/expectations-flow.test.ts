@@ -3,7 +3,7 @@ import {
   addExpectation, 
   updateExpectation, 
   deleteExpectation, 
-  // markExpectationAsDone, // TODO: TICKET #5
+  markExpectationAsDone,
   getUserActiveExpectation 
 } from '@/app/actions/expectations'
 import { auth } from '@clerk/nextjs/server'
@@ -133,14 +133,8 @@ describe('Expectation Management Integration Flow', () => {
       expect(updateResult.success).toBe(true)
       expect(updateResult.data?.title).toBe('Complete project setup and documentation')
 
-      // Step 4: User marks expectation as done
-      // TODO: TICKET #5 - Uncomment when implementing Mark as Done
-      // const doneResult = await markExpectationAsDone(expectationId!)
-      // expect(doneResult.success).toBe(true)
-      // expect(doneResult.data).toMatchObject({
-      //   isDone: true,
-      //   doneAt: expect.any(Date)
-      // })
+      // Step 4: User marks expectation as done (Not implemented yet - Ticket #5)
+      // Will be implemented in next PR
 
       // Step 5: User creates a new expectation (old one should be marked as done)
       const secondExpectation = {
@@ -200,31 +194,7 @@ describe('Expectation Management Integration Flow', () => {
       expect(checkResult.data).toBeNull()
     })
 
-    it.skip('should prevent updating completed expectations - TODO: TICKET #5', async () => {
-      // Create and complete an expectation
-      const expectation = {
-        title: 'Task to complete',
-        estimatedCompletion: new Date('2025-01-25T10:00:00Z')
-      }
-      
-      const createResult = await addExpectation(expectation)
-      expect(createResult.success).toBe(true)
-      const expectationId = createResult.data?.id
-
-      // Mark as done
-      const doneResult = await markExpectationAsDone(expectationId!)
-      expect(doneResult.success).toBe(true)
-
-      // Try to update completed expectation
-      const updateResult = await updateExpectation({
-        id: expectationId!,
-        title: 'Try to update completed task'
-      })
-      
-      // Should fail because expectation is already done
-      expect(updateResult.success).toBe(false)
-      expect(updateResult.error).toContain('Cannot update completed expectation')
-    })
+    // TODO: Implement this test in Ticket #5 when markAsDone is available
   })
 
   describe('Error Handling', () => {
@@ -293,12 +263,7 @@ describe('Expectation Management Integration Flow', () => {
   })
 
   describe('Business Rules Validation', () => {
-    it.skip('should not allow marking non-existent expectation as done - TODO: TICKET #5', async () => {
-      const result = await markExpectationAsDone('non_existent_id')
-      
-      expect(result.success).toBe(false)
-      expect(result.error).toContain('not found')
-    })
+    // TODO: Implement test for marking non-existent expectation in Ticket #5
 
     it('should not allow deleting another user\'s expectation', async () => {
       // This is simulated by the mock returning empty array for wrong user
@@ -308,25 +273,7 @@ describe('Expectation Management Integration Flow', () => {
       expect(result.error).toContain('not found or unauthorized')
     })
 
-    it.skip('should handle edge case of marking already done expectation - TODO: TICKET #5', async () => {
-      // Create and mark as done
-      const expectation = {
-        title: 'Task to mark done twice',
-        estimatedCompletion: new Date('2025-01-25T10:00:00Z')
-      }
-      
-      const createResult = await addExpectation(expectation)
-      const expectationId = createResult.data?.id
-
-      // Mark as done first time
-      const firstDone = await markExpectationAsDone(expectationId!)
-      expect(firstDone.success).toBe(true)
-
-      // Try to mark as done again
-      const secondDone = await markExpectationAsDone(expectationId!)
-      expect(secondDone.success).toBe(false)
-      expect(secondDone.error).toBe('Expectation is already completed')
-    })
+    // TODO: Implement test for marking already done expectation in Ticket #5
 
     it('should validate date is not too far in the future', async () => {
       const farFutureExpectation = {

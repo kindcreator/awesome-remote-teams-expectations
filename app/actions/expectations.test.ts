@@ -3,7 +3,7 @@ import {
   addExpectation, 
   updateExpectation, 
   deleteExpectation, 
-  // markExpectationAsDone, // TODO: TICKET #5
+  markExpectationAsDone,
   getUserActiveExpectation 
 } from './expectations'
 import { auth } from '@clerk/nextjs/server'
@@ -365,106 +365,13 @@ describe('Expectation Server Actions', () => {
     })
   })
 
-  // TODO: TICKET #5 - Move these tests to next PR (Mark as Done & View History)
-  describe.skip('markExpectationAsDone', () => {
-    const expectationId = 'exp_123'
-
-    beforeEach(() => {
-      // Mock user lookup
-      const selectMock = {
-        from: vi.fn().mockReturnThis(),
-        where: vi.fn().mockReturnThis(),
-        limit: vi.fn().mockResolvedValue([{ id: mockDbUserId }])
-      }
-      mockDb.select.mockReturnValue(selectMock)
-
-      // Mock update
-      mockDb.update.mockReturnValue({
-        set: vi.fn().mockReturnThis(),
-        where: vi.fn().mockReturnThis(),
-        returning: vi.fn().mockResolvedValue([{
-          id: expectationId,
-          userId: mockDbUserId,
-          isDone: true,
-          doneAt: new Date()
-        }])
-      })
-    })
-
-    it('should require authentication', async () => {
-      mockAuth.mockResolvedValue({ userId: null })
-
-      const result = await markExpectationAsDone(expectationId)
-
-      expect(result.success).toBe(false)
-      expect(result.error).toBe('Unauthorized')
-    })
-
-    it('should validate expectation ID', async () => {
-      const result = await markExpectationAsDone('')
-
-      expect(result.success).toBe(false)
-      expect(result.error).toContain('Expectation ID is required')
-    })
-
-    it('should only mark user\'s own expectations as done', async () => {
-      mockDb.update.mockReturnValue({
-        set: vi.fn().mockReturnThis(),
-        where: vi.fn().mockReturnThis(),
-        returning: vi.fn().mockResolvedValue([])
-      })
-
-      const result = await markExpectationAsDone(expectationId)
-
-      expect(result.success).toBe(false)
-      expect(result.error).toBe('Expectation not found or unauthorized')
-    })
-
-    it('should not mark already completed expectations', async () => {
-      // First call to check if already done
-      const selectMock = {
-        from: vi.fn().mockReturnThis(),
-        where: vi.fn().mockReturnThis(),
-        limit: vi.fn().mockResolvedValue([{ 
-          id: expectationId,
-          isDone: true,
-          doneAt: new Date('2025-01-01')
-        }])
-      }
-      mockDb.select.mockReturnValue(selectMock)
-
-      const result = await markExpectationAsDone(expectationId)
-
-      expect(result.success).toBe(false)
-      expect(result.error).toBe('Expectation is already completed')
-    })
-
-    it('should mark expectation as done successfully', async () => {
-      const result = await markExpectationAsDone(expectationId)
-
-      expect(result.success).toBe(true)
-      expect(result.data).toMatchObject({
-        id: expectationId,
-        isDone: true,
-        doneAt: expect.any(Date)
-      })
+  describe('markExpectationAsDone', () => {
+    // TODO: Implement proper tests in Ticket #5
+    it('should return not implemented error', async () => {
+      const result = await markExpectationAsDone('test-id')
       
-      const updateCall = mockDb.update.mock.calls[0]
-      expect(updateCall[0]).toBe(expectations)
-    })
-
-    it('should set doneAt timestamp when marking as done', async () => {
-      const beforeCall = new Date()
-      const result = await markExpectationAsDone(expectationId)
-      const afterCall = new Date()
-
-      expect(result.success).toBe(true)
-      expect(result.data.doneAt).toBeInstanceOf(Date)
-      
-      // Verify doneAt is set to current time
-      const doneAt = result.data.doneAt as Date
-      expect(doneAt.getTime()).toBeGreaterThanOrEqual(beforeCall.getTime())
-      expect(doneAt.getTime()).toBeLessThanOrEqual(afterCall.getTime())
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('Feature not yet implemented (Ticket #5)')
     })
   })
 
