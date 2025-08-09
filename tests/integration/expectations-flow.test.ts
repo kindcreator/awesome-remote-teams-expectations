@@ -7,6 +7,7 @@ import {
   getUserActiveExpectation 
 } from '@/app/actions/expectations'
 import { auth } from '@clerk/nextjs/server'
+import { expectationsService } from '@/lib/services/expectations.service'
 
 // Mock Clerk auth
 vi.mock('@clerk/nextjs/server', () => ({
@@ -165,13 +166,13 @@ vi.mock('@/db', () => {
 
 describe('Expectation Management Integration Flow', () => {
   const mockAuth = auth as ReturnType<typeof vi.fn>
-  const { expectationsService } = require('@/lib/services/expectations.service')
+  const mockExpectationsService = expectationsService as any
   
   beforeEach(() => {
     vi.clearAllMocks()
     // Clear expectations state between tests
-    if (expectationsService._clearExpectations) {
-      expectationsService._clearExpectations()
+    if (mockExpectationsService._clearExpectations) {
+      mockExpectationsService._clearExpectations()
     }
     // Authenticate user
     mockAuth.mockResolvedValue({ userId: 'clerk_user_123' })
